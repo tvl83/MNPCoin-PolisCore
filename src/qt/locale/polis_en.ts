@@ -5254,8 +5254,8 @@ https://www.transifex.com/projects/p/polis/</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Show N confirmations for a successfully locked transaction (0-9999, default: %u)</source>
-        <translation>Show N confirmations for a successfully locked transaction (0-9999, default: %u)</translation>
+        <source>Show N confirmations for a successfully locked transaction (0-11111, default: %u)</source>
+        <translation>Show N confirmations for a successfully locked transaction (0-11111, default: %u)</translation>
     </message>
     <message>
         <location line="+17"/>
