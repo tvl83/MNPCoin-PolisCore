@@ -12,7 +12,7 @@ cache:
   - "$HOME/.ccache"
 env:
   global:
-  - MAKEJOBS=-j8
+  - MAKEJOBS=-j5
   - RUN_TESTS=false
   - BOOST_TEST_RANDOM=1$TRAVIS_BUILD_ID
   - CCACHE_SIZE=400M
@@ -28,14 +28,14 @@ env:
     --enable-reduce-exports"
   - HOST=i686-w64-mingw32 DPKG_ADD_ARCH="i386" DEP_OPTS="NO_QT=1" PPA="ppa:bitcoin/bitcoin"
     PACKAGES="python3 nsis g++-mingw-w64-i686 wine1.7 bc" RUN_TESTS=true GOAL="install"
-    BITCOIN_CONFIG="--enable-gui --enable-reduce-exports" MAKEJOBS="-j8" WINE=true
+    BITCOIN_CONFIG="--enable-gui --enable-reduce-exports" MAKEJOBS="-j4" WINE=true
   - HOST=i686-pc-linux-gnu PPA="ppa:bitcoin/bitcoin" PACKAGES="g++-multilib bc python3-zmq"
     DEP_OPTS="NO_QT=1" RUN_TESTS=true GOAL="install" BITCOIN_CONFIG="--enable-zmq
     --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++"
     USE_SHELL="/bin/polis" PYZMQ=true
   - HOST=x86_64-w64-mingw32 DPKG_ADD_ARCH="i386" DEP_OPTS="NO_QT=1" PPA="ppa:bitcoin/bitcoin"
     PACKAGES="python3 nsis g++-mingw-w64-x86-64 wine1.7 bc" RUN_TESTS=true GOAL="install"
-    BITCOIN_CONFIG="--enable-gui --enable-reduce-exports" MAKEJOBS="-j8" WINE=true
+    BITCOIN_CONFIG="--enable-gui --enable-reduce-exports" MAKEJOBS="-j4" WINE=true
   - HOST=x86_64-unknown-linux-gnu PPA="ppa:bitcoin/bitcoin" PACKAGES="bc python3-zmq"
     DEP_OPTS="NO_QT=1 NO_UPNP=1 DEBUG=1" RUN_TESTS=true GOAL="install" BITCOIN_CONFIG="--enable-zmq
     --enable-glibc-back-compat --enable-reduce-exports" CPPFLAGS="-DDEBUG_LOCKORDER
@@ -94,10 +94,3 @@ script:
 after_script:
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then (echo "Upload goes here. Something like: scp
     -r $BASE_OUTDIR server" || echo "upload failed"); fi
-deploy:
-  provider: releases
-  api_key:
-    secure: dMV9o+UaUR/rg3wF37ZRa0kJM7ScdH6E500cbGA+CZ/S5tdoNuTVjFnmyIOZdWqBGxpN/onpLR5Ic07+FkepDeqKg/nSieGNtlEPSxeRdWid+CiJkSHKn3Y5DoGtWCl46Cpnan9e7HKmz3g42CaAhvn41GSpzmaZTaRo30uOmKKbWIiZdqv1K4L8loJ7nAfJSjPexOLbvJ7Sa5pF9tqwHW7z1Hn/BtQM1jU9ebtIjnK5yVQ49gtB5BSPyFoc0cfBHroV2RtFuwIuphAf+9Nb/vmsndngw57/JtgGrbglQ27tOJwFeH6cV0nYZ89ZAudUj5DkiUzoYma1tnWDJshiksPeEX+LgIlI3JQiJf99okWwDast8YozJbtUTNCksfoe6umt38lmZ1KnXRu+N1P9rnlaOdtJkWIsdVMo3SnFHImum9/P6tAhXvxpny1icPTcs57XD5/ydVLrfHFcpqYSw1621GgmFPyL9msdJ/JzgbAma4V/MuWxKDmbUJSg9czAxQzTh6WDjsZbIBkrYBxMhFv1bkND2hHftoySJ8Lol249nK0RqazEjmZPa1tzhLi3cNfuIJAkEHcFJhbinYWn3zXz+U73d6Ywc/spCbWn9eso4qfMIemGNqyFdiqbo39fPL9PskrP6ZeiyQxbk3pg0DSZNGku6UgqKyKUCSW2Qd0=
-  file: "$DEPLOYFILE"
-  on:
-    repo: polispay/polis
