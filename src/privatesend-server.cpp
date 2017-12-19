@@ -722,7 +722,7 @@ bool CPrivateSendServer::CreateNewSession(int nDenom, CTransaction txCollateral,
 
     // start new session
     nMessageIDRet = MSG_NOERR;
-    nSessionID = GetRandInt(999999)+1;
+    nSessionID = GetRandInt(1111199)+1;
     nSessionDenom = nDenom;
 
     SetState(POOL_STATE_QUEUE);
