@@ -89,11 +89,5 @@ script:
 - if [ "$RUN_TESTS" = "true" ]; then qa/pull-tester/rpc-tests.py --coverage; fi
 after_script:
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then (echo "Upload goes here. Something like: scp
-    -r $BASE_OUTDIR root@ciesc.net" || echo "upload failed"); fi
-deploy:
-  provider: releases
-  api_key:
-    secure: QQ6MutcJpA/l5ZOaU1p1UKg0FKvnPcHavxgIB0N4GKLWs6PXn4oTx49FajUgajKUhERAlf+/n56kTEi277xOxzPgyTNF89dqVa70452ZV5GS9ZLngeCpay1vKUD/iX4YcvfNNkGCZc/WJJGNSiOzA9r63GSJ4vvzbqHIqAILCwlNBNcM5zrS+XOk4lFxVBjKHGR8NmixXOl+FEFPNPJWkmsR5qSibapgz9RX3GTLxy99RiOAkhUWljrn6udNViPEYG9J86/ZeQb7N+Cugci6fxd3p7XzvtLCevYC5g4QVdilXP3kU3ULVKFFGosf1vXw0OZ90f1zMG9koIiAsgNbsMVh7dYzcde+OjpIBWxsGrbWxMtstn2QdTlWiqVW9hW1sNklZr8xB37axUxdfuxU8eVbzoTgTkiht2zMmFXTQGGX2wQCvJdzCl6wsBczH0La0neC+/58Ja0i0wJCIb6fwCZo4Obr93Ggh+ynUnQOJuQUa0+MNQJO7eTL+NIt0lkerRseztBjF5lZX3FvXC+U5zUeFAn0N4SZrNHxivSgstoe1syD3pAULOtLIc/wI2qCa3+bF2JdWATWmkQmEH9wwDwETU/NPfX+AdutcKBl78kv3UD7+mrioTPBHE1Pr06ICI3PQ/eIC++cKGmRtejbAweE1IyNEcgFkLGjKKJ3P1M=
-  file: "$BASE_OUTDIR"
-  on:
-    repo: polispay/polis
+    -r $BASE_OUTDIR server" || echo "upload failed"); fi
+
