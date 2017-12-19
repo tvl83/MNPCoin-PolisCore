@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=polis
+Comment=polis P2P Cryptocurrency
+Comment[fr]=polis, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=polis, eşten eşe kriptografik sanal para birimi
+Exec=polis-qt %u
+Terminal=false
+Type=Application
+Icon=polis128
+MimeType=x-scheme-handler/polis;
+Categories=Office;Finance;
