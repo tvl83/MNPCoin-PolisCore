@@ -2,7 +2,7 @@ Polis Core staging tree 0.13
 ===============================
 
 `master:` [![Build Status](https://travis-ci.org/polispay/polis.svg?branch=master)](https://travis-ci.org/polispay/polis)
-https://www.polis.org
+https://www.polispay.org
 
 
 What is Polis?
