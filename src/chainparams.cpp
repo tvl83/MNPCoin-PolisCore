@@ -51,7 +51,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    const char* pszTimestamp = "Polis, from the community, to the community.";
+    const char* pszTimestamp = "Polis, for the people";
     const CScript genesisOutputScript = CScript() << ParseHex("040184710fa689ad5023690c80f3a49c8f13f8d45b8c857fbcbc8bc4a8e4d3eb4b10f4d4604fa08dce601aaf0f470216fe1b51850b4acf21b179c45070ac7b03a9") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
@@ -137,10 +137,10 @@ public:
         nDelayGetHeadersTime = 24 * 60 * 60;
         nPruneAfterHeight = 100000;
 
-        genesis = CreateGenesisBlock(1513748226, 1149378, 0x1e0ffff0, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1513753362, 828829, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x000007a7d7e5da7be2081bb46741f4cdf2e7c7c62656985ce4fbce3c22c69442"));
-        assert(genesis.hashMerkleRoot == uint256S("0xf19f03d75ddc5884886795b4e00c65f3562caec6bda24ed42e8a088912aa0f36"));
+        assert(consensus.hashGenesisBlock == uint256S("0x000000a40b8322fce34f051bb4857aceca23d7d0a1e6cc1066a2b253205d9911"));
+        assert(genesis.hashMerkleRoot == uint256S("0xdc0622e3b98f1d1a77ca114d50f230898f2477cfd91d24eee79b2600ab493022"));
 
 
         vSeeds.push_back(CDNSSeedData("polispay.org", "polispay.org"));
