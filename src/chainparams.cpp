@@ -137,10 +137,10 @@ public:
         nDelayGetHeadersTime = 24 * 60 * 60;
         nPruneAfterHeight = 100000;
 
-        genesis = CreateGenesisBlock(1513775928, 1893015, 0x1e0ffff0, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1513775928, 219583, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x0000033b2629aed2f91f1dec5c8e9a485193b9f7e9b6bc50ea2287bb3ff3ace7"));
-        assert(genesis.hashMerkleRoot == uint256S("0x00000bf5ec0baaaf300b601c8614517a0c664e9eec314d1d8f3a9f458bfdf36a"));
+        assert(genesis.hashMerkleRoot == uint256S("0xdc0622e3b98f1d1a77ca114d50f230898f2477cfd91d24eee79b2600ab493022"));
 
 
         vSeeds.push_back(CDNSSeedData("polispay.org", "polispay.org"));
