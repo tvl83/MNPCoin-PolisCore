@@ -143,7 +143,8 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0xdc0622e3b98f1d1a77ca114d50f230898f2477cfd91d24eee79b2600ab493022"));
 
 
-        vSeeds.push_back(CDNSSeedData("polispay.org", "polispay.org"));
+        vFixedSeeds.clear();
+        vSeeds.clear();;
 
         // polis addresses start with 'P'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55);
@@ -158,7 +159,7 @@ public:
 
         // polis BIP44 coin type is '5'
         nExtCoinType = 5;
-
+     
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
         fMiningRequiresPeers = true;
@@ -173,7 +174,7 @@ public:
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
-            ( 0, uint256S("0x0000033b2629aed2f91f1dec5c8e9a485193b9f7e9b6bc50ea2287bb3ff3ace7")),
+            ( 0, uint256S("0x00")),
             1513775928, // * UNIX timestamp of last checkpoint block
             10,    // * total number of transactions between genesis and last checkpoint
                         //   (the tx=... number in the SetBestChain debug.log lines)
