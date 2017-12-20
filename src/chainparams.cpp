@@ -137,9 +137,9 @@ public:
         nDelayGetHeadersTime = 24 * 60 * 60;
         nPruneAfterHeight = 100000;
 
-        genesis = CreateGenesisBlock(1513792105, 1400537, 0x1e0ffff0, 1, 0 * COIN);
+        genesis = CreateGenesisBlock(1513793088, 482975, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x0000013de90aab39ce040f312cac1f723ad41d74e8f60d3025ecab361098fd1c"));
+        assert(consensus.hashGenesisBlock == uint256S("0x00000424544da047b8537f9a716415753621f152e574b3186298542b3617d2b7"));
         assert(genesis.hashMerkleRoot == uint256S("0x5dc9bcf5d1e4802dad0045a88849e3ad97d07a5b8aaee1114ed5ae03b98c4bfc"));
 
 
@@ -170,7 +170,7 @@ public:
 
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
-        strSporkPubKey = "04549ac134f694c0243f503e8c8a9a986f5de6610049c40b07816809b0d1d06a21b07be27b9bb555931773f62ba6cf35a25fd52f694d4e1106ccd237a7bb899fdd";
+        strSporkPubKey = "04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f";
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
@@ -251,10 +251,11 @@ public:
         nDelayGetHeadersTime = 24 * 60 * 60;
         nPruneAfterHeight = 1000;
  
-        genesis = CreateGenesisBlock(1513792105, 1400537, 0x1e0ffff0, 1, 0 * COIN);
+        genesis = CreateGenesisBlock(1513793088, 482975, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x0000013de90aab39ce040f312cac1f723ad41d74e8f60d3025ecab361098fd1c"));
+        assert(consensus.hashGenesisBlock == uint256S("0x00000424544da047b8537f9a716415753621f152e574b3186298542b3617d2b7"));
         assert(genesis.hashMerkleRoot == uint256S("0x5dc9bcf5d1e4802dad0045a88849e3ad97d07a5b8aaee1114ed5ae03b98c4bfc"));
+
 
        
         vFixedSeeds.clear();
