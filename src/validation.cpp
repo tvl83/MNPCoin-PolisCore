@@ -1285,7 +1285,7 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
                 if((nPrevHeight = 967680)) nSubsidyBase = 10000;// Year 4
                 if((nPrevHeight > 967680) & (nPrevHeight < 1209600 )) nSubsidyBase = 10; 
                 if((nPrevHeight = 1209600)) nSubsidyBase = 10000;// Year 5
-                if((nPrevHeight > 1209600) nSubsidyBase = 10;// Finished Lucky-PoW
+                if((nPrevHeight > 1209600)) nSubsidyBase = 10;// Finished Lucky-PoW
 	}
 
     // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
