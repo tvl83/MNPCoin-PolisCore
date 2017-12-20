@@ -95,9 +95,9 @@ public:
         consensus.nPowTargetTimespan = 60; // polis: 1 day
         consensus.nPowTargetSpacing = 120 ; // polis: 2.5 minutes
         //consensus.fPowAllowMinDifficultyBlocks = false;
-        //consensus.fPowNoRetargeting = false;
-        consensus.nPowKGWHeight = 15200;
-        consensus.nPowDGWHeight = 34140;
+        consensus.fPowNoRetargeting = false;
+        //consensus.nPowKGWHeight = 15200;
+        //consensus.nPowDGWHeight = 34140;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
