@@ -1232,6 +1232,33 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
           but current height to avoid confusion.
   */
  	if(nPrevHeight <= 4) {nSubsidyBase = 50000;}
+    if(nPrevHeight == 9) {nSubsidyBase = 1.2333;}
+    if(nPrevHeight == 19) {nSubsidyBase = 1.2333;}
+    if(nPrevHeight == 719) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 1439) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 2159) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 2879) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 3599) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 4319) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 5039) {nSubsidyBase = 1000;}
+    if(nPrevHeight == 10079) {nSubsidyBase = 2000;}
+    if(nPrevHeight == 15119) {nSubsidyBase = 2000;}
+    if(nPrevHeight == 20159) {nSubsidyBase = 2000;}
+    if(nPrevHeight == 40319) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 60479) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 80639) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 100799) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 120959) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 141119) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 161279) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 201599) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 221759) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 241919) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 483839) {nSubsidyBase = 10000;}
+    if(nPrevHeight == 725759) {nSubsidyBase = 10000;}
+    if(nPrevHeight == 967679) {nSubsidyBase = 10000;}
+    if(nPrevHeight == 1209599) {nSubsidyBase = 10000;}
    
   
         // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
