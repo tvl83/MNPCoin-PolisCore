@@ -1,4 +1,4 @@
-polis Core version 0.12.2
+polis Core version 0.1
 ========================
 
 Release is now available from:
@@ -24,9 +24,9 @@ polisd/polis-qt (on Linux).
 
 Downgrade warning
 -----------------
-### Downgrade to a version < 0.12.2
+### Downgrade to a version < 0.1
 
-Because release 0.12.2 includes DIP0001 (2 MB block size hardfork) plus
+Because release 0.1 includes DIP0001 (2 MB block size hardfork) plus
 a transaction fee reduction and a fix for masternode rank calculation algo
 (which activation also depends on DIP0001) this release will not be
 backwards compatible after DIP0001 lock in/activation happens.
@@ -58,7 +58,7 @@ RPC changes
 -----------
 
 There are few changes in existing RPC in this release:
-- There is no more `bcconfirmations` field in RPC output and `confirmations` shows blockchain only confirmations by default now. You can change this behaviour by switching new `addlockconf` param to `true`. There is a new rpc field `instantlock` which indicates whether a given transaction is locked via InstantSend. For more info and examples please see https://github.com/polispay/polis/blob/v0.12.2.x/doc/instantsend.md;
+- There is no more `bcconfirmations` field in RPC output and `confirmations` shows blockchain only confirmations by default now. You can change this behaviour by switching new `addlockconf` param to `true`. There is a new rpc field `instantlock` which indicates whether a given transaction is locked via InstantSend. For more info and examples please see https://github.com/polispay/polis/blob/v0.1.x/doc/instantsend.md;
 - `gobject list` and `gobject diff` accept `funding`, `delete` and `endorsed` filtering options now, in addition to `valid` and `all` currently available;
 - `vin` field in `masternode` commands is renamed to `outpoint` and shows data in short format now;
 - `getblocktemplate` output is extended with versionbits-related information;
@@ -99,10 +99,10 @@ This release includes experimental implementation of BIP39/BIP44 compatible HD w
 
 **WARNING:** The way it's currently implemented is NOT safe and is NOT recommended to use on mainnet. Wallet is created unencrypted with mnemonic stored inside, so even if you encrypt it later there will be a short period of time when mnemonic is stored in plain text. This issue will be addressed in future releases.
 
-0.12.2 Change log
+0.1 Change log
 =================
 
-Detailed [change log](https://github.com/polispay/polis/compare/v0.12.1.x...polispay:v0.12.2.x) below.
+Detailed [change log](https://github.com/polispay/polis/compare/v0.12.1.x...polispay:v0.1.x) below.
 
 ### Backports:
 - [`ff30aed68`](https://github.com/polispay/polis/commit/ff30aed68) Align with btc 0.12 (#1409)
@@ -276,7 +276,7 @@ Detailed [change log](https://github.com/polispay/polis/compare/v0.12.1.x...poli
 - [`b6804678f`](https://github.com/polispay/polis/commit/b6804678f) Minor Warning Fixed (#1482)
 - [`cd76f2a15`](https://github.com/polispay/polis/commit/cd76f2a15) Disable HD wallet by default (#1629)
 - [`8f850c60f`](https://github.com/polispay/polis/commit/8f850c60f) Lower tx fees 10x (#1632)
-- [`7ab175a8e`](https://github.com/polispay/polis/commit/7ab175a8e) Ensure polis wallets < 0.12.2 can't open HD wallets (#1638)
+- [`7ab175a8e`](https://github.com/polispay/polis/commit/7ab175a8e) Ensure polis wallets < 0.1 can't open HD wallets (#1638)
 - [`7efa5e79d`](https://github.com/polispay/polis/commit/7efa5e79d) fix fallback fee (#1649)
 
 ### RPC:
@@ -313,9 +313,9 @@ Detailed [change log](https://github.com/polispay/polis/compare/v0.12.1.x...poli
 - [`adc7c6cb1`](https://github.com/polispay/polis/commit/adc7c6cb1) Remove some recursive locks (#1624)
 
 ### Other (technical) commits:
-- [`1a528d945`](https://github.com/polispay/polis/commit/1a528d945) bump to 0.12.2.0 (#1407)
-- [`b815a7b6a`](https://github.com/polispay/polis/commit/b815a7b6a) Merge remote-tracking branch 'remotes/origin/master' into v0.12.2.x
-- [`7a5943c3a`](https://github.com/polispay/polis/commit/7a5943c3a) Merge pull request #1431 from polispay/v0.12.2.x-merge_upstream
+- [`1a528d945`](https://github.com/polispay/polis/commit/1a528d945) bump to 0.1.0 (#1407)
+- [`b815a7b6a`](https://github.com/polispay/polis/commit/b815a7b6a) Merge remote-tracking branch 'remotes/origin/master' into v0.1.x
+- [`7a5943c3a`](https://github.com/polispay/polis/commit/7a5943c3a) Merge pull request #1431 from polispay/v0.1.x-merge_upstream
 - [`8bbcf6200`](https://github.com/polispay/polis/commit/8bbcf6200) Fixed pow (test and algo) (#1415)
 - [`f3b92a95d`](https://github.com/polispay/polis/commit/f3b92a95d) c++11: don't throw from the reverselock destructor (#1421)
 - [`b40f8f333`](https://github.com/polispay/polis/commit/b40f8f333) Rename bitcoinconsensus library to polisconsensus. (#1432)
