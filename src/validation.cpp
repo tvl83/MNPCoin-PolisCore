@@ -1250,10 +1250,17 @@ NOTE:   unlike bitcoin we are using PREVIOUS block height here,
   }
 
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
-  {
-      CAmount ret = blockValue/4;
-     return ret;
- }
+    {
+       CAmount ret = blockValue/4; // start at 20%
+  
+      int nMNPIBlock = Params().GetConsensus().nMasternodePaymentsIncreaseBlock;
+      int nMNPIPeriod = Params().GetConsensus().nMasternodePaymentsIncreasePeriod;
+  
+                                                                        // mainnet:
+      if(nHeight > nMNPIBlock)                  ret += blockValue /4; // 158000 - 25.0% - 2014-10-24
+  
+       return ret;
+   }
 
 bool IsInitialBlockDownload()
 {
