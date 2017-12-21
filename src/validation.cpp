@@ -1225,67 +1225,14 @@ double ConvertBitsToDouble(unsigned int nBits)
 CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params& consensusParams, bool fSuperblockPartOnly)
    {
        double dDiff;
-        CAmount nSubsidyBase;
+        CAmount nSubsidyBase = 10;
   /*
   NOTE:   unlike bitcoin we are using PREVIOUS block height here,
           might be a good idea to change this to use prev bits
           but current height to avoid confusion.
   */
  	if(nPrevHeight <= 4) {nSubsidyBase = 50000;}
-   	else {
-  		if((nPrevHeight > 5) & (nPrevHeight < 720)) nSubsidyBase = 10;     
-  		if((nPrevHeight = 720)) nSubsidyBase = 1000; // Day 1
-                  if((nPrevHeight > 720) & (nPrevHeight < 1440 )) nSubsidyBase = 10; 	
-                  if((nPrevHeight = 1440)) nSubsidyBase = 1000;// Day 2
-                  if((nPrevHeight > 1440) & (nPrevHeight < 2160 )) nSubsidyBase = 10;
-                  if((nPrevHeight = 2160)) nSubsidyBase = 1000;// Day 3
-                  if((nPrevHeight > 2160) & (nPrevHeight < 2880 )) nSubsidyBase = 10;
-                  if((nPrevHeight = 2880)) nSubsidyBase = 1000;// Day 4
-                  if((nPrevHeight > 2880) & (nPrevHeight < 3600 )) nSubsidyBase = 10;
-                  if((nPrevHeight = 3600)) nSubsidyBase = 1000;// Day 5
-                  if((nPrevHeight > 3600) & (nPrevHeight < 4320 )) nSubsidyBase = 10;
-                  if((nPrevHeight = 4320)) nSubsidyBase = 1000;// Day 6
-                  if((nPrevHeight > 4320) & (nPrevHeight < 5040 )) nSubsidyBase = 10;    				
-                  if((nPrevHeight = 5040)) nSubsidyBase = 1000;// Day 7		
-                  if((nPrevHeight > 5040) & (nPrevHeight < 10080 )) nSubsidyBase = 10;  
-                  if((nPrevHeight = 10080)) nSubsidyBase = 2000;// Week 2	
-                  if((nPrevHeight > 10080) & (nPrevHeight < 15120 )) nSubsidyBase = 10;  
-                  if((nPrevHeight = 15120)) nSubsidyBase = 2000;// Week 3
-                  if((nPrevHeight > 15120) & (nPrevHeight < 20160 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 20160)) nSubsidyBase = 2000;// Week 4
-                  if((nPrevHeight > 20160) & (nPrevHeight < 40320 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 40320)) nSubsidyBase = 5000;// Month 2
-                  if((nPrevHeight > 40320) & (nPrevHeight < 60480 )) nSubsidyBase = 10;
-                  if((nPrevHeight = 60480)) nSubsidyBase = 5000;// Month 3
-                  if((nPrevHeight > 60480) & (nPrevHeight < 80640 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 80640)) nSubsidyBase = 5000;// Month 4
-                 if((nPrevHeight > 80640) & (nPrevHeight < 100800 )) nSubsidyBase = 10;
-                  if((nPrevHeight = 100800)) nSubsidyBase = 5000;// Month 5 
-                  if((nPrevHeight > 100800) & (nPrevHeight < 120960 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 120960)) nSubsidyBase = 5000;// Month 6
-                  if((nPrevHeight > 120960) & (nPrevHeight < 141120 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 141120)) nSubsidyBase = 5000;// Month 7
-                  if((nPrevHeight > 141120) & (nPrevHeight < 161280 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 161280)) nSubsidyBase = 5000;// Month 8
-                 if((nPrevHeight > 161280) & (nPrevHeight < 181440 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 181440)) nSubsidyBase = 5000;// Month 9
-                  if((nPrevHeight > 181440) & (nPrevHeight < 201600 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 201600)) nSubsidyBase = 5000;// Month 10
-                if((nPrevHeight > 201600) & (nPrevHeight < 221760 )) nSubsidyBase = 10; 
-                 if((nPrevHeight = 221760)) nSubsidyBase = 5000;// Month 11
-                 if((nPrevHeight > 221760) & (nPrevHeight < 241920 )) nSubsidyBase = 10; 
-                 if((nPrevHeight = 241920)) nSubsidyBase = 5000;// Month 12
-                 if((nPrevHeight > 241920) & (nPrevHeight < 483840 )) nSubsidyBase = 10; 
-                 if((nPrevHeight = 483840)) nSubsidyBase = 10000;// Year 2
-                  if((nPrevHeight > 483840) & (nPrevHeight < 725760 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 725760)) nSubsidyBase = 10000;// Year 3
-                 if((nPrevHeight > 725760) & (nPrevHeight < 967680 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 967680)) nSubsidyBase = 10000;// Year 4
-                 if((nPrevHeight > 967680) & (nPrevHeight < 1209600 )) nSubsidyBase = 10; 
-                  if((nPrevHeight = 1209600)) nSubsidyBase = 10000;// Year 5
-                  if((nPrevHeight > 1209600)) nSubsidyBase = 10;// Finished Lucky-PoW
- 		if((nPrevHeight > 4)) nSubsidyBase = 10;     
-    	}
+   
   
         // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
        CAmount nSubsidy = nSubsidyBase * COIN;
@@ -1303,13 +1250,6 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
     {
        CAmount ret = blockValue/4; // start at 20%
-  
-      int nMNPIBlock = Params().GetConsensus().nMasternodePaymentsIncreaseBlock;
-      int nMNPIPeriod = Params().GetConsensus().nMasternodePaymentsIncreasePeriod;
-  
-                                                                        // mainnet:
-      if(nHeight > nMNPIBlock)                  ret += blockValue /4; // 158000 - 25.0% - 2014-10-24
-  
        return ret;
    }
 
