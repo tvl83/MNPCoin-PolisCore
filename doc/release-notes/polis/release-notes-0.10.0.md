@@ -326,32 +326,32 @@ Please move any testing funds to a new wallet to test the new version.
   denominating (2)" when it should have split
 
 
-0.10.17 Release notes
+0.10.12.27 Release notes
 ------------------------
 
 - removed inputs < 1 COIN from DS
 
 
-0.10.16 Release notes
+0.10.12.26 Release notes
 ------------------------
 
 - minor bugfix
 
 
-0.10.15 Release notes
+0.10.12.25 Release notes
 ------------------------
 
 RC4 released!
 
 
-0.10.14 Release notes
+0.10.12.24 Release notes
 ------------------------
 
 - Reverted the pairing fix, seems the network didn't improve at all.
 - Inc protocol version
 
 
-0.10.13 Release notes
+0.10.12.23 Release notes
 ------------------------
 
 - Fixed an issue with pairing, hopefully it should be faster now
@@ -360,7 +360,7 @@ RC4 released!
 - inc protocol to kick off old versions
 
 
-0.10.12 Release notes
+0.10.12.22 Release notes
 ------------------------
 
 All fees will use 0.001 sized inputs (they have no change so you can't follow
@@ -387,14 +387,14 @@ http://test.explorer.darkcoin.fr/tx/ce0ea2bdf630233955d459489b6f764e0d0bbe9e8a62
 - incrementing protocol version to knock all old clients off
 
 
-0.10.11 Release notes
+0.10.12.21 Release notes
 ------------------------
 
 - Majorly improved the way darksend participants are paired together. It should
   be super fast now.
 
 
-0.10.10 Release notes
+0.10.12.20 Release notes
 ------------------------
 
 - Disabled collateral charging for now. We'll work on this after RC4 is
@@ -685,7 +685,7 @@ This is a pretty large update to the RC client.
 
 - min merged transactions
 
-0.10.1 Release notes
+0.10.12.2 Release notes
 -----------------------
 
 - Fixed payout issues (masternode consessus was paying out to vout(0) by default)

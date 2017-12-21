@@ -1,4 +1,4 @@
-polis Core version 0.1.2
+polis Core version 0.12.2.2
 ==========================
 
 Release is now available from:
@@ -29,9 +29,9 @@ the first run.
 Downgrade warning
 -----------------
 
-### Downgrade to a version < 0.1.2
+### Downgrade to a version < 0.12.2.2
 
-Because release 0.1.2 includes the per-UTXO fix (see below) which changes the
+Because release 0.12.2.2 includes the per-UTXO fix (see below) which changes the
 structure of the internal database, this release is not fully backwards
 compatible. You will have to reindex the database if you decide to use any
 previous version.
@@ -101,10 +101,10 @@ And as usual, various small bugs and typos were fixed and more refactoring was
 done too.
 
 
-0.1.2 Change log
+0.12.2.2 Change log
 ===================
 
-See detailed [change log](https://github.com/polispay/polis/compare/v0.1.1...polispay:v0.1.2) below.
+See detailed [change log](https://github.com/polispay/polis/compare/v0.12.2.1...polispay:v0.12.2.2) below.
 
 ### Backports:
 - [`996f5103a`](https://github.com/polispay/polis/commit/996f5103a) Backport #7056: Save last db read
@@ -192,8 +192,8 @@ See detailed [change log](https://github.com/polispay/polis/compare/v0.1.1...pol
 - [`bc8342558`](https://github.com/polispay/polis/commit/bc8342558) Two small fixes in docs (#1746)
 - [`9e7cc56cb`](https://github.com/polispay/polis/commit/9e7cc56cb) Fix typo in release-notes.md (#1759)
 - [`3f3705c47`](https://github.com/polispay/polis/commit/3f3705c47) [Trivial] Typo/doc updates and RPC help formatting (#1758)
-- [`e96da9f19`](https://github.com/polispay/polis/commit/e96da9f19) move 0.1 release notes
-- [`6915ee45e`](https://github.com/polispay/polis/commit/6915ee45e) Bump version in README.md to 0.1 (#1774)
+- [`e96da9f19`](https://github.com/polispay/polis/commit/e96da9f19) move 0.12.2 release notes
+- [`6915ee45e`](https://github.com/polispay/polis/commit/6915ee45e) Bump version in README.md to 0.12.2 (#1774)
 - [`0291604ad`](https://github.com/polispay/polis/commit/0291604ad) Clarify usage of pointers and references in code (#1778)
 
 ### Other:
@@ -202,7 +202,7 @@ See detailed [change log](https://github.com/polispay/polis/compare/v0.1.1...pol
 - [`d1aeac1b2`](https://github.com/polispay/polis/commit/d1aeac1b2) Spelling mistake in validation.cpp (#1752)
 - [`442325b07`](https://github.com/polispay/polis/commit/442325b07) add `maxgovobjdatasize` field to the output of `getgovernanceinfo` (#1757)
 - [`c5ec2f82a`](https://github.com/polispay/polis/commit/c5ec2f82a) Drop `IsNormalPaymentScript`, use `IsPayToPublicKeyHash` (#1761)
-- [`f9f28e7c7`](https://github.com/polispay/polis/commit/f9f28e7c7) De-bump to 0.1.2 (#1768)
+- [`f9f28e7c7`](https://github.com/polispay/polis/commit/f9f28e7c7) De-bump to 0.12.2.2 (#1768)
 - [`54186a159`](https://github.com/polispay/polis/commit/54186a159) Make sure additional indexes are recalculated correctly in VerifyDB (#1773)
 - [`86e6f0dd2`](https://github.com/polispay/polis/commit/86e6f0dd2) Fix CMasternodeMan::ProcessVerify* logs (#1782)
 
@@ -249,7 +249,7 @@ polis Core tree 0.12.1.x was a fork of Bitcoin Core tree 0.12.
 
 These release are considered obsolete. Old release notes can be found here:
 
-- [v0.1](release-notes/polis/release-notes-0.1.md) released Nov/08/2017
+- [v0.12.2](release-notes/polis/release-notes-0.12.2.md) released Nov/08/2017
 - [v0.12.1](release-notes/polis/release-notes-0.12.1.md) released ???/??/2016
 - [v0.12.0](release-notes/polis/release-notes-0.12.0.md) released ???/??/2015
 - [v0.11.2](release-notes/polis/release-notes-0.11.2.md) released Mar/25/2015
