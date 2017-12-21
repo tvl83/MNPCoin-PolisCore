@@ -13,17 +13,17 @@ Copyright (c) 2017-2018 Polis Developers
 What is Polis?
 ----------------
 
-MonetaryUnit is an experimental new digital currency that enables instant payments to
-anyone, anywhere in the world. MonetaryUnit uses peer-to-peer technology to operate
+Polis is an experimental new digital currency that enables instant payments to
+anyone, anywhere in the world. Polis uses peer-to-peer technology to operate
 with no central authority: managing transactions and issuing money are carried
-out collectively by the network. MonetaryUnit Core is the name of open source
+out collectively by the network. Polis Core is the name of open source
 software which enables the use of this currency.
 
 For more information, as well as an immediately usable, binary version of
-the MonetaryUnit Core software, see http://www.monetaryunit.org/.
+the Polis Core software, see http://www.polispay.org.
 
 License
 -------
 
-MonetaryUnit Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
+Polis Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
 information or see http://opensource.org/licenses/MIT.
