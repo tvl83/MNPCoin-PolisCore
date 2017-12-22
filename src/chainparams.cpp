@@ -142,9 +142,10 @@ public:
         assert(consensus.hashGenesisBlock == uint256S("0x000009701eb781a8113b1af1d814e2f060f6408a2c990db291bc5108a1345c1e"));
         assert(genesis.hashMerkleRoot == uint256S("0x5dc9bcf5d1e4802dad0045a88849e3ad97d07a5b8aaee1114ed5ae03b98c4bfc"));
 
-
-        vFixedSeeds.clear();
-        vSeeds.clear();;
+        vSeeds.push_back(CDNSSeedData("polispay.org", "polispay.org"));
+        vSeeds.push_back(CDNSSeedData("n1.polispay.org", "n1.polispay.org"));
+        vSeeds.push_back(CDNSSeedData("n2.polispay.org", "n2.polispay.org"));
+        vSeeds.push_back(CDNSSeedData("n3.polispay.org", "n3.polispay.org"));
 
         // polis addresses start with 'P'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55);
@@ -174,7 +175,14 @@ public:
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
-            ( 0, uint256S("0x00")),
+            ( 0, uint256S("0x000009701eb781a8113b1af1d814e2f060f6408a2c990db291bc5108a1345c1e"))
+            ( 10, uint256S("0x000006f686844f1873f4fcf77516eaa0a11f5762b797314c5875438c97fe4562"))
+            ( 50, uint256S("0x00000547ca650f3be6ddf31871dfd5f76faafcd12b6083706e3d0a88c9a0cdbe"))  
+            ( 100, uint256S("0x000001c12d74ca8120d2751bb2846a5af44892045099750efe73a0cbb1eca860"))
+            ( 200, uint256S("0x000000053db45327e7fcce9b8baf9060622c01456ac677121a6f8dcf15a98d7b"))
+            ( 300, uint256S("0x00000000027d5a77e5c38e366465be2f21292fa3eb4d290efb6316eebcc5c0ca"))
+            ( 400, uint256S("0x0000000000004bcce3cea51dd54da213272b7ef1aa35dca5269e92a56ec7974b"))
+            ( 500, uint256S("0x000000000000157f78c69400b85824588e381ca4d11384e172394468a02bea32")),
             1513775928, // * UNIX timestamp of last checkpoint block
             10,    // * total number of transactions between genesis and last checkpoint
                         //   (the tx=... number in the SetBestChain debug.log lines)
