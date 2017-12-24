@@ -90,7 +90,7 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
 	./bin/gbuild --num-make 24 --memory 64000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-linux.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-linux.yml
-	mv build/out/polis-*.tar.gz build/out/src/polis-*.tar.gz ../
+	mv build/out/poliscore-*.tar.gz build/out/src/poliscore-*.tar.gz ../
 
 	./bin/gbuild --num-make 24 --memory 64000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-win.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-win.yml
@@ -99,8 +99,8 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
 	./bin/gbuild --num-make 24 --memory 64000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-osx.yml
-	mv build/out/poliscore-*-osx-unsigned.tar.gz inputs/poliscore-osx-unsigned.tar.gz
-	mv build/out/poliscore-*.tar.gz build/out/poliscore-*.dmg ../
+	mv build/out/polis-*-osx-unsigned.tar.gz inputs/polis-osx-unsigned.tar.gz
+	mv build/out/polis-*.tar.gz build/out/polis-*.dmg ../
 
   Build output expected:
 
