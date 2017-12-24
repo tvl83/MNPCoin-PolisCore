@@ -88,16 +88,16 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
 ### Build and sign polis Core for Linux, Windows, and OS X:
 
-	./bin/gbuild --num-make 12 --memory 32000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-linux.yml
+	./bin/gbuild --num-make 24 --memory 64000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-linux.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-linux.yml
 	mv build/out/polis-*.tar.gz build/out/src/polis-*.tar.gz ../
 
-	./bin/gbuild --num-make 12 --memory 32000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-win.yml
+	./bin/gbuild --num-make 24 --memory 64000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-win.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-win.yml
 	mv build/out/poliscore-*-win-unsigned.tar.gz inputs/poliscore-win-unsigned.tar.gz
 	mv build/out/poliscore-*.zip build/out/poliscore-*.exe ../
 
-	./bin/gbuild --num-make 12 --memory 32000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-osx.yml
+	./bin/gbuild --num-make 24 --memory 64000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	mv build/out/poliscore-*-osx-unsigned.tar.gz inputs/poliscore-osx-unsigned.tar.gz
 	mv build/out/poliscore-*.tar.gz build/out/poliscore-*.dmg ../
