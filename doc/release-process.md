@@ -94,13 +94,13 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
 	./bin/gbuild --num-make 12 --memory 32000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-win.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-win.yml
-	mv build/out/polis-*-win-unsigned.tar.gz inputs/polis-win-unsigned.tar.gz
-	mv build/out/polis-*.zip build/out/polis-*.exe ../
+	mv build/out/poliscore-*-win-unsigned.tar.gz inputs/poliscore-win-unsigned.tar.gz
+	mv build/out/poliscore-*.zip build/out/poliscore-*.exe ../
 
 	./bin/gbuild --num-make 12 --memory 32000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-osx.yml
-	mv build/out/polis-*-osx-unsigned.tar.gz inputs/polis-osx-unsigned.tar.gz
-	mv build/out/polis-*.tar.gz build/out/polis-*.dmg ../
+	mv build/out/poliscore-*-osx-unsigned.tar.gz inputs/poliscore-osx-unsigned.tar.gz
+	mv build/out/poliscore-*.tar.gz build/out/poliscore-*.dmg ../
 
   Build output expected:
 
