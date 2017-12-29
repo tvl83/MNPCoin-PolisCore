@@ -1,4 +1,4 @@
-polis Core 1.0.0.0
+polis Core 1.1.0
 =====================
 
 Intro
