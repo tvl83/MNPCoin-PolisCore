@@ -1225,7 +1225,7 @@ double ConvertBitsToDouble(unsigned int nBits)
 CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params& consensusParams, bool fSuperblockPartOnly)
    {
        double dDiff;
-        CAmount nSubsidyBase = 10;
+        CAmount nSubsidyBase = 20;
   /*
   NOTE:   unlike bitcoin we are using PREVIOUS block height here,
           might be a good idea to change this to use prev bits
@@ -1276,7 +1276,7 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
    }
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
     {
-       CAmount ret = blockValue/4; // start at 20%
+       CAmount ret = blockValue/75; // start at 20%
        return ret;
    }
 
