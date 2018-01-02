@@ -96,8 +96,8 @@ public:
         consensus.nPowTargetSpacing = 120 ; // polis: 2.5 minutes
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        //consensus.nPowKGWHeight = 15200;
-        //consensus.nPowDGWHeight = 34140;
+        consensus.nPowKGWHeight = 15200;
+        consensus.nPowDGWHeight = 34140;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -117,9 +117,9 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_DIP0001].nThreshold = 3226; // 80% of 4032
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000cedb7e0387bac020"); // 782700
+        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000e72e9b868ce8efb7"); // 782700
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x0000000000000eb756e252b3531160c2fb9db619f9f905ee89d28b6697b51c1f"); // 782700
+        consensus.defaultAssumeValid = uint256S("0x00000000000015f27f37b2cf6122d5df3fa781d1471258377d9b4d4d7dfa0776"); // 782700
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
@@ -187,8 +187,9 @@ public:
             ( 4000, uint256S("0x0000000000000b443f7faeaaf85178b5364664ee7374259cf0f7b03e9531a108"))
             ( 5000, uint256S("0x00000000000004779b06d324ea780378ad8e41ddc9056129444030243faf5ad4"))
             ( 6000, uint256S("0x00000000000027ffb241efa3fafa43a3121216d70e79b28bc2afb8457d84cbfe"))
-            ( 7000, uint256S("0x0000000000003a79e1b54fe39070e0d53799cdca901db726eb1c847ce8d0c890")),
-            1514734974, // * UNIX timestamp of last checkpoint block
+            ( 7000, uint256S("0x0000000000003a79e1b54fe39070e0d53799cdca901db726eb1c847ce8d0c890"))
+            ( 8000, uint256S("0x000000000000045991733d2bc793d17a6fcafd7bfa35adb68b4036813b64fbf1")),
+            1514863421, // * UNIX timestamp of last checkpoint block
             21000,    // * total number of transactions between genesis and last checkpoint
                         //   (the tx=... number in the SetBestChain debug.log lines)
             21000        // * estimated number of transactions per day after checkpoint
