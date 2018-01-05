@@ -225,12 +225,12 @@ public:
         consensus.BIP34Height = 1;
         consensus.BIP34Hash = uint256S("0x0000047d24635e347be3aaaeb66c26be94901a2f962feccd4f95090191f208c1");
         consensus.powLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000");
-        consensus.nPowTargetTimespan = 24 * 60 * 60; // polis: 1 day
-        consensus.nPowTargetSpacing = 2.5 * 60; // polis: 2.5 minutes
+        consensus.nPowTargetTimespan = 120; // polis: 1 day
+        consensus.nPowTargetSpacing = 120; // polis: 2.5 minutes
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
-        consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
-        consensus.nPowDGWHeight = 4001;
+        //consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
+        //consensus.nPowDGWHeight = 4001;
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -250,24 +250,24 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_DIP0001].nThreshold = 50; // 50% of 100
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000000924e924a21715"); // 37900
+        consensus.nMinimumChainWork = uint256S("0x00"); // 37900
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x0000000004f5aef732d572ff514af99a995702c92e4452c7af10858231668b1f"); // 37900
+        consensus.defaultAssumeValid = uint256S("0x00"); // 37900
 
         pchMessageStart[0] = 0xce;
         pchMessageStart[1] = 0xe2;
         pchMessageStart[2] = 0xca;
         pchMessageStart[3] = 0xff;
-        vAlertPubKey = ParseHex("04517d8a699cb43d3938d7b24faaff7cda448ca4ea267723ba614784de661949bf632d6304316b244646dea079735b9a6fc4af804efb4752075b9fe2245e14e412");
-        nDefaultPort = 19999;
+        vAlertPubKey = ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f");
+        nDefaultPort = 121426;
         nMaxTipAge = 0x7fffffff; // allow mining on top of old blocks for testnet
         nDelayGetHeadersTime = 24 * 60 * 60;
         nPruneAfterHeight = 1000;
       
-        genesis = CreateGenesisBlock(1513831322, 887612, 0x1e0ffff0, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1514986005, 2870303, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x00000f3b4ec57f851b3706c056eda3120875896c9970495ae2efd49b46472a05"));
+        assert(consensus.hashGenesisBlock == uint256S("0x00000d01aab2eedc08bb052053d5e41fc343092b88f235cddf8c9399ba769f5d"));
         assert(genesis.hashMerkleRoot == uint256S("0x5dc9bcf5d1e4802dad0045a88849e3ad97d07a5b8aaee1114ed5ae03b98c4bfc"));
 
 
@@ -304,9 +304,7 @@ public:
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
-            (    261, uint256S("0x00000c26026d0815a7e2ce4fa270775f61403c040647ff2c3091f99e894a4618"))
-            (   1999, uint256S("0x00000052e538d27fa53693efe6fb6892a0c1d26c0235f599171c48a3cce553b1"))
-            (   2999, uint256S("0x0000024bc3f4f4cb30d29827c13d921ad77d2c6072e586c7f60d83c2722cdcc5")),
+            (   0, uint256S("0x00")),
 
             1462856598, // * UNIX timestamp of last checkpoint block
             3094,       // * total number of transactions between genesis and last checkpoint
