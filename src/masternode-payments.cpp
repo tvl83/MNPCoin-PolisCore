@@ -142,6 +142,16 @@ bool IsBlockPayeeValid(const CTransaction& txNew, int nBlockHeight, CAmount bloc
 
     const Consensus::Params& consensusParams = Params().GetConsensus();
 
+    //not using superblocks, but must check for valid masternode payment
+    if(sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT) && !mnpayments.IsTransactionValid(txNew, nBlockHeight)) {
+		LogPrintf("IsBlockPayeeValid -- ERROR: Invalid polis masternode payment detected at height %d: %s", nBlockHeight, txNew.ToString());
+        return false;
+    } else if (mnpayments.IsTransactionValid(txNew, nBlockHeight)){
+		LogPrintf("IsBlockPayeeValid -- Valid polis masternode payment detected at height %d: %s", nBlockHeight, txNew.ToString());
+	}
+    
+
+     
     if(nBlockHeight < consensusParams.nSuperblockStartBlock) {
         if(mnpayments.IsTransactionValid(txNew, nBlockHeight)) {
             LogPrint("mnpayments", "IsBlockPayeeValid -- Valid masternode payment at height %d: %s", nBlockHeight, txNew.ToString());
