@@ -141,9 +141,11 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0x5dc9bcf5d1e4802dad0045a88849e3ad97d07a5b8aaee1114ed5ae03b98c4bfc"));
 
         vSeeds.push_back(CDNSSeedData("polispay.org", "polispay.org"));
-        vSeeds.push_back(CDNSSeedData("n1.polispay.org", "n1.polispay.org"));
-        vSeeds.push_back(CDNSSeedData("n2.polispay.org", "n2.polispay.org"));
-        vSeeds.push_back(CDNSSeedData("n3.polispay.org", "n3.polispay.org"));
+        vSeeds.push_back(CDNSSeedData("node1.polispay.org", "node1.polispay.org"));
+        vSeeds.push_back(CDNSSeedData("node2.polispay.org", "node2.polispay.org"));
+        vSeeds.push_back(CDNSSeedData("explorer.polispay.org", "explorer.polispay.org"));
+        vSeeds.push_back(CDNSSeedData("insight.polispay.org", "insight.polispay.org"));
+        vSeeds.push_back(CDNSSeedData("insight2.polispay.org", "insight2.polispay.org"));
 
         // polis addresses start with 'P'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55);
@@ -226,7 +228,7 @@ public:
         consensus.BIP34Hash = uint256S("0x0000047d24635e347be3aaaeb66c26be94901a2f962feccd4f95090191f208c1");
         consensus.powLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000");
         consensus.nPowTargetTimespan = 60*60*24; // polis: 1 day
-        consensus.nPowTargetSpacing = 1; // polis: 2.5 minutes
+        consensus.nPowTargetSpacing = 0.1; // polis: 2.5 minutes
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         //consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
