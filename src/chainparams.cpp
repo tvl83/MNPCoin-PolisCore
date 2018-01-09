@@ -228,11 +228,11 @@ public:
         consensus.BIP34Hash = uint256S("0x0000047d24635e347be3aaaeb66c26be94901a2f962feccd4f95090191f208c1");
         consensus.powLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000");
         consensus.nPowTargetTimespan = 60*60*24; // polis: 1 day
-        consensus.nPowTargetSpacing = 1; // polis: 2.5 minutes
+        consensus.nPowTargetSpacing = 0.1; // polis: 2.5 minutes
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
-        //consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
-        //consensus.nPowDGWHeight = 4001;
+        consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
+        consensus.nPowDGWHeight = 4001;
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -267,9 +267,9 @@ public:
         nDelayGetHeadersTime = 24 * 60 * 60;
         nPruneAfterHeight = 1000;
       
-        genesis = CreateGenesisBlock(1515470504, 252997, 0x1e0ffff0, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1515470931, 2502880, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x000008c13b56ff9906d8a77d0b8290e71538e1a176e9679a6b9aeddcb34e0988"));
+        assert(consensus.hashGenesisBlock == uint256S("0x00000aa65e8b9642625a1d0ee81686b5bc7c8da28bcb68b454592ab06f230782"));
         assert(genesis.hashMerkleRoot == uint256S("0x5dc9bcf5d1e4802dad0045a88849e3ad97d07a5b8aaee1114ed5ae03b98c4bfc"));
 
 
