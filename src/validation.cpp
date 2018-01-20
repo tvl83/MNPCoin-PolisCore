@@ -1231,9 +1231,9 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
           might be a good idea to change this to use prev bits
           but current height to avoid confusion.
   */
- 	if(nPrevHeight <= 4) {nSubsidyBase = 50000;}
-    if(nPrevHeight == 9) {nSubsidyBase = 1.2333;}
-    if(nPrevHeight == 19) {nSubsidyBase = 1.2333;}
+    if(nPrevHeight <= 4) {nSubsidyBase = 50000;}
+    if(nPrevHeight == 9) {nSubsidyBase = 1;}
+    if(nPrevHeight == 19) {nSubsidyBase = 1;}
     if(nPrevHeight == 719) {nSubsidyBase = 1000;}
     if(nPrevHeight == 1439) {nSubsidyBase = 1000;}
     if(nPrevHeight == 2159) {nSubsidyBase = 1000;}
@@ -1241,6 +1241,7 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
     if(nPrevHeight == 3599) {nSubsidyBase = 1000;}
     if(nPrevHeight == 4319) {nSubsidyBase = 1000;}
     if(nPrevHeight == 5039) {nSubsidyBase = 1000;}
+    if(nPrevHeight > 6000) {nSubsidyBase = 20;}
     if(nPrevHeight == 10079) {nSubsidyBase = 2000;}
     if(nPrevHeight == 15119) {nSubsidyBase = 2000;}
     if(nPrevHeight == 20159) {nSubsidyBase = 2000;}
@@ -1259,12 +1260,10 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
     if(nPrevHeight == 725759) {nSubsidyBase = 10000;}
     if(nPrevHeight == 967679) {nSubsidyBase = 10000;}
     if(nPrevHeight == 1209599) {nSubsidyBase = 10000;}
-    if(nPrevHeight > 6000) {nSubsidyBase = 20;}
-   
-  
+
         // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
        CAmount nSubsidy = nSubsidyBase * COIN;
-  
+
       // yearly decline of production by ~7.1% per year, projected ~18M coins max by year 2050+.
       for (int i = consensusParams.nSubsidyHalvingInterval; i <= nPrevHeight; i += consensusParams.nSubsidyHalvingInterval) {
           nSubsidy -= nSubsidy/14;
