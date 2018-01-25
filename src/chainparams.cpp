@@ -168,7 +168,7 @@ public:
 
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
-        strSporkPubKey = "02226e317807f2b872f3aa24a3e1925c72c54603703779aa0ecccf15528b4d709c";
+        strSporkPubKey = "";
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
@@ -299,7 +299,7 @@ public:
 
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
-        strSporkPubKey = "046f78dcf911fbd61910136f7f0f8d90578f68d0b3ac973b5040fb7afb501b5939f39b108b0569dca71488f5bbf498d92e4d1194f6f941307ffd95f75e76869f0e";
+        strSporkPubKey = "041DEBE4B4BE1F392D76D3EED8897EE885F805D8BCCF4FDCE699AD6A20C6520FA07B8B18E11E905B475F4EC0E5E0DAA907A3D1F6C388FDFF2D9910FBD9F1984C35";
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
