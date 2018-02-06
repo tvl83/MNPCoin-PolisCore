@@ -246,7 +246,7 @@ public:
             ( 8000, uint256S("0x000000000000045991733d2bc793d17a6fcafd7bfa35adb68b4036813b64fbf1"))
                 
         };
-        
+        chainTxData = ChainTxData{
             1514863421, // * UNIX timestamp of last checkpoint block
             21000,    // * total number of transactions between genesis and last checkpoint
                         //   (the tx=... number in the SetBestChain debug.log lines)
@@ -373,7 +373,7 @@ public:
                 
                                 
         };
-
+        chainTxData = ChainTxData{
             0, // * UNIX timestamp of last checkpoint block
             0,       // * total number of transactions between genesis and last checkpoint
                         //   (the tx=... number in the SetBestChain debug.log lines)
