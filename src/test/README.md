@@ -57,6 +57,5 @@ The test directory also contains the bitcoin-util-test.py tool, which tests bitc
 
 ```
 test/bitcoin-util-test.py --srcdir=[current directory]
->>>>>>> pr/8
 
 ```

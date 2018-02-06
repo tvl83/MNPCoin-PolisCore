@@ -11,7 +11,6 @@
 #include "version.h"
 #include "test/test_polis.h"
 #include "test/test_random.h"
->>>>>>> pr/8
 
 #include <vector>
 

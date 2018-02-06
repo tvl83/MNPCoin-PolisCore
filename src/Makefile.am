@@ -476,7 +476,6 @@ endif
 polis_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBUNIVALUE) \
-
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
 polis_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
