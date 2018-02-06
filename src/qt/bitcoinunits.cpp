@@ -19,7 +19,7 @@ BitcoinUnits::BitcoinUnits(QObject *parent):
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(polis);
+    unitlist.append(POLIS);
     unitlist.append(mpolis);
     unitlist.append(upolis);
     unitlist.append(duffs);
@@ -30,7 +30,7 @@ bool BitcoinUnits::valid(int unit)
 {
     switch(unit)
     {
-    case polis:
+    case POLIS:
     case mpolis:
     case upolis:
     case duffs:
@@ -46,7 +46,7 @@ QString BitcoinUnits::name(int unit)
     {
         switch(unit)
         {
-            case polis: return QString("polis");
+            case POLIS: return QString("POLIS");
             case mpolis: return QString("mpolis");
             case upolis: return QString::fromUtf8("μpolis");
             case duffs: return QString("duffs");
@@ -57,7 +57,7 @@ QString BitcoinUnits::name(int unit)
     {
         switch(unit)
         {
-            case polis: return QString("tpolis");
+            case POLIS: return QString("tPOLIS");
             case mpolis: return QString("mtpolis");
             case upolis: return QString::fromUtf8("μtpolis");
             case duffs: return QString("tduffs");
@@ -72,7 +72,7 @@ QString BitcoinUnits::description(int unit)
     {
         switch(unit)
         {
-            case polis: return QString("polis");
+            case POLIS: return QString("POLIS");
             case mpolis: return QString("Milli-polis (1 / 1" THIN_SP_UTF8 "000)");
             case upolis: return QString("Micro-polis (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
             case duffs: return QString("Ten Nano-polis (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
@@ -83,7 +83,7 @@ QString BitcoinUnits::description(int unit)
     {
         switch(unit)
         {
-            case polis: return QString("Testpoliss");
+            case POLIS: return QString("Testpoliss");
             case mpolis: return QString("Milli-Testpolis (1 / 1" THIN_SP_UTF8 "000)");
             case upolis: return QString("Micro-Testpolis (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
             case duffs: return QString("Ten Nano-Testpolis (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
@@ -96,7 +96,7 @@ qint64 BitcoinUnits::factor(int unit)
 {
     switch(unit)
     {
-    case polis:  return 100000000;
+    case POLIS:  return 100000000;
     case mpolis: return 100000;
     case upolis: return 100;
     case duffs: return 1;
@@ -108,7 +108,7 @@ int BitcoinUnits::decimals(int unit)
 {
     switch(unit)
     {
-    case polis: return 8;
+    case POLIS: return 8;
     case mpolis: return 5;
     case upolis: return 2;
     case duffs: return 0;
