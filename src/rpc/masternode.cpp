@@ -23,12 +23,14 @@
 #include <iomanip>
 #include <univalue.h>
 
+UniValue masternodelist(const JSONRPCRequest& request);
+
 #ifdef ENABLE_WALLET
 void EnsureWalletIsUnlocked();
 
-UniValue privatesend(const UniValue& params, bool fHelp)
+UniValue privatesend(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
             "privatesend \"command\"\n"
             "\nArguments:\n"
@@ -39,13 +41,13 @@ UniValue privatesend(const UniValue& params, bool fHelp)
             "  reset       - Reset mixing\n"
             );
 
-    if(params[0].get_str() == "start") {
+    if(request.params[0].get_str() == "start") {
         {
             LOCK(pwalletMain->cs_wallet);
             EnsureWalletIsUnlocked();
         }
 
-        if(fMasterNode)
+        if(fMasternodeMode)
             return "Mixing is not supported from masternodes";
 
         privateSendClient.fEnablePrivateSend = true;
@@ -53,12 +55,12 @@ UniValue privatesend(const UniValue& params, bool fHelp)
         return "Mixing " + (result ? "started successfully" : ("start failed: " + privateSendClient.GetStatus() + ", will retry"));
     }
 
-    if(params[0].get_str() == "stop") {
+    if(request.params[0].get_str() == "stop") {
         privateSendClient.fEnablePrivateSend = false;
         return "Mixing was stopped";
     }
 
-    if(params[0].get_str() == "reset") {
+    if(request.params[0].get_str() == "reset") {
         privateSendClient.ResetPool();
         return "Mixing was reset";
     }
@@ -67,19 +69,19 @@ UniValue privatesend(const UniValue& params, bool fHelp)
 }
 #endif // ENABLE_WALLET
 
-UniValue getpoolinfo(const UniValue& params, bool fHelp)
+UniValue getpoolinfo(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw std::runtime_error(
             "getpoolinfo\n"
             "Returns an object containing mixing pool related information.\n");
 
 #ifdef ENABLE_WALLET
-    CPrivateSendBase* pprivateSendBase = fMasterNode ? (CPrivateSendBase*)&privateSendServer : (CPrivateSendBase*)&privateSendClient;
+    CPrivateSendBase* pprivateSendBase = fMasternodeMode ? (CPrivateSendBase*)&privateSendServer : (CPrivateSendBase*)&privateSendClient;
 
     UniValue obj(UniValue::VOBJ);
     obj.push_back(Pair("state",             pprivateSendBase->GetStateString()));
-    obj.push_back(Pair("mixing_mode",       (!fMasterNode && privateSendClient.fPrivateSendMultiSession) ? "multi-session" : "normal"));
+    obj.push_back(Pair("mixing_mode",       (!fMasternodeMode && privateSendClient.fPrivateSendMultiSession) ? "multi-session" : "normal"));
     obj.push_back(Pair("queue",             pprivateSendBase->GetQueueSize()));
     obj.push_back(Pair("entries",           pprivateSendBase->GetEntriesCount()));
     obj.push_back(Pair("status",            privateSendClient.GetStatus()));
@@ -106,11 +108,11 @@ UniValue getpoolinfo(const UniValue& params, bool fHelp)
 }
 
 
-UniValue masternode(const UniValue& params, bool fHelp)
+UniValue masternode(const JSONRPCRequest& request)
 {
     std::string strCommand;
-    if (params.size() >= 1) {
-        strCommand = params[0].get_str();
+    if (request.params.size() >= 1) {
+        strCommand = request.params[0].get_str();
     }
 
 #ifdef ENABLE_WALLET
@@ -118,7 +120,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "DEPRECATED, please use start-all instead");
 #endif // ENABLE_WALLET
 
-    if (fHelp  ||
+    if (request.fHelp  ||
         (
 #ifdef ENABLE_WALLET
             strCommand != "start-alias" && strCommand != "start-all" && strCommand != "start-missing" &&
@@ -150,28 +152,29 @@ UniValue masternode(const UniValue& params, bool fHelp)
 
     if (strCommand == "list")
     {
-        UniValue newParams(UniValue::VARR);
+        JSONRPCRequest newRequest = request;
+        newRequest.params.setArray();
         // forward params but skip "list"
-        for (unsigned int i = 1; i < params.size(); i++) {
-            newParams.push_back(params[i]);
+        for (unsigned int i = 1; i < request.params.size(); i++) {
+            newRequest.params.push_back(request.params[i]);
         }
-        return masternodelist(newParams, fHelp);
+        return masternodelist(newRequest);
     }
 
     if(strCommand == "connect")
     {
-        if (params.size() < 2)
+        if (request.params.size() < 2)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Masternode address required");
 
-        std::string strAddress = params[1].get_str();
+        std::string strAddress = request.params[1].get_str();
 
         CService addr;
         if (!Lookup(strAddress.c_str(), addr, 0, false))
             throw JSONRPCError(RPC_INTERNAL_ERROR, strprintf("Incorrect masternode address %s", strAddress));
 
         // TODO: Pass CConnman instance somehow and don't use global variable.
-        CNode *pnode = g_connman->ConnectNode(CAddress(addr, NODE_NETWORK), NULL);
-        if(!pnode)
+        g_connman->OpenMasternodeConnection(CAddress(addr, NODE_NETWORK));
+        if (!g_connman->IsConnected(CAddress(addr, NODE_NETWORK), CConnman::AllNodes))
             throw JSONRPCError(RPC_INTERNAL_ERROR, strprintf("Couldn't connect to masternode %s", strAddress));
 
         return "successfully connected";
@@ -179,13 +182,13 @@ UniValue masternode(const UniValue& params, bool fHelp)
 
     if (strCommand == "count")
     {
-        if (params.size() > 2)
+        if (request.params.size() > 2)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Too many parameters");
 
-        if (params.size() == 1)
+        if (request.params.size() == 1)
             return mnodeman.size();
 
-        std::string strMode = params[1].get_str();
+        std::string strMode = request.params[1].get_str();
 
         if (strMode == "ps")
             return mnodeman.CountEnabled(MIN_PRIVATESEND_PEER_PROTO_VERSION);
@@ -237,7 +240,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
 #ifdef ENABLE_WALLET
     if (strCommand == "start-alias")
     {
-        if (params.size() < 2)
+        if (request.params.size() < 2)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Please specify an alias");
 
         {
@@ -245,14 +248,14 @@ UniValue masternode(const UniValue& params, bool fHelp)
             EnsureWalletIsUnlocked();
         }
 
-        std::string strAlias = params[1].get_str();
+        std::string strAlias = request.params[1].get_str();
 
         bool fFound = false;
 
         UniValue statusObj(UniValue::VOBJ);
         statusObj.push_back(Pair("alias", strAlias));
 
-        BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        for (const auto& mne : masternodeConfig.getEntries()) {
             if(mne.getAlias() == strAlias) {
                 fFound = true;
                 std::string strError;
@@ -297,7 +300,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
 
         UniValue resultsObj(UniValue::VOBJ);
 
-        BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        for (const auto& mne : masternodeConfig.getEntries()) {
             std::string strError;
 
             COutPoint outpoint = COutPoint(uint256S(mne.getTxHash()), uint32_t(atoi(mne.getOutputIndex().c_str())));
@@ -347,7 +350,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
     {
         UniValue resultObj(UniValue::VOBJ);
 
-        BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        for (const auto& mne : masternodeConfig.getEntries()) {
             COutPoint outpoint = COutPoint(uint256S(mne.getTxHash()), uint32_t(atoi(mne.getOutputIndex().c_str())));
             CMasternode mn;
             bool fFound = mnodeman.Get(outpoint, mn);
@@ -374,7 +377,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
         pwalletMain->AvailableCoins(vPossibleCoins, true, NULL, false, ONLY_1000);
 
         UniValue obj(UniValue::VOBJ);
-        BOOST_FOREACH(COutput& out, vPossibleCoins) {
+        for (const auto& out : vPossibleCoins) {
             obj.push_back(Pair(out.tx->GetHash().ToString(), strprintf("%d", out.i)));
         }
 
@@ -384,7 +387,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
 
     if (strCommand == "status")
     {
-        if (!fMasterNode)
+        if (!fMasternodeMode)
             throw JSONRPCError(RPC_INTERNAL_ERROR, "This is not a masternode");
 
         UniValue mnObj(UniValue::VOBJ);
@@ -415,15 +418,15 @@ UniValue masternode(const UniValue& params, bool fHelp)
         int nLast = 10;
         std::string strFilter = "";
 
-        if (params.size() >= 2) {
-            nLast = atoi(params[1].get_str());
+        if (request.params.size() >= 2) {
+            nLast = atoi(request.params[1].get_str());
         }
 
-        if (params.size() == 3) {
-            strFilter = params[2].get_str();
+        if (request.params.size() == 3) {
+            strFilter = request.params[2].get_str();
         }
 
-        if (params.size() > 3)
+        if (request.params.size() > 3)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Correct usage is 'masternode winners ( \"count\" \"filter\" )'");
 
         UniValue obj(UniValue::VOBJ);
@@ -440,15 +443,15 @@ UniValue masternode(const UniValue& params, bool fHelp)
     return NullUniValue;
 }
 
-UniValue masternodelist(const UniValue& params, bool fHelp)
+UniValue masternodelist(const JSONRPCRequest& request)
 {
     std::string strMode = "status";
     std::string strFilter = "";
 
-    if (params.size() >= 1) strMode = params[0].get_str();
-    if (params.size() == 2) strFilter = params[1].get_str();
+    if (request.params.size() >= 1) strMode = request.params[0].get_str();
+    if (request.params.size() == 2) strFilter = request.params[1].get_str();
 
-    if (fHelp || (
+    if (request.fHelp || (
                 strMode != "activeseconds" && strMode != "addr" && strMode != "full" && strMode != "info" &&
                 strMode != "lastseen" && strMode != "lastpaidtime" && strMode != "lastpaidblock" &&
                 strMode != "protocol" && strMode != "payee" && strMode != "pubkey" &&
@@ -495,14 +498,14 @@ UniValue masternodelist(const UniValue& params, bool fHelp)
     if (strMode == "rank") {
         CMasternodeMan::rank_pair_vec_t vMasternodeRanks;
         mnodeman.GetMasternodeRanks(vMasternodeRanks);
-        BOOST_FOREACH(PAIRTYPE(int, CMasternode)& s, vMasternodeRanks) {
-            std::string strOutpoint = s.second.vin.prevout.ToStringShort();
+        for (const auto& rankpair : vMasternodeRanks) {
+            std::string strOutpoint = rankpair.second.vin.prevout.ToStringShort();
             if (strFilter !="" && strOutpoint.find(strFilter) == std::string::npos) continue;
-            obj.push_back(Pair(strOutpoint, s.first));
+            obj.push_back(Pair(strOutpoint, rankpair.first));
         }
     } else {
         std::map<COutPoint, CMasternode> mapMasternodes = mnodeman.GetFullMasternodeMap();
-        for (auto& mnpair : mapMasternodes) {
+        for (const auto& mnpair : mapMasternodes) {
             CMasternode mn = mnpair.second;
             std::string strOutpoint = mnpair.first.ToStringShort();
             if (strMode == "activeseconds") {
@@ -593,13 +596,13 @@ bool DecodeHexVecMnb(std::vector<CMasternodeBroadcast>& vecMnb, std::string strH
     return true;
 }
 
-UniValue masternodebroadcast(const UniValue& params, bool fHelp)
+UniValue masternodebroadcast(const JSONRPCRequest& request)
 {
     std::string strCommand;
-    if (params.size() >= 1)
-        strCommand = params[0].get_str();
+    if (request.params.size() >= 1)
+        strCommand = request.params[0].get_str();
 
-    if (fHelp  ||
+    if (request.fHelp  ||
         (
 #ifdef ENABLE_WALLET
             strCommand != "create-alias" && strCommand != "create-all" &&
@@ -626,7 +629,7 @@ UniValue masternodebroadcast(const UniValue& params, bool fHelp)
         if (fImporting || fReindex)
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Wait for reindex and/or import to finish");
 
-        if (params.size() < 2)
+        if (request.params.size() < 2)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Please specify an alias");
 
         {
@@ -635,14 +638,14 @@ UniValue masternodebroadcast(const UniValue& params, bool fHelp)
         }
 
         bool fFound = false;
-        std::string strAlias = params[1].get_str();
+        std::string strAlias = request.params[1].get_str();
 
         UniValue statusObj(UniValue::VOBJ);
         std::vector<CMasternodeBroadcast> vecMnb;
 
         statusObj.push_back(Pair("alias", strAlias));
 
-        BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        for (const auto& mne : masternodeConfig.getEntries()) {
             if(mne.getAlias() == strAlias) {
                 fFound = true;
                 std::string strError;
@@ -692,7 +695,7 @@ UniValue masternodebroadcast(const UniValue& params, bool fHelp)
         UniValue resultsObj(UniValue::VOBJ);
         std::vector<CMasternodeBroadcast> vecMnb;
 
-        BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        for (const auto& mne : masternodeConfig.getEntries()) {
             std::string strError;
             CMasternodeBroadcast mnb;
 
@@ -726,12 +729,12 @@ UniValue masternodebroadcast(const UniValue& params, bool fHelp)
 
     if (strCommand == "decode")
     {
-        if (params.size() != 2)
+        if (request.params.size() != 2)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Correct usage is 'masternodebroadcast decode \"hexstring\"'");
 
         std::vector<CMasternodeBroadcast> vecMnb;
 
-        if (!DecodeHexVecMnb(vecMnb, params[1].get_str()))
+        if (!DecodeHexVecMnb(vecMnb, request.params[1].get_str()))
             throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Masternode broadcast message decode failed");
 
         int nSuccessful = 0;
@@ -739,7 +742,7 @@ UniValue masternodebroadcast(const UniValue& params, bool fHelp)
         int nDos = 0;
         UniValue returnObj(UniValue::VOBJ);
 
-        BOOST_FOREACH(CMasternodeBroadcast& mnb, vecMnb) {
+        for (const auto& mnb : vecMnb) {
             UniValue resultObj(UniValue::VOBJ);
 
             if(mnb.CheckSignature(nDos)) {
@@ -775,7 +778,7 @@ UniValue masternodebroadcast(const UniValue& params, bool fHelp)
 
     if (strCommand == "relay")
     {
-        if (params.size() < 2 || params.size() > 3)
+        if (request.params.size() < 2 || request.params.size() > 3)
             throw JSONRPCError(RPC_INVALID_PARAMETER,   "masternodebroadcast relay \"hexstring\" ( fast )\n"
                                                         "\nArguments:\n"
                                                         "1. \"hex\"      (string, required) Broadcast messages hex string\n"
@@ -783,16 +786,16 @@ UniValue masternodebroadcast(const UniValue& params, bool fHelp)
 
         std::vector<CMasternodeBroadcast> vecMnb;
 
-        if (!DecodeHexVecMnb(vecMnb, params[1].get_str()))
+        if (!DecodeHexVecMnb(vecMnb, request.params[1].get_str()))
             throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Masternode broadcast message decode failed");
 
         int nSuccessful = 0;
         int nFailed = 0;
-        bool fSafe = params.size() == 2;
+        bool fSafe = request.params.size() == 2;
         UniValue returnObj(UniValue::VOBJ);
 
         // verify all signatures first, bailout if any of them broken
-        BOOST_FOREACH(CMasternodeBroadcast& mnb, vecMnb) {
+        for (const auto& mnb : vecMnb) {
             UniValue resultObj(UniValue::VOBJ);
 
             resultObj.push_back(Pair("outpoint", mnb.vin.prevout.ToStringShort()));
@@ -830,9 +833,9 @@ UniValue masternodebroadcast(const UniValue& params, bool fHelp)
     return NullUniValue;
 }
 
-UniValue sentinelping(const UniValue& params, bool fHelp)
+UniValue sentinelping(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 1) {
+    if (request.fHelp || request.params.size() != 1) {
         throw std::runtime_error(
             "sentinelping version\n"
             "\nSentinel ping.\n"
@@ -846,6 +849,25 @@ UniValue sentinelping(const UniValue& params, bool fHelp)
         );
     }
 
-    activeMasternode.UpdateSentinelPing(StringVersionToInt(params[0].get_str()));
+    activeMasternode.UpdateSentinelPing(StringVersionToInt(request.params[0].get_str()));
     return true;
+}
+
+static const CRPCCommand commands[] =
+{ //  category              name                      actor (function)         okSafe argNames
+  //  --------------------- ------------------------  -----------------------  ------ ----------
+    { "dash",               "masternode",             &masternode,             true,  {} },
+    { "dash",               "masternodelist",         &masternodelist,         true,  {} },
+    { "dash",               "masternodebroadcast",    &masternodebroadcast,    true,  {} },
+    { "dash",               "getpoolinfo",            &getpoolinfo,            true,  {} },
+    { "dash",               "sentinelping",           &sentinelping,           true,  {} },
+#ifdef ENABLE_WALLET
+    { "dash",               "privatesend",            &privatesend,            false, {} },
+#endif // ENABLE_WALLET
+};
+
+void RegisterMasternodeRPCCommands(CRPCTable &t)
+{
+    for (unsigned int vcidx = 0; vcidx < ARRAYLEN(commands); vcidx++)
+        t.appendCommand(commands[vcidx].name, &commands[vcidx]);
 }

@@ -1,4 +1,7 @@
-
+// Copyright (c) 2013-2015 The Bitcoin Core developers
+// Copyright (c) 2014-2017 The Polis Core developers
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <QtGlobal>
 
@@ -42,7 +45,7 @@ QT_TRANSLATE_NOOP("polis-core", ""
 "notation for IPv6. This option can be specified multiple times (default: "
 "bind to all interfaces)"),
 QT_TRANSLATE_NOOP("polis-core", ""
-"Cannot obtain a lock on data directory %s. polis Core is probably already "
+"Cannot obtain a lock on data directory %s. Polis Core is probably already "
 "running."),
 QT_TRANSLATE_NOOP("polis-core", ""
 "Create new files with system default permissions, instead of umask 077 (only "
@@ -51,7 +54,7 @@ QT_TRANSLATE_NOOP("polis-core", ""
 "Delete all wallet transactions and only recover those parts of the "
 "blockchain through -rescan on startup"),
 QT_TRANSLATE_NOOP("polis-core", ""
-"Disable all polis specific functionality (Masternodes, PrivateSend, "
+"Disable all Polis specific functionality (Masternodes, PrivateSend, "
 "InstantSend, Governance) (0-1, default: %u)"),
 QT_TRANSLATE_NOOP("polis-core", ""
 "Discover own IP addresses (default: 1 when listening and no -externalip or -"
@@ -119,7 +122,7 @@ QT_TRANSLATE_NOOP("polis-core", ""
 "testnet: %s)"),
 QT_TRANSLATE_NOOP("polis-core", ""
 "InstantSend doesn't support sending values that high yet. Transactions are "
-"currently limited to %1 polis."),
+"currently limited to %1 POLIS."),
 QT_TRANSLATE_NOOP("polis-core", ""
 "InstantSend requires inputs with at least %d confirmations, you might need "
 "to wait a few minutes and try again."),
@@ -158,7 +161,7 @@ QT_TRANSLATE_NOOP("polis-core", ""
 "Output debugging information (default: %u, supplying <category> is optional)"),
 QT_TRANSLATE_NOOP("polis-core", ""
 "Please check that your computer's date and time are correct! If your clock "
-"is wrong polis Core will not work properly."),
+"is wrong Polis Core will not work properly."),
 QT_TRANSLATE_NOOP("polis-core", ""
 "PrivateSend uses exact denominated amounts to send funds, you might simply "
 "need to anonymize some more coins."),
@@ -221,15 +224,15 @@ QT_TRANSLATE_NOOP("polis-core", ""
 "Tries to keep outbound traffic under the given target (in MiB per 24h), 0 = "
 "no limit (default: %d)"),
 QT_TRANSLATE_NOOP("polis-core", ""
-"Unable to bind to %s on this computer. polis Core is probably already running."),
+"Unable to bind to %s on this computer. Polis Core is probably already running."),
 QT_TRANSLATE_NOOP("polis-core", ""
 "Unable to locate enough PrivateSend denominated funds for this transaction."),
 QT_TRANSLATE_NOOP("polis-core", ""
 "Unable to locate enough PrivateSend non-denominated funds for this "
-"transaction that are not equal 1000 polis."),
+"transaction that are not equal 1000 POLIS."),
 QT_TRANSLATE_NOOP("polis-core", ""
 "Unable to locate enough funds for this transaction that are not equal 1000 "
-"polis."),
+"POLIS."),
 QT_TRANSLATE_NOOP("polis-core", ""
 "Unsupported argument -socks found. Setting SOCKS version isn't possible "
 "anymore, only SOCKS5 proxies are supported."),
@@ -333,7 +336,7 @@ QT_TRANSLATE_NOOP("polis-core", "Connect to KeePassHttp on port <port> (default:
 QT_TRANSLATE_NOOP("polis-core", "Connect to a node to retrieve peer addresses, and disconnect"),
 QT_TRANSLATE_NOOP("polis-core", "Connection options:"),
 QT_TRANSLATE_NOOP("polis-core", "Copyright (C) 2009-%i The Bitcoin Core Developers"),
-QT_TRANSLATE_NOOP("polis-core", "Copyright (C) 2014-%i The polis Core Developers"),
+QT_TRANSLATE_NOOP("polis-core", "Copyright (C) 2014-%i The Polis Core Developers"),
 QT_TRANSLATE_NOOP("polis-core", "Corrupted block database detected"),
 QT_TRANSLATE_NOOP("polis-core", "Could not parse masternode.conf"),
 QT_TRANSLATE_NOOP("polis-core", "Debugging/Testing options:"),
@@ -358,7 +361,7 @@ QT_TRANSLATE_NOOP("polis-core", "Error loading %s: You can't disable HD on a alr
 QT_TRANSLATE_NOOP("polis-core", "Error loading block database"),
 QT_TRANSLATE_NOOP("polis-core", "Error loading wallet.dat"),
 QT_TRANSLATE_NOOP("polis-core", "Error loading wallet.dat: Wallet corrupted"),
-QT_TRANSLATE_NOOP("polis-core", "Error loading wallet.dat: Wallet requires newer version of polis Core"),
+QT_TRANSLATE_NOOP("polis-core", "Error loading wallet.dat: Wallet requires newer version of Polis Core"),
 QT_TRANSLATE_NOOP("polis-core", "Error opening block database"),
 QT_TRANSLATE_NOOP("polis-core", "Error reading from database, shutting down."),
 QT_TRANSLATE_NOOP("polis-core", "Error"),
@@ -385,7 +388,7 @@ QT_TRANSLATE_NOOP("polis-core", "Incompatible mode."),
 QT_TRANSLATE_NOOP("polis-core", "Incompatible version."),
 QT_TRANSLATE_NOOP("polis-core", "Incorrect or no genesis block found. Wrong datadir for network?"),
 QT_TRANSLATE_NOOP("polis-core", "Information"),
-QT_TRANSLATE_NOOP("polis-core", "Initialization sanity check failed. polis Core is shutting down."),
+QT_TRANSLATE_NOOP("polis-core", "Initialization sanity check failed. Polis Core is shutting down."),
 QT_TRANSLATE_NOOP("polis-core", "Input is not valid."),
 QT_TRANSLATE_NOOP("polis-core", "InstantSend options:"),
 QT_TRANSLATE_NOOP("polis-core", "Insufficient funds."),
@@ -403,7 +406,7 @@ QT_TRANSLATE_NOOP("polis-core", "Invalid port detected in masternode.conf"),
 QT_TRANSLATE_NOOP("polis-core", "Invalid script detected."),
 QT_TRANSLATE_NOOP("polis-core", "KeePassHttp id for the established association"),
 QT_TRANSLATE_NOOP("polis-core", "KeePassHttp key for AES encrypted communication with KeePass"),
-QT_TRANSLATE_NOOP("polis-core", "Keep N polis anonymized (default: %u)"),
+QT_TRANSLATE_NOOP("polis-core", "Keep N POLIS anonymized (default: %u)"),
 QT_TRANSLATE_NOOP("polis-core", "Keep at most <n> unconnectable transactions in memory (default: %u)"),
 QT_TRANSLATE_NOOP("polis-core", "Keep the transaction memory pool below <n> megabytes (default: %u)"),
 QT_TRANSLATE_NOOP("polis-core", "Keypool ran out, please call keypoolrefill first"),
@@ -537,7 +540,7 @@ QT_TRANSLATE_NOOP("polis-core", "Verifying wallet..."),
 QT_TRANSLATE_NOOP("polis-core", "Very low number of keys left: %d"),
 QT_TRANSLATE_NOOP("polis-core", "Wallet %s resides outside data directory %s"),
 QT_TRANSLATE_NOOP("polis-core", "Wallet is locked."),
-QT_TRANSLATE_NOOP("polis-core", "Wallet needed to be rewritten: restart polis Core to complete"),
+QT_TRANSLATE_NOOP("polis-core", "Wallet needed to be rewritten: restart Polis Core to complete"),
 QT_TRANSLATE_NOOP("polis-core", "Wallet options:"),
 QT_TRANSLATE_NOOP("polis-core", "Wallet window title"),
 QT_TRANSLATE_NOOP("polis-core", "Warning"),

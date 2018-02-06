@@ -35,19 +35,27 @@ extern "C" {
 
 typedef enum polisconsensus_error_t
 {
+
     polisconsensus_ERR_OK = 0,
     polisconsensus_ERR_TX_INDEX,
     polisconsensus_ERR_TX_SIZE_MISMATCH,
     polisconsensus_ERR_TX_DESERIALIZE,
+    polisconsensus_ERR_INVALID_FLAGS,
 } polisconsensus_error;
 
 /** Script verification flags */
 enum
 {
+
     polisconsensus_SCRIPT_FLAGS_VERIFY_NONE                = 0,
     polisconsensus_SCRIPT_FLAGS_VERIFY_P2SH                = (1U << 0), // evaluate P2SH (BIP16) subscripts
     polisconsensus_SCRIPT_FLAGS_VERIFY_DERSIG              = (1U << 2), // enforce strict DER (BIP66) compliance
+    polisconsensus_SCRIPT_FLAGS_VERIFY_NULLDUMMY           = (1U << 4), // enforce NULLDUMMY (BIP147)
     polisconsensus_SCRIPT_FLAGS_VERIFY_CHECKLOCKTIMEVERIFY = (1U << 9), // enable CHECKLOCKTIMEVERIFY (BIP65)
+    polisconsensus_SCRIPT_FLAGS_VERIFY_CHECKSEQUENCEVERIFY = (1U << 10), // enable CHECKSEQUENCEVERIFY (BIP112)
+    polisconsensus_SCRIPT_FLAGS_VERIFY_ALL                 = polisconsensus_SCRIPT_FLAGS_VERIFY_P2SH | polisconsensus_SCRIPT_FLAGS_VERIFY_DERSIG |
+                                                            polisconsensus_SCRIPT_FLAGS_VERIFY_NULLDUMMY | polisconsensus_SCRIPT_FLAGS_VERIFY_CHECKLOCKTIMEVERIFY |
+                                                            polisconsensus_SCRIPT_FLAGS_VERIFY_CHECKSEQUENCEVERIFY
 };
 
 /// Returns 1 if the input nIn of the serialized transaction pointed to by

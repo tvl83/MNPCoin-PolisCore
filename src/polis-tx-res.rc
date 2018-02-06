@@ -16,8 +16,8 @@ BEGIN
     BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
         BEGIN
-            VALUE "CompanyName",        "polis"
-            VALUE "FileDescription",    "polis-tx (CLI polis transaction editor utility)"
+            VALUE "CompanyName",        "Polis"
+            VALUE "FileDescription",    "polis-cli (JSON-RPC client for " PACKAGE_NAME ")"
             VALUE "FileVersion",        VER_FILEVERSION_STR
             VALUE "InternalName",       "polis-tx"
             VALUE "LegalCopyright",     COPYRIGHT_STR

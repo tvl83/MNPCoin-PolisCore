@@ -1,3 +1,2 @@
-debian/manpages/polisd.1
-debian/manpages/polis.conf.5
-debian/manpages/polis-cli.1
+doc/man/polisd.1
+doc/man/polis-cli.1
