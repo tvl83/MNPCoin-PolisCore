@@ -28,8 +28,8 @@ Drag polis-Qt to your applications folder, and then run polis-Qt.
 
 * See the [polis documentation](https://polispay.atlassian.net/wiki/display/DOC)
 for help and more information.
-* Ask for help on [#polispay](http://webchat.freenode.net?channels=polispay) on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net?channels=polispay).
-* Ask for help on the [polisTalk](https://polistalk.org/) forums.
+* Ask for help on [Polispay Discord](https://discord.gg/gwhHv8U)
+* Ask for help on the [Polis Forum](https://polispay.org/forum)
 
 Building
 ---------------------
@@ -59,8 +59,8 @@ The polis Core repo's [root README](/README.md) contains relevant information on
 - [Benchmarking](benchmarking.md)
 
 ### Resources
-* Discuss on the [polisTalk](https://polistalk.org/) forums, in the Development & Technical Discussion board.
-* Discuss on [#polispay](http://webchat.freenode.net/?channels=polispay) on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net/?channels=polispay).
+* Discuss on the [Polis  Forum](https://polispay.org/forum), in the Development & Technical Discussion board.
+* Discuss on [Polis Discord](https://discord.gg/gwhHv8U)
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

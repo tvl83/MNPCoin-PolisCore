@@ -556,7 +556,7 @@ bool AddOrphanTx(const CTransactionRef& tx, NodeId peer) EXCLUSIVE_LOCKS_REQUIRE
     return true;
 }
 
-int EraseOrphanTx(uint256 hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
+int static EraseOrphanTx(uint256 hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
 {
     std::map<uint256, COrphanTx>::iterator it = mapOrphanTransactions.find(hash);
     if (it == mapOrphanTransactions.end())
@@ -586,7 +586,7 @@ void EraseOrphansFor(NodeId peer)
             nErased += EraseOrphanTx(maybeErase->second.tx->GetHash());
         }
     }
-    if (nErased > 0) LogPrint("mempool", "Erased %d orphan tx from peer %d\n", nErased, peer);
+    if (nErased > 0) LogPrint("mempool", "Erased %d orphan tx from peer=%d\n", nErased, peer);
 }
 
 
@@ -1489,7 +1489,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                         // send a GETHEADERS message at some point in time. This is delayed to later in SendMessages
                         // when the headers chain has catched up enough.
                         LogPrint("net", "delaying getheaders (%d) %s to peer=%d\n", pindexBestHeader->nHeight, inv.hash.ToString(), pfrom->id);
-                        pfrom->PushBlockHashFromINV(inv.hash);
+                        pfrom->PushDelayedGetHeaders(inv.hash);
                     } else {
                         // We used to request the full block here, but since headers-announcements are now the
                         // primary method of announcement on the network, and since, in the case that a node
@@ -2093,6 +2093,13 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             return true;
         }
 
+        if (connman.OutboundTargetReached(false) && !pfrom->fWhitelisted)
+        {
+            LogPrint("net", "mempool request with bandwidth limit reached, disconnect peer=%d\n", pfrom->GetId());
+            pfrom->fDisconnect = true;
+            return true;
+        }
+
         LOCK(pfrom->cs_inventory);
         pfrom->fSendMempool = true;
     }
@@ -2597,11 +2604,11 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
             // Headers chain has catched up enough so we can send out GETHEADER messages which were initially meant to
             // be sent directly after INV was received
             LOCK(pto->cs_inventory);
-            BOOST_FOREACH(const uint256 &hash, pto->vBlockHashesFromINV) {
+            BOOST_FOREACH(const uint256 &hash, pto->vDelayedGetHeaders) {
                 LogPrint("net", "process delayed getheaders (%d) to peer=%d\n", pindexBestHeader->nHeight, pto->id);
                 connman.PushMessage(pto, msgMaker.Make(NetMsgType::GETHEADERS, chainActive.GetLocator(pindexBestHeader), hash));
             }
-            pto->vBlockHashesFromINV.clear();
+            pto->vDelayedGetHeaders.clear();
         }
 
         // Resend wallet transactions that haven't gotten in a block yet
@@ -2783,6 +2790,7 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
                         vInv.clear();
                     }
                 }
+                pto->timeLastMempoolReq = GetTime();
             }
 
             // Determine transactions to relay

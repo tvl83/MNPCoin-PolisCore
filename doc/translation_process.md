@@ -107,4 +107,6 @@ To create a new language template, you will need to edit the languages manifest 
 **Note:** that the language translation file **must end in `.qm`** (the compiled extension), and not `.ts`.
 
 ### Questions and general assistance
-Check official forum at [https://polistalk.org/forums/polis-worldwide-collaboration.88/](https://polistalk.org/forums/polis-worldwide-collaboration.88/).
+
+Check official forum at [https://www.dash.org/forum/topic/dash-worldwide-collaboration.88/](https://www.dash.org/forum/topic/dash-worldwide-collaboration.88/).
+

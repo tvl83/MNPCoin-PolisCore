@@ -1406,6 +1406,8 @@ isminetype CWallet::IsMine(const CTxIn &txin) const
     return ISMINE_NO;
 }
 
+// Note that this function doesn't distinguish between a 0-valued input,
+// and a not-"is mine" (according to the filter) input.
 CAmount CWallet::GetDebit(const CTxIn &txin, const isminefilter& filter) const
 {
     {
@@ -1687,6 +1689,27 @@ CAmount CWallet::GetDebit(const CTransaction& tx, const isminefilter& filter) co
             throw std::runtime_error(std::string(__func__) + ": value out of range");
     }
     return nDebit;
+}
+
+bool CWallet::IsAllFromMe(const CTransaction& tx, const isminefilter& filter) const
+{
+    LOCK(cs_wallet);
+
+    BOOST_FOREACH(const CTxIn& txin, tx.vin)
+    {
+        auto mi = mapWallet.find(txin.prevout.hash);
+        if (mi == mapWallet.end())
+            return false; // any unknown inputs can't be from us
+
+        const CWalletTx& prev = (*mi).second;
+
+        if (txin.prevout.n >= prev.tx->vout.size())
+            return false; // invalid input!
+
+        if (!(IsMine(prev.tx->vout[txin.prevout.n]) & filter))
+            return false;
+    }
+    return true;
 }
 
 CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter) const
@@ -4742,7 +4765,7 @@ std::string CWallet::GetWalletHelpString(bool showDebug)
         strUsage += HelpMessageOpt("-dblogsize=<n>", strprintf("Flush wallet database activity from memory to disk log every <n> megabytes (default: %u)", DEFAULT_WALLET_DBLOGSIZE));
         strUsage += HelpMessageOpt("-flushwallet", strprintf("Run a thread to flush wallet periodically (default: %u)", DEFAULT_FLUSHWALLET));
         strUsage += HelpMessageOpt("-privdb", strprintf("Sets the DB_PRIVATE flag in the wallet db environment (default: %u)", DEFAULT_WALLET_PRIVDB));
-        strUsage += HelpMessageOpt("-walletrejectlongchains", strprintf(_("Wallet will not create transactions that violate mempool chain limits (default: %u"), DEFAULT_WALLET_REJECT_LONG_CHAINS));
+        strUsage += HelpMessageOpt("-walletrejectlongchains", strprintf(_("Wallet will not create transactions that violate mempool chain limits (default: %u)"), DEFAULT_WALLET_REJECT_LONG_CHAINS));
     }
 
     return strUsage;
