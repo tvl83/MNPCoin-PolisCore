@@ -212,17 +212,6 @@ void CPrivateSendServer::ProcessMessage(CNode* pfrom, const std::string& strComm
                 PushStatus(pfrom, STATUS_REJECTED, ERR_FEES, connman);
                 return;
             }
-
-            {
-                LOCK(cs_main);
-                CValidationState validationState;
-                mempool.PrioritiseTransaction(tx.GetHash(), tx.GetHash().ToString(), 1000, 0.1*COIN);
-                if(!AcceptToMemoryPool(mempool, validationState, MakeTransactionRef(tx), false, NULL, false, maxTxFee, true)) {
-                    LogPrintf("DSVIN -- transaction not valid! tx=%s", tx.ToString());
-                    PushStatus(pfrom, STATUS_REJECTED, ERR_INVALID_TX, connman);
-                    return;
-                }
-            }
         }
 
         PoolMessage nMessageID = MSG_NOERR;
@@ -443,16 +432,7 @@ void CPrivateSendServer::ChargeFees(CConnman& connman)
         LogPrintf("CPrivateSendServer::ChargeFees -- found uncooperative node (didn't %s transaction), charging fees: %s\n",
                 (nState == POOL_STATE_SIGNING) ? "sign" : "send", vecOffendersCollaterals[0]->ToString());
 
-        LOCK(cs_main);
-
-        CValidationState state;
-        bool fMissingInputs;
-        if(!AcceptToMemoryPool(mempool, state, vecOffendersCollaterals[0], false, &fMissingInputs, false, maxTxFee)) {
-            // should never really happen
-            LogPrintf("CPrivateSendServer::ChargeFees -- ERROR: AcceptToMemoryPool failed!\n");
-        } else {
-            connman.RelayTransaction(*vecOffendersCollaterals[0]);
-        }
+        connman.RelayTransaction(*vecOffendersCollaterals[0]);
     }
 }
 
@@ -472,22 +452,10 @@ void CPrivateSendServer::ChargeRandomFees(CConnman& connman)
 {
     if(!fMasternodeMode) return;
 
-    LOCK(cs_main);
-
     for (const auto& txCollateral : vecSessionCollaterals) {
-
         if(GetRandInt(100) > 10) return;
-
         LogPrintf("CPrivateSendServer::ChargeRandomFees -- charging random fees, txCollateral=%s", txCollateral->ToString());
-
-        CValidationState state;
-        bool fMissingInputs;
-        if(!AcceptToMemoryPool(mempool, state, txCollateral, false, &fMissingInputs, false, maxTxFee)) {
-            // should never really happen
-            LogPrintf("CPrivateSendServer::ChargeRandomFees -- ERROR: AcceptToMemoryPool failed!\n");
-        } else {
-            connman.RelayTransaction(*txCollateral);
-        }
+        connman.RelayTransaction(*txCollateral);
     }
 }
 
@@ -500,9 +468,8 @@ void CPrivateSendServer::CheckTimeout(CConnman& connman)
 
     if(!fMasternodeMode) return;
 
-    int nLagTime = fMasternodeMode ? 0 : 10000; // if we're the client, give the server a few extra seconds before resetting.
     int nTimeout = (nState == POOL_STATE_SIGNING) ? PRIVATESEND_SIGNING_TIMEOUT : PRIVATESEND_QUEUE_TIMEOUT;
-    bool fTimeout = GetTimeMillis() - nTimeLastSuccessfulStep >= nTimeout*1000 + nLagTime;
+    bool fTimeout = GetTime() - nTimeLastSuccessfulStep >= nTimeout;
 
     if(nState != POOL_STATE_IDLE && fTimeout) {
         LogPrint("privatesend", "CPrivateSendServer::CheckTimeout -- %s timed out (%ds) -- resetting\n",
@@ -619,7 +586,7 @@ bool CPrivateSendServer::AddEntry(const CDarkSendEntry& entryNew, PoolMessage& n
 
     LogPrint("privatesend", "CPrivateSendServer::AddEntry -- adding entry\n");
     nMessageIDRet = MSG_ENTRIES_ADDED;
-    nTimeLastSuccessfulStep = GetTimeMillis();
+    nTimeLastSuccessfulStep = GetTime();
 
     return true;
 }
@@ -727,7 +694,7 @@ bool CPrivateSendServer::CreateNewSession(const CDarksendAccept& dsa, PoolMessag
     nSessionDenom = dsa.nDenom;
 
     SetState(POOL_STATE_QUEUE);
-    nTimeLastSuccessfulStep = GetTimeMillis();
+    nTimeLastSuccessfulStep = GetTime();
 
     if(!fUnitTest) {
         //broadcast that I'm accepting entries, only if it's the first entry through
@@ -770,7 +737,7 @@ bool CPrivateSendServer::AddUserToExistingSession(const CDarksendAccept& dsa, Po
     // count new user as accepted to an existing session
 
     nMessageIDRet = MSG_NOERR;
-    nTimeLastSuccessfulStep = GetTimeMillis();
+    nTimeLastSuccessfulStep = GetTime();
     vecSessionCollaterals.push_back(MakeTransactionRef(dsa.txCollateral));
 
     LogPrintf("CPrivateSendServer::AddUserToExistingSession -- new user accepted, nSessionID: %d  nSessionDenom: %d (%s)  vecSessionCollaterals.size(): %d\n",

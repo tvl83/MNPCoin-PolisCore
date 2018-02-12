@@ -27,9 +27,6 @@ typedef boost::shared_ptr<CSuperblock> CSuperblock_sptr;
 // DECLARE GLOBAL VARIABLES FOR GOVERNANCE CLASSES
 extern CGovernanceTriggerManager triggerman;
 
-// SPLIT A STRING UP - USED FOR SUPERBLOCK PAYMENTS
-std::vector<std::string> SplitBy(std::string strCommand, std::string strDelimit);
-
 /**
 *   Trigger Mananger
 *
@@ -148,11 +145,11 @@ class CSuperblock : public CGovernanceObject
 private:
     uint256 nGovObjHash;
 
-    int nEpochStart;
+    int nBlockHeight;
     int nStatus;
     std::vector<CGovernancePayment> vecPayments;
 
-    void ParsePaymentSchedule(std::string& strPaymentAddresses, std::string& strPaymentAmounts);
+    void ParsePaymentSchedule(const std::string& strPaymentAddresses, const std::string& strPaymentAmounts);
 
 public:
 
@@ -160,6 +157,7 @@ public:
     CSuperblock(uint256& nHash);
 
     static bool IsValidBlockHeight(int nBlockHeight);
+    static void GetNearestSuperblocksHeights(int nBlockHeight, int& nLastSuperblockRet, int& nNextSuperblockRet);
     static CAmount GetPaymentsLimit(int nBlockHeight);
 
     int GetStatus() { return nStatus; }
@@ -177,26 +175,9 @@ public:
         return pObj;
     }
 
-    int GetBlockStart()
+    int GetBlockHeight()
     {
-        /* // 12.1 TRIGGER EXECUTION */
-        /* // NOTE : Is this over complicated? */
-
-        /* //int nRet = 0; */
-        /* int nTipEpoch = 0; */
-        /* int nTipBlock = chainActive.Tip()->nHeight+1; */
-
-        /* // GET TIP EPOCK / BLOCK */
-
-        /* // typically it should be more than the current time */
-        /* int nDiff = nEpochStart - nTipEpoch; */
-        /* int nBlockDiff = nDiff / (2.6*60); */
-
-        /* // calculate predicted block height */
-        /* int nMod = (nTipBlock + nBlockDiff) % Params().GetConsensus().nSuperblockCycle; */
-
-        /* return (nTipBlock + nBlockDiff)-nMod; */
-        return nEpochStart;
+        return nBlockHeight;
     }
 
     int CountPayments() { return (int)vecPayments.size(); }
