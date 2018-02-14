@@ -284,8 +284,8 @@ public:
         consensus.BIP65Height = 2431; // 0000039cf01242c7f921dcb4806a5994bc003b48c1973ae0c89b67809c2bb2ab
         consensus.BIP66Height = 2075; // 0000002acdd29a14583540cb72e1c5cc83783560e38fa7081495d474fe1671f7
         consensus.powLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000");
-        consensus.nPowTargetTimespan = 120; // polis: 1 day
-        consensus.nPowTargetSpacing = 1; // polis: 2.5 minutes
+        consensus.nPowTargetTimespan = 60; // polis: 1 day
+        consensus.nPowTargetSpacing = 120; // polis: 2.5 minutes
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
@@ -330,9 +330,9 @@ public:
         nDelayGetHeadersTime = 24 * 60 * 60;
         nPruneAfterHeight = 1000;
       
-        genesis = CreateGenesisBlock(1517497981, 189834, 0x1e0ffff0, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1518283816, 2312372, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x00000d5823121b09d279fe34f7a89e5d5879d05b27b55f1f41f0180b61c08740"));
+        assert(consensus.hashGenesisBlock == uint256S("0x00000dfd7b3052bd8489814d6dca74188a244ce83e40c71dca9efea02c73074d"));
         assert(genesis.hashMerkleRoot == uint256S("0x5dc9bcf5d1e4802dad0045a88849e3ad97d07a5b8aaee1114ed5ae03b98c4bfc"));
 
 
