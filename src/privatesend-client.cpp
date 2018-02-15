@@ -52,11 +52,11 @@ void CPrivateSendClient::ProcessMessage(CNode* pfrom, const std::string& strComm
         if(dsq.IsExpired()) return;
 
         masternode_info_t infoMn;
-        if(!mnodeman.GetMasternodeInfo(dsq.vin.prevout, infoMn)) return;
+        if(!mnodeman.GetMasternodeInfo(dsq.masternodeOutpoint, infoMn)) return;
 
         if(!dsq.CheckSignature(infoMn.pubKeyMasternode)) {
             // we probably have outdated info
-            mnodeman.AskForMN(pfrom, dsq.vin.prevout, connman);
+            mnodeman.AskForMN(pfrom, dsq.masternodeOutpoint, connman);
             return;
         }
 
@@ -74,7 +74,7 @@ void CPrivateSendClient::ProcessMessage(CNode* pfrom, const std::string& strComm
             }
         } else {
             for (const auto& q : vecDarksendQueue) {
-                if(q.vin == dsq.vin) {
+                if(q.masternodeOutpoint == dsq.masternodeOutpoint) {
                     // no way same mn can send another "not yet ready" dsq this soon
                     LogPrint("privatesend", "DSQUEUE -- Masternode %s is sending WAY too many dsq messages\n", infoMn.addr.ToString());
                     return;
@@ -89,10 +89,10 @@ void CPrivateSendClient::ProcessMessage(CNode* pfrom, const std::string& strComm
                 return;
             }
 
-            if(!mnodeman.AllowMixing(dsq.vin.prevout)) return;
+            if(!mnodeman.AllowMixing(dsq.masternodeOutpoint)) return;
 
             LogPrint("privatesend", "DSQUEUE -- new PrivateSend queue (%s) from masternode %s\n", dsq.ToString(), infoMn.addr.ToString());
-            if(infoMixingMasternode.fInfoValid && infoMixingMasternode.vin.prevout == dsq.vin.prevout) {
+            if(infoMixingMasternode.fInfoValid && infoMixingMasternode.outpoint == dsq.masternodeOutpoint) {
                 dsq.fTried = true;
             }
             vecDarksendQueue.push_back(dsq);
@@ -490,7 +490,7 @@ bool CPrivateSendClient::SignFinalTransaction(const CTransaction& finalTransacti
     sort(finalMutableTransaction.vout.begin(), finalMutableTransaction.vout.end(), CompareOutputBIP69());
 
     if(finalMutableTransaction.GetHash() != finalTransactionNew.GetHash()) {
-        LogPrintf("CPrivateSendClient::SignFinalTransaction -- WARNING! Masternode %s is not BIP69 compliant!\n", infoMixingMasternode.vin.prevout.ToStringShort());
+        LogPrintf("CPrivateSendClient::SignFinalTransaction -- WARNING! Masternode %s is not BIP69 compliant!\n", infoMixingMasternode.outpoint.ToStringShort());
         UnlockCoins();
         keyHolderStorage.ReturnAll();
         SetNull();
@@ -837,8 +837,8 @@ bool CPrivateSendClient::JoinExistingQueue(CAmount nBalanceNeedsAnonymized, CCon
 
         masternode_info_t infoMn;
 
-        if(!mnodeman.GetMasternodeInfo(dsq.vin.prevout, infoMn)) {
-            LogPrintf("CPrivateSendClient::JoinExistingQueue -- dsq masternode is not in masternode list, masternode=%s\n", dsq.vin.prevout.ToStringShort());
+        if(!mnodeman.GetMasternodeInfo(dsq.masternodeOutpoint, infoMn)) {
+            LogPrintf("CPrivateSendClient::JoinExistingQueue -- dsq masternode is not in masternode list, masternode=%s\n", dsq.masternodeOutpoint.ToStringShort());
             continue;
         }
 
@@ -846,7 +846,7 @@ bool CPrivateSendClient::JoinExistingQueue(CAmount nBalanceNeedsAnonymized, CCon
 
         // skip next mn payments winners
         if (mnpayments.IsScheduled(infoMn, 0)) {
-            LogPrintf("CPrivateSendClient::JoinExistingQueue -- skipping winner, masternode=%s\n", infoMn.vin.prevout.ToStringShort());
+            LogPrintf("CPrivateSendClient::JoinExistingQueue -- skipping winner, masternode=%s\n", infoMn.outpoint.ToStringShort());
             continue;
         }
 
@@ -872,7 +872,7 @@ bool CPrivateSendClient::JoinExistingQueue(CAmount nBalanceNeedsAnonymized, CCon
             continue;
         }
 
-        vecMasternodesUsed.push_back(dsq.vin.prevout);
+        vecMasternodesUsed.push_back(dsq.masternodeOutpoint);
 
         if (connman.IsMasternodeOrDisconnectRequested(infoMn.addr)) {
             LogPrintf("CPrivateSendClient::JoinExistingQueue -- skipping masternode connection, addr=%s\n", infoMn.addr.ToString());
@@ -922,17 +922,17 @@ bool CPrivateSendClient::StartNewQueue(CAmount nValueMin, CAmount nBalanceNeedsA
 
         // skip next mn payments winners
         if (mnpayments.IsScheduled(infoMn, 0)) {
-            LogPrintf("CPrivateSendClient::StartNewQueue -- skipping winner, masternode=%s\n", infoMn.vin.prevout.ToStringShort());
+            LogPrintf("CPrivateSendClient::StartNewQueue -- skipping winner, masternode=%s\n", infoMn.outpoint.ToStringShort());
             nTries++;
             continue;
         }
 
-        vecMasternodesUsed.push_back(infoMn.vin.prevout);
+        vecMasternodesUsed.push_back(infoMn.outpoint);
 
         if(infoMn.nLastDsq != 0 && infoMn.nLastDsq + nMnCountEnabled/5 > mnodeman.nDsqCount) {
             LogPrintf("CPrivateSendClient::StartNewQueue -- Too early to mix on this masternode!"
                         " masternode=%s  addr=%s  nLastDsq=%d  CountEnabled/5=%d  nDsqCount=%d\n",
-                        infoMn.vin.prevout.ToStringShort(), infoMn.addr.ToString(), infoMn.nLastDsq,
+                        infoMn.outpoint.ToStringShort(), infoMn.addr.ToString(), infoMn.nLastDsq,
                         nMnCountEnabled/5, mnodeman.nDsqCount);
             nTries++;
             continue;
@@ -1182,7 +1182,7 @@ bool CPrivateSendClient::MakeCollateralAmounts(const CompactTallyItem& tallyItem
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     // denominated input is always a single one, so we can check its amount directly and return early
-    if(!fTryDenominated && tallyItem.vecTxIn.size() == 1 && CPrivateSend::IsDenominatedAmount(tallyItem.nAmount))
+    if(!fTryDenominated && tallyItem.vecOutPoints.size() == 1 && CPrivateSend::IsDenominatedAmount(tallyItem.nAmount))
         return false;
 
     CWalletTx wtx;
@@ -1209,8 +1209,8 @@ bool CPrivateSendClient::MakeCollateralAmounts(const CompactTallyItem& tallyItem
     coinControl.fAllowWatchOnly = false;
     // send change to the same address so that we were able create more denoms out of it later
     coinControl.destChange = tallyItem.txdest;
-    for (const auto& txin : tallyItem.vecTxIn)
-        coinControl.Select(txin.prevout);
+    for (const auto& outpoint : tallyItem.vecOutPoints)
+        coinControl.Select(outpoint);
 
     bool fSuccess = pwalletMain->CreateTransaction(vecSend, wtx, reservekeyChange,
             nFeeRet, nChangePosRet, strFail, &coinControl, true, ONLY_NONDENOMINATED);
@@ -1345,8 +1345,8 @@ bool CPrivateSendClient::CreateDenominated(const CompactTallyItem& tallyItem, bo
     coinControl.fAllowWatchOnly = false;
     // send change to the same address so that we were able create more denoms out of it later
     coinControl.destChange = tallyItem.txdest;
-    for (const auto& txin : tallyItem.vecTxIn)
-        coinControl.Select(txin.prevout);
+    for (const auto& outpoint : tallyItem.vecOutPoints)
+        coinControl.Select(outpoint);
 
     CWalletTx wtx;
     CAmount nFeeRet = 0;

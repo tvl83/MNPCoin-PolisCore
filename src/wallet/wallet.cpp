@@ -3120,7 +3120,7 @@ bool CWallet::SelectCoinsGrouppedByAddresses(std::vector<CompactTallyItem>& vecT
             CompactTallyItem& item = mapTally[txdest];
             item.txdest = txdest;
             item.nAmount += wtx.tx->vout[i].nValue;
-            item.vecTxIn.push_back(CTxIn(outpoint.hash, i));
+            item.vecOutPoints.emplace_back(outpoint.hash, i);
         }
     }
 
@@ -3227,7 +3227,7 @@ bool CWallet::GetMasternodeOutpointAndKeys(COutPoint& outpointRet, CPubKey& pubK
     if(strTxHash.empty()) // No output specified, select the first one
         return GetOutpointAndKeysFromOutput(vPossibleCoins[0], outpointRet, pubKeyRet, keyRet);
 
-    // Find specific vin
+    // Find specific outpoint
     uint256 txHash = uint256S(strTxHash);
     int nOutputIndex = atoi(strOutputIndex);
 
