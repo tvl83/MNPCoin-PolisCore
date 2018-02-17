@@ -264,9 +264,9 @@ public:
         nDelayGetHeadersTime = 24 * 60 * 60;
         nPruneAfterHeight = 1000;
       
-        genesis = CreateGenesisBlock(1518283816, 2312372, 0x1e0ffff0, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1518833511, 113300, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x00000dfd7b3052bd8489814d6dca74188a244ce83e40c71dca9efea02c73074d"));
+        assert(consensus.hashGenesisBlock == uint256S("0x0000009038aeaea86784e959b0b4002793adad39fc9d6f8789ed2edf99ad5c8b"));
         assert(genesis.hashMerkleRoot == uint256S("0x5dc9bcf5d1e4802dad0045a88849e3ad97d07a5b8aaee1114ed5ae03b98c4bfc"));
 
 
