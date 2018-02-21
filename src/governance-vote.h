@@ -101,9 +101,13 @@ private:
     int64_t nTime;
     std::vector<unsigned char> vchSig;
 
+    /** Memory only. */
+    const uint256 hash;
+    void UpdateHash() const;
+
 public:
     CGovernanceVote();
-    CGovernanceVote(COutPoint outpointMasternodeIn, uint256 nParentHashIn, vote_signal_enum_t eVoteSignalIn, vote_outcome_enum_t eVoteOutcomeIn);
+    CGovernanceVote(const COutPoint& outpointMasternodeIn, const uint256& nParentHashIn, vote_signal_enum_t eVoteSignalIn, vote_outcome_enum_t eVoteOutcomeIn);
 
     bool IsValid() const { return fValid; }
 
@@ -117,7 +121,7 @@ public:
 
     const uint256& GetParentHash() const { return nParentHash; }
 
-    void SetTime(int64_t nTimeIn) { nTime = nTimeIn; }
+    void SetTime(int64_t nTimeIn) { nTime = nTimeIn; UpdateHash(); }
 
     void SetSignature(const std::vector<unsigned char>& vchSigIn) { vchSig = vchSigIn; }
 
@@ -151,34 +155,6 @@ public:
         return ostr.str();
     }
 
-    /**
-    *   GetTypeHash()
-    *
-    *   GET HASH WITH DETERMINISTIC VALUE OF MASTERNODE-OUTPOINT/PARENT-HASH/VOTE-SIGNAL
-    *
-    *   This hash collides with previous masternode votes when they update their votes on governance objects.
-    *   With 12.1 there's various types of votes (funding, valid, delete, etc), so this is the deterministic hash
-    *   that will collide with the previous vote and allow the system to update.
-    *
-    *   --
-    *
-    *   We do not include an outcome, because that can change when a masternode updates their vote from yes to no
-    *   on funding a specific project for example.
-    *   We do not include a time because it will be updated each time the vote is updated, changing the hash
-    */
-    uint256 GetTypeHash() const
-    {
-        // CALCULATE HOW TO STORE VOTE IN governance.mapVotes
-
-        CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-        ss << masternodeOutpoint << uint8_t{} << 0xffffffff;
-        ss << nParentHash;
-        ss << nVoteSignal;
-        //  -- no outcome
-        //  -- timeless
-        return ss.GetHash();
-    }
-
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
@@ -205,6 +181,8 @@ public:
         if (!(s.GetType() & SER_GETHASH)) {
             READWRITE(vchSig);
         }
+        if (ser_action.ForRead())
+            UpdateHash();
     }
 
 };

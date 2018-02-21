@@ -33,7 +33,7 @@ CCriticalSection cs_mapMasternodePaymentVotes;
 *   - When non-superblocks are detected, the normal schedule should be maintained
 */
 
-bool IsBlockValueValid(const CBlock& block, int nBlockHeight, CAmount blockReward, std::string &strErrorRet)
+bool IsBlockValueValid(const CBlock& block, int nBlockHeight, CAmount blockReward, std::string& strErrorRet)
 {
     strErrorRet = "";
 
@@ -295,8 +295,11 @@ void CMasternodePayments::ProcessMessage(CNode* pfrom, const std::string& strCom
         // but this is a heavy one so it's better to finish sync first.
         if (!masternodeSync.IsSynced()) return;
 
-        int nCountNeeded;
-        vRecv >> nCountNeeded;
+        // DEPRECATED, should be removed on next protocol bump
+        if(pfrom->nVersion == 70208) {
+            int nCountNeeded;
+            vRecv >> nCountNeeded;
+        }
 
         if(netfulfilledman.HasFulfilledRequest(pfrom->addr, NetMsgType::MASTERNODEPAYMENTSYNC)) {
             // Asking for the payments list multiple times in a short period of time is no good
@@ -603,7 +606,7 @@ std::string CMasternodeBlockPayees::GetRequiredPaymentsString()
 {
     LOCK(cs_vecPayees);
 
-    std::string strRequiredPayments = "Unknown";
+    std::string strRequiredPayments = "";
 
     for (const auto& payee : vecPayees)
     {
@@ -611,12 +614,14 @@ std::string CMasternodeBlockPayees::GetRequiredPaymentsString()
         ExtractDestination(payee.GetPayee(), address1);
         CBitcoinAddress address2(address1);
 
-        if (strRequiredPayments != "Unknown") {
-            strRequiredPayments += ", " + address2.ToString() + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
-        } else {
-            strRequiredPayments = address2.ToString() + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
-        }
+        if (!strRequiredPayments.empty())
+            strRequiredPayments += ", ";
+
+        strRequiredPayments += strprintf("%s:%d", address2.ToString(), payee.GetVoteCount());
     }
+
+    if (strRequiredPayments.empty())
+        return "Unknown";
 
     return strRequiredPayments;
 }

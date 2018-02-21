@@ -90,12 +90,10 @@ bool CGovernanceManager::SerializeVoteForHash(uint256 nHash, CDataStream& ss)
         return false;
     }
 
-    CGovernanceVote vote;
-    if(!pGovobj->GetVoteFile().GetVote(nHash, vote)) {
+    if(!pGovobj->GetVoteFile().SerializeVoteToStream(nHash, ss)) {
         return false;
     }
 
-    ss << vote;
     return true;
 }
 
@@ -587,7 +585,7 @@ std::vector<CGovernanceVote> CGovernanceManager::GetCurrentVotes(const uint256& 
 
     CMasternode mn;
     std::map<COutPoint, CMasternode> mapMasternodes;
-    if(mnCollateralOutpointFilter == COutPoint()) {
+    if(mnCollateralOutpointFilter.IsNull()) {
         mapMasternodes = mnodeman.GetFullMasternodeMap();
     } else if (mnodeman.Get(mnCollateralOutpointFilter, mn)) {
         mapMasternodes[mnCollateralOutpointFilter] = mn;
