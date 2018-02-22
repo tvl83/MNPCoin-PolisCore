@@ -1,6 +1,6 @@
 
 ---
-name: "polis-linux-1.2.1"
+name: "polis-linux-1.2.2"
 enable_cache: true
 suites:
 - "trusty"
@@ -121,4 +121,3 @@ script: |
   mv ${OUTDIR}/${DISTNAME}-i686-*-debug.tar.gz ${OUTDIR}/${DISTNAME}-linux32-debug.tar.gz
   mv ${OUTDIR}/${DISTNAME}-x86_64-*.tar.gz ${OUTDIR}/${DISTNAME}-linux64.tar.gz
   mv ${OUTDIR}/${DISTNAME}-i686-*.tar.gz ${OUTDIR}/${DISTNAME}-linux32.tar.gz
-

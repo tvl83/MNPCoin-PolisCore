@@ -1,6 +1,6 @@
 
 
-Polis Core 1.2.1
+Polis Core 1.2.2
 =====================
 
 This is the official reference wallet for polis digital currency and comprises the backbone of the polis peer-to-peer network. You can [download polis Core](https://www.polis.org/downloads/) or [build it yourself](#building) using the guides below.
