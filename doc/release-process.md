@@ -89,7 +89,7 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
 ### Build and sign polis Core for Linux, Raspberry Pi, Windows, and OS X:
 
-        Linux
+	Linux
 
 	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-linux.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-linux.yml
