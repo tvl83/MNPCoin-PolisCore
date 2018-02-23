@@ -89,27 +89,27 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
 ### Build and sign polis Core for Linux, Raspberry Pi, Windows, and OS X:
 
-       #### Linux
+        Linux
 
 	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-linux.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-linux.yml
 	mv build/out/poliscore-*.tar.gz build/out/src/poliscore-*.tar.gz ../
 
-	#### Windows
+	Windows
 
 	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-win.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-win.yml
 	mv build/out/poliscore-*-win-unsigned.tar.gz inputs/poliscore-win-unsigned.tar.gz
 	mv build/out/poliscore-*.zip build/out/poliscore-*.exe ../
 
-	#### OSX
+	OSX
 
 	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	mv build/out/poliscore-*-osx-unsigned.tar.gz inputs/poliscore-osx-unsigned.tar.gz
 	mv build/out/poliscore-*.tar.gz build/out/poliscore-*.dmg ../
 	
-	#### RPi
+	RPi
 
 	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-rpi2.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-RPi2 --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-rpi2.yml
@@ -136,6 +136,8 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-linux ../polis/contrib/gitian-descriptors/gitian-linux.yml
 	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-unsigned ../polis/contrib/gitian-descriptors/gitian-win.yml
 	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-unsigned ../polis/contrib/gitian-descriptors/gitian-osx.yml
+	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-RPi2 ../polis/contrib/gitian-descriptors/gitian-rpi2.yml
+
 
 	popd
 
@@ -147,6 +149,7 @@ Commit your signature to gitian.sigs:
 	git add ${VERSION}-linux/${SIGNER}
 	git add ${VERSION}-win-unsigned/${SIGNER}
 	git add ${VERSION}-osx-unsigned/${SIGNER}
+	git add ${VERSION}-RPi2/${SIGNER}
 	git commit -a
 	git push  # Assuming you can push to the gitian.sigs tree
 	popd
