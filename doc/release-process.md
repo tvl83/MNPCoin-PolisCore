@@ -63,8 +63,9 @@ Check out the source code in the following directory hierarchy.
 	mkdir -p inputs
 	wget -P inputs https://bitcoincore.org/cfields/osslsigncode-Backports-to-1.7.1.patch
 	wget -P inputs http://downloads.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-1.7.1.tar.gz
+	wget -Oinputs/raspberrypi-tools.tar.gz https://github.com/raspberrypi/tools/archive/master.tar.gz
 
- Register and download the Apple SDK: see [OS X readme](README_osx.txt) for details.
+Register and download the Apple SDK: see [OS X readme](README_osx.txt) for details.
 
  https://developer.apple.com/devcenter/download.action?path=/Developer_Tools/xcode_6.1.1/xcode_6.1.1.dmg
 
@@ -86,21 +87,35 @@ NOTE: Offline builds must use the --url flag to ensure Gitian fetches only from 
 ```
 The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
-### Build and sign polis Core for Linux, Windows, and OS X:
+### Build and sign polis Core for Linux, Raspberry Pi, Windows, and OS X:
+
+       #### Linux
 
 	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-linux.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-linux.yml
 	mv build/out/poliscore-*.tar.gz build/out/src/poliscore-*.tar.gz ../
+
+	#### Windows
 
 	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-win.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-win.yml
 	mv build/out/poliscore-*-win-unsigned.tar.gz inputs/poliscore-win-unsigned.tar.gz
 	mv build/out/poliscore-*.zip build/out/poliscore-*.exe ../
 
+	#### OSX
+
 	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	mv build/out/poliscore-*-osx-unsigned.tar.gz inputs/poliscore-osx-unsigned.tar.gz
 	mv build/out/poliscore-*.tar.gz build/out/poliscore-*.dmg ../
+	
+	#### RPi
+
+	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-rpi2.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-RPi2 --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-rpi2.yml
+	mv build/out/poliscore-*.tar.gz build/out/src/poliscore-*.tar.gz ../
+
+
 
   Build output expected:
 
