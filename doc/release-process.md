@@ -99,8 +99,8 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
 	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-osx.yml
-	mv build/out/polis-*-osx-unsigned.tar.gz inputs/polis-osx-unsigned.tar.gz
-	mv build/out/polis-*.tar.gz build/out/polis-*.dmg ../
+	mv build/out/poliscore-*-osx-unsigned.tar.gz inputs/poliscore-osx-unsigned.tar.gz
+	mv build/out/poliscore-*.tar.gz build/out/poliscore-*.dmg ../
 
   Build output expected:
 
