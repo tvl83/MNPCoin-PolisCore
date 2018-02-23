@@ -670,15 +670,9 @@ void ReadConfigFile(const std::string& confPath)
 
         for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it)
         {
-<<<<<<< HEAD
-            // Don't overwrite existing settings so command line settings override polis.conf
-            string strKey = string("-") + it->string_key;
-            string strValue = it->value[0];
-=======
             // Don't overwrite existing settings so command line settings override dash.conf
             std::string strKey = std::string("-") + it->string_key;
             std::string strValue = it->value[0];
->>>>>>> upstream/develop
             InterpretNegativeSetting(strKey, strValue);
             if (mapArgs.count(strKey) == 0)
                 mapArgs[strKey] = strValue;
@@ -1023,4 +1017,3 @@ std::string SafeIntVersionToString(uint32_t nVersion)
         return "invalid_version";
     }
 }
-
