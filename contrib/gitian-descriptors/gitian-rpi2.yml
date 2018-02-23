@@ -2,11 +2,11 @@
 name: "polis-raspberry-1.2.2"
 enable_cache: true
 suites:
-- "precise"
+- "trusty"
 architectures:
 - "amd64"
 packages:
-- "g++-multilib"
+- "g++-arm-linux-gnueabihf"
 - "git-core"
 - "pkg-config"
 - "autoconf2.13"
