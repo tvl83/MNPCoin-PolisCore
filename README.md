@@ -6,9 +6,9 @@ POLIS Core integration/staging tree
 
 http://www.polispay.org
 
-Copyright (c) 2009-2015 Bitcoin Developers
-Copyright (c) 2014-2017 Dash Developers
-Copyright (c) 2017-2018 Polis Developers
+- Copyright (c) 2009-2015 Bitcoin Developers
+- Copyright (c) 2014-2017 Dash Developers
+- Copyright (c) 2017-2018 Polis Developers
 
 What is Polis?
 ----------------
