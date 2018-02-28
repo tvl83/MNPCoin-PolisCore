@@ -84,10 +84,12 @@ Ensure your gitian.sigs are up-to-date if you wish to gverify your builds agains
 
 Ensure gitian-builder is up-to-date:
 
-    pushd ./gitian-builder
-    git pull
-    popd
+	mkdir -p inputs
+	wget -P inputs https://bitcoincore.org/cfields/osslsigncode-Backports-to-1.7.1.patch
+	wget -P inputs http://downloads.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-1.7.1.tar.gz
+	wget -Oinputs/raspberrypi-tools.tar.gz https://github.com/raspberrypi/tools/archive/master.tar.gz
 
+Register and download the Apple SDK: see [OS X readme](README_osx.txt) for details.
 
 ### Fetch and create inputs: (first time, or when dependency versions change)
 
@@ -118,26 +120,36 @@ NOTE: Offline builds must use the --url flag to ensure Gitian fetches only from 
 
 The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
-### Build and sign polis Core for Linux, Windows, and OS X:
+### Build and sign polis Core for Linux, Raspberry Pi, Windows, and OS X:
+
+	Linux
+
+	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-linux.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-linux.yml
+	mv build/out/poliscore-*.tar.gz build/out/src/poliscore-*.tar.gz ../
+
+	Windows
+
+	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-win.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-win.yml
+	mv build/out/poliscore-*-win-unsigned.tar.gz inputs/poliscore-win-unsigned.tar.gz
+	mv build/out/poliscore-*.zip build/out/poliscore-*.exe ../
+
+	OSX
+
+	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-osx.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-osx.yml
+	mv build/out/poliscore-*-osx-unsigned.tar.gz inputs/poliscore-osx-unsigned.tar.gz
+	mv build/out/poliscore-*.tar.gz build/out/poliscore-*.dmg ../
+	
+	RPi
+
+	./bin/gbuild --num-make 2 --memory 7168 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-rpi2.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-RPi2 --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-rpi2.yml
+	mv build/out/poliscore-*.tar.gz build/out/src/poliscore-*.tar.gz ../
 
 
-    pushd ./gitian-builder
-    ./bin/gbuild --memory 3000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-linux.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-linux.yml
-    mv build/out/polis-*.tar.gz build/out/src/polis-*.tar.gz ../
 
-    ./bin/gbuild --memory 3000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-win.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-win.yml
-    mv build/out/polis-*-win-unsigned.tar.gz inputs/polis-win-unsigned.tar.gz
-    mv build/out/polis-*.zip build/out/polis-*.exe ../
-
-    ./bin/gbuild --memory 3000 --commit polis=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-osx.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-osx.yml
-    mv build/out/polis-*-osx-unsigned.tar.gz inputs/polis-osx-unsigned.tar.gz
-    mv build/out/polis-*.tar.gz build/out/polis-*.dmg ../
-    popd
-
-Build output expected:
 
 
   1. source tarball (`polis-${VERSION}.tar.gz`)
@@ -156,6 +168,13 @@ Add other gitian builders keys to your gpg keyring, and/or refresh keys.
 
 Verify the signatures
 
+	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-linux ../polis/contrib/gitian-descriptors/gitian-linux.yml
+	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-unsigned ../polis/contrib/gitian-descriptors/gitian-win.yml
+	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-unsigned ../polis/contrib/gitian-descriptors/gitian-osx.yml
+	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-RPi2 ../polis/contrib/gitian-descriptors/gitian-rpi2.yml
+
+
+
     pushd ./gitian-builder
     ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-linux ../polis/contrib/gitian-descriptors/gitian-linux.yml
     ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-unsigned ../polis/contrib/gitian-descriptors/gitian-win.yml
@@ -166,6 +185,38 @@ Verify the signatures
 
 Commit your signature to gitian.sigs:
 
+
+	pushd gitian.sigs
+	git add ${VERSION}-linux/${SIGNER}
+	git add ${VERSION}-win-unsigned/${SIGNER}
+	git add ${VERSION}-osx-unsigned/${SIGNER}
+	git add ${VERSION}-RPi2/${SIGNER}
+	git commit -a
+	git push  # Assuming you can push to the gitian.sigs tree
+	popd
+
+  Wait for Windows/OS X detached signatures:
+	Once the Windows/OS X builds each have 3 matching signatures, they will be signed with their respective release keys.
+	Detached signatures will then be committed to the [polis-detached-sigs](https://github.com/polispay/polis-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
+
+  Create (and optionally verify) the signed OS X binary:
+
+	pushd ./gitian-builder
+	./bin/gbuild -i --commit signature=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-osx-signer.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-osx-signer.yml
+	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-signed ../polis/contrib/gitian-descriptors/gitian-osx-signer.yml
+	mv build/out/polis-osx-signed.dmg ../polis-${VERSION}-osx.dmg
+	popd
+
+  Create (and optionally verify) the signed Windows binaries:
+
+	pushd ./gitian-builder
+	./bin/gbuild -i --commit signature=v${VERSION} ../polis/contrib/gitian-descriptors/gitian-win-signer.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-win-signer.yml
+	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-signed ../polis/contrib/gitian-descriptors/gitian-win-signer.yml
+	mv build/out/polis-*win64-setup.exe ../polis-${VERSION}-win64-setup.exe
+	mv build/out/polis-*win32-setup.exe ../polis-${VERSION}-win32-setup.exe
+	popd
 
     pushd gitian.sigs
     git add ${VERSION}-linux/${SIGNER}

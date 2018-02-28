@@ -1,10 +1,9 @@
 
 dnl require autoconf 2.60 (AS_ECHO/AS_ECHO_N)
 AC_PREREQ([2.60])
-<<<<<<< HEAD
 define(_CLIENT_VERSION_MAJOR, 1)
 define(_CLIENT_VERSION_MINOR, 2)
-define(_CLIENT_VERSION_REVISION, 1)
+define(_CLIENT_VERSION_REVISION, 2)
 define(_CLIENT_VERSION_BUILD, 0)
 define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2017)
@@ -16,10 +15,10 @@ AC_CONFIG_HEADERS([src/config/polis-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
 
-BITCOIN_DAEMON_NAME=dashd
-BITCOIN_GUI_NAME=dash-qt
-BITCOIN_CLI_NAME=dash-cli
-BITCOIN_TX_NAME=dash-tx
+BITCOIN_DAEMON_NAME=d
+BITCOIN_GUI_NAME=polis-qt
+BITCOIN_CLI_NAME=polis-cli
+BITCOIN_TX_NAME=polis-tx
 
 AC_CANONICAL_HOST
 
@@ -1170,7 +1169,7 @@ case ${OS} in
    ;;
 esac
 
-echo 
+echo
 echo "Options used to compile and link:"
 echo "  with wallet   = $enable_wallet"
 echo "  with gui / qt = $bitcoin_enable_qt"
@@ -1184,7 +1183,7 @@ echo "  with bench    = $use_bench"
 echo "  with upnp     = $use_upnp"
 echo "  debug enabled = $enable_debug"
 echo "  werror        = $enable_werror"
-echo 
+echo
 echo "  target os     = $TARGET_OS"
 echo "  build os      = $BUILD_OS"
 echo
@@ -1194,4 +1193,4 @@ echo "  CPPFLAGS      = $CPPFLAGS"
 echo "  CXX           = $CXX"
 echo "  CXXFLAGS      = $CXXFLAGS"
 echo "  LDFLAGS       = $LDFLAGS"
-echo 
+echo
