@@ -32,7 +32,7 @@ env:
     - SDK_URL=https://bitcoincore.org/depends-sources/sdks
     - PYTHON_DEBUG=1
     - WINEDEBUG=fixme-all
-    - DOCKER_BUILD=false
+    - DOCKER_BUILD=true
 
   matrix:
 # ARM
