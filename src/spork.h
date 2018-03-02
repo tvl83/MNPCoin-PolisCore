@@ -8,6 +8,7 @@
 #include "hash.h"
 #include "net.h"
 #include "utilstrencodings.h"
+#include "key.h"
 
 class CSporkMessage;
 class CSporkManager;
@@ -88,8 +89,8 @@ public:
     uint256 GetHash() const;
     uint256 GetSignatureHash() const;
 
-    bool Sign(const std::string& strSignKey);
-    bool CheckSignature() const;
+    bool Sign(const CKey& key);
+    bool CheckSignature(const CKeyID& pubKeyId) const;
     void Relay(CConnman& connman);
 };
 
@@ -98,8 +99,10 @@ class CSporkManager
 {
 private:
     std::vector<unsigned char> vchSig;
-    std::string strMasterPrivKey;
     std::map<int, CSporkMessage> mapSporksActive;
+
+    CKeyID sporkPubKeyID;
+    CKey sporkPrivKey;
 
 public:
 
@@ -114,6 +117,7 @@ public:
     int GetSporkIDByName(const std::string& strName);
     std::string GetSporkNameByID(int nSporkID);
 
+    bool SetSporkAddress(const std::string& strAddress);
     bool SetPrivKey(const std::string& strPrivKey);
 };
 
