@@ -129,4 +129,7 @@ polis-qt
 make
 
 /docker/bin
-contrib/debian/dash-qt.desktop
+
+# CLion
+.idea
+cmake-build-debug
