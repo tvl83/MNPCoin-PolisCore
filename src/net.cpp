@@ -303,7 +303,7 @@ CNode* CConnman::FindNode(const CNetAddr& ip)
     BOOST_FOREACH(CNode* pnode, vNodes)
         if ((CNetAddr)pnode->addr == ip)
             return (pnode);
-    return NULL;
+    return nullptr;
 }
 
 CNode* CConnman::FindNode(const CSubNet& subNet)
@@ -312,7 +312,7 @@ CNode* CConnman::FindNode(const CSubNet& subNet)
     BOOST_FOREACH(CNode* pnode, vNodes)
     if (subNet.Match((CNetAddr)pnode->addr))
         return (pnode);
-    return NULL;
+    return nullptr;
 }
 
 CNode* CConnman::FindNode(const std::string& addrName)
@@ -323,7 +323,7 @@ CNode* CConnman::FindNode(const std::string& addrName)
             return (pnode);
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 CNode* CConnman::FindNode(const CService& addr)
@@ -332,7 +332,7 @@ CNode* CConnman::FindNode(const CService& addr)
     BOOST_FOREACH(CNode* pnode, vNodes)
         if((CService)pnode->addr == addr)
             return (pnode);
-    return NULL;
+    return nullptr;
 }
 
 bool CConnman::CheckIncomingNonce(uint64_t nonce)
@@ -347,16 +347,16 @@ bool CConnman::CheckIncomingNonce(uint64_t nonce)
 
 CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCountFailure)
 {
-    if (pszDest == NULL) {
+    if (pszDest == nullptr) {
         if (IsLocal(addrConnect))
-            return NULL;
+            return nullptr;
 
         // Look for an existing connection
         CNode* pnode = FindNode((CService)addrConnect);
         if (pnode)
         {
             LogPrintf("Failed to open new connection, already connected\n");
-            return NULL;
+            return nullptr;
         }
     }
 
@@ -374,7 +374,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
         if (!IsSelectableSocket(hSocket)) {
             LogPrintf("Cannot create connection: non-selectable socket created (fd >= FD_SETSIZE ?)\n");
             CloseSocket(hSocket);
-            return NULL;
+            return nullptr;
         }
 
         if (pszDest && addrConnect.IsValid()) {
@@ -389,7 +389,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
                 pnode->MaybeSetAddrName(std::string(pszDest));
                 CloseSocket(hSocket);
                 LogPrintf("Failed to open new connection, already connected\n");
-                return NULL;
+                return nullptr;
             }
         }
 
@@ -411,7 +411,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
         addrman.Attempt(addrConnect, fCountFailure);
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void CConnman::DumpBanlist()
@@ -955,7 +955,7 @@ bool CConnman::AttemptToEvictConnection()
             NodeEvictionCandidate candidate = {node->id, node->nTimeConnected, node->nMinPingUsecTime,
                                                node->nLastBlockTime, node->nLastTXTime,
                                                (node->nServices & nRelevantServices) == nRelevantServices,
-                                               node->fRelayTxes, node->pfilter != NULL, node->nKeyedNetGroup};
+                                               node->fRelayTxes, node->pfilter != nullptr, node->nKeyedNetGroup};
             vEvictionCandidates.push_back(candidate);
         }
     }
@@ -1519,7 +1519,7 @@ void ThreadMapPort()
 
 void MapPort(bool fUseUPnP)
 {
-    static boost::thread* upnp_thread = NULL;
+    static boost::thread* upnp_thread = nullptr;
 
     if (fUseUPnP)
     {
@@ -1534,7 +1534,7 @@ void MapPort(bool fUseUPnP)
         upnp_thread->interrupt();
         upnp_thread->join();
         delete upnp_thread;
-        upnp_thread = NULL;
+        upnp_thread = nullptr;
     }
 }
 
@@ -1685,7 +1685,7 @@ void CConnman::ThreadOpenConnections()
             BOOST_FOREACH(const std::string& strAddr, mapMultiArgs.at("-connect"))
             {
                 CAddress addr(CService(), NODE_NONE);
-                OpenNetworkConnection(addr, false, NULL, strAddr.c_str());
+                OpenNetworkConnection(addr, false, nullptr, strAddr.c_str());
                 for (int i = 0; i < 10 && i < nLoop; i++)
                 {
                     if (!interruptNet.sleep_for(std::chrono::milliseconds(500)))
@@ -1842,7 +1842,7 @@ void CConnman::ThreadOpenConnections()
                 LogPrint("net", "Making feeler connection to %s\n", addrConnect.ToString());
             }
 
-            OpenNetworkConnection(addrConnect, (int)setConnected.size() >= std::min(nMaxConnections - 1, 2), &grant, NULL, false, fFeeler);
+            OpenNetworkConnection(addrConnect, (int)setConnected.size() >= std::min(nMaxConnections - 1, 2), &grant, nullptr, false, fFeeler);
         }
     }
 }
@@ -2014,7 +2014,7 @@ bool CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFai
 }
 
 bool CConnman::OpenMasternodeConnection(const CAddress &addrConnect) {
-    return OpenNetworkConnection(addrConnect, false, NULL, NULL, false, false, false, true);
+    return OpenNetworkConnection(addrConnect, false, nullptr, nullptr, false, false, false, true);
 }
 
 void CConnman::ThreadMessageHandler()
@@ -2184,9 +2184,9 @@ void Discover(boost::thread_group& threadGroup)
     struct ifaddrs* myaddrs;
     if (getifaddrs(&myaddrs) == 0)
     {
-        for (struct ifaddrs* ifa = myaddrs; ifa != NULL; ifa = ifa->ifa_next)
+        for (struct ifaddrs* ifa = myaddrs; ifa != nullptr; ifa = ifa->ifa_next)
         {
-            if (ifa->ifa_addr == NULL) continue;
+            if (ifa->ifa_addr == nullptr) continue;
             if ((ifa->ifa_flags & IFF_UP) == 0) continue;
             if (strcmp(ifa->ifa_name, "lo") == 0) continue;
             if (strcmp(ifa->ifa_name, "lo0") == 0) continue;
@@ -2239,14 +2239,14 @@ CConnman::CConnman(uint64_t nSeed0In, uint64_t nSeed1In) : nSeed0(nSeed0In), nSe
     nLastNodeId = 0;
     nSendBufferMaxSize = 0;
     nReceiveFloodSize = 0;
-    semOutbound = NULL;
-    semAddnode = NULL;
-    semMasternodeOutbound = NULL;
+    semOutbound = nullptr;
+    semAddnode = nullptr;
+    semMasternodeOutbound = nullptr;
     nMaxConnections = 0;
     nMaxOutbound = 0;
     nMaxAddnode = 0;
     nBestHeight = 0;
-    clientInterface = NULL;
+    clientInterface = nullptr;
     flagInterruptMsgProc = false;
 }
 
@@ -2315,16 +2315,16 @@ bool CConnman::Start(CScheduler& scheduler, std::string& strNodeError, Options c
 
     fAddressesInitialized = true;
 
-    if (semOutbound == NULL) {
+    if (semOutbound == nullptr) {
         // initialize semaphore
         semOutbound = new CSemaphore(std::min((nMaxOutbound + nMaxFeeler), nMaxConnections));
     }
-    if (semAddnode == NULL) {
+    if (semAddnode == nullptr) {
         // initialize semaphore
         semAddnode = new CSemaphore(nMaxAddnode);
     }
 
-    if (semMasternodeOutbound == NULL) {
+    if (semMasternodeOutbound == nullptr) {
         // initialize semaphore
         semMasternodeOutbound = new CSemaphore(MAX_OUTBOUND_MASTERNODE_CONNECTIONS);
     }
@@ -2459,11 +2459,11 @@ void CConnman::Stop()
     vNodesDisconnected.clear();
     vhListenSocket.clear();
     delete semOutbound;
-    semOutbound = NULL;
+    semOutbound = nullptr;
     delete semAddnode;
-    semAddnode = NULL;
+    semAddnode = nullptr;
     delete semMasternodeOutbound;
-    semMasternodeOutbound = NULL;
+    semMasternodeOutbound = nullptr;
 }
 
 void CConnman::DeleteNode(CNode* pnode)

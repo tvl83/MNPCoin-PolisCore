@@ -95,7 +95,7 @@ std::string ScriptToAsmStr(const CScript& script, const bool fAttemptSighashDeco
                     // this won't decode correctly formatted public keys in Pubkey or Multisig scripts due to
                     // the restrictions on the pubkey formats (see IsCompressedOrUncompressedPubKey) being incongruous with the
                     // checks in CheckSignatureEncoding.
-                    if (CheckSignatureEncoding(vch, SCRIPT_VERIFY_STRICTENC, NULL)) {
+                    if (CheckSignatureEncoding(vch, SCRIPT_VERIFY_STRICTENC, nullptr)) {
                         const unsigned char chSigHashType = vch.back();
                         if (mapSigHashTypes.count(chSigHashType)) {
                             strSigHashDecode = "[" + mapSigHashTypes.find(chSigHashType)->second + "]";
@@ -157,14 +157,22 @@ void TxToUniv(const CTransaction& tx, const uint256& hashBlock, UniValue& entry)
         UniValue in(UniValue::VOBJ);
         if (tx.IsCoinBase())
             in.pushKV("coinbase", HexStr(txin.scriptSig.begin(), txin.scriptSig.end()));
-        else {
-            in.pushKV("txid", txin.prevout.hash.GetHex());
-            in.pushKV("vout", (int64_t)txin.prevout.n);
-            UniValue o(UniValue::VOBJ);
-            o.pushKV("asm", ScriptToAsmStr(txin.scriptSig, true));
-            o.pushKV("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end()));
-            in.pushKV("scriptSig", o);
-        }
+            else {
+                in.pushKV("txid", txin.prevout.hash.GetHex());
+                in.pushKV("vout", (int64_t)txin.prevout.n);
+                UniValue o(UniValue::VOBJ);
+                o.pushKV("asm", ScriptToAsmStr(txin.scriptSig, true));
+                o.pushKV("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end()));
+                in.pushKV("scriptSig", o);
+                if (!tx.vin[i].scriptWitness.IsNull()) {
+                    UniValue txinwitness(UniValue::VARR);
+                    for (const auto& item : tx.vin[i].scriptWitness.stack) {
+                        txinwitness.push_back(HexStr(item.begin(), item.end()));
+                    }
+                    in.pushKV("txinwitness", txinwitness);
+                }
+            }
+
         in.pushKV("sequence", (int64_t)txin.nSequence);
         vin.push_back(in);
     }

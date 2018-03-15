@@ -28,7 +28,7 @@ namespace Checkpoints {
                 return t->second;
 
         }
-        return NULL;
+        return nullptr;
     }
 
 } // namespace Checkpoints
