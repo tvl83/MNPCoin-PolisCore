@@ -235,7 +235,6 @@ bool BlockAssembler::TestPackageTransactions(const CTxMemPool::setEntries& packa
     BOOST_FOREACH (const CTxMemPool::txiter it, package) {
         if (!IsFinalTx(it->GetTx(), nHeight, nLockTimeCutoff))
             return false;
-            if (!fIncludeWitness && it->GetTx().HasWitness())
     }
     return true;
 }
@@ -542,8 +541,7 @@ void BlockAssembler::addPriorityTxs()
             assert(false); // shouldn't happen for priority txs
             continue;
         }
-        if (!fIncludeWitness && iter->GetTx().HasWitness())
-                   continue;
+
         // If tx is dependent on other mempool txs which haven't yet been included
         // then put it in the waitSet
         if (isStillDependent(iter)) {

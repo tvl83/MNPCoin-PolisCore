@@ -25,7 +25,7 @@ WalletTestingSetup::~WalletTestingSetup()
 {
     UnregisterValidationInterface(pwalletMain);
     delete pwalletMain;
-    pwalletMain = nullptr;
+    pwalletMain = NULL;
 
     bitdb.Flush(true);
     bitdb.Reset();

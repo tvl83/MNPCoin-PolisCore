@@ -107,7 +107,7 @@ static void potential_deadlock_detected(const std::pair<void*, void*>& mismatch,
 
 static void push_lock(void* c, const CLockLocation& locklocation, bool fTry)
 {
-    if (lockstack.get() == nullptr)
+    if (lockstack.get() == NULL)
         lockstack.reset(new LockStack);
 
     boost::unique_lock<boost::mutex> lock(lockdata.dd_mutex);

@@ -62,7 +62,7 @@ bool CGovernanceManager::HaveVoteForHash(uint256 nHash)
 {
     LOCK(cs);
 
-    CGovernanceObject* pGovobj = nullptr;
+    CGovernanceObject* pGovobj = NULL;
     if(!cmapVoteToObject.Get(nHash,pGovobj)) {
         return false;
     }
@@ -83,7 +83,7 @@ bool CGovernanceManager::SerializeVoteForHash(uint256 nHash, CDataStream& ss)
 {
     LOCK(cs);
 
-    CGovernanceObject* pGovobj = nullptr;
+    CGovernanceObject* pGovobj = NULL;
     if(!cmapVoteToObject.Get(nHash,pGovobj)) {
         return false;
     }
@@ -297,7 +297,7 @@ void CGovernanceManager::CheckOrphanVotes(CGovernanceObject& govobj, CGovernance
         if(pairVote.second < nNow) {
             fRemove = true;
         }
-        else if(govobj.ProcessVote(nullptr, vote, exception, connman)) {
+        else if(govobj.ProcessVote(NULL, vote, exception, connman)) {
             vote.Relay(connman);
             fRemove = true;
         }
@@ -353,7 +353,7 @@ void CGovernanceManager::AddGovernanceObject(CGovernanceObject& govobj, CConnman
         DBG( std::cout << "CGovernanceManager::AddGovernanceObject After AddNewTrigger" << std::endl; );
     }
 
-    LogPrintf("CGovernanceManager::AddGovernanceObject -- %s new, received from %s\n", strHash, pfrom? pfrom->GetAddrName() : "nullptr");
+    LogPrintf("CGovernanceManager::AddGovernanceObject -- %s new, received from %s\n", strHash, pfrom? pfrom->GetAddrName() : "NULL");
     govobj.Relay(connman);
 
     // Update the rate buffer
@@ -480,7 +480,7 @@ CGovernanceObject *CGovernanceManager::FindGovernanceObject(const uint256& nHash
     if(mapObjects.count(nHash))
         return &mapObjects[nHash];
 
-    return nullptr;
+    return NULL;
 }
 
 std::vector<CGovernanceVote> CGovernanceManager::GetMatchingVotes(const uint256& nParentHash)
@@ -625,7 +625,7 @@ bool CGovernanceManager::ConfirmInventoryRequest(const CInv& inv)
     }
 
 
-    hash_s_t* setHash = nullptr;
+    hash_s_t* setHash = NULL;
     switch(inv.type) {
     case MSG_GOVERNANCE_OBJECT:
         setHash = &setRequestedObjects;

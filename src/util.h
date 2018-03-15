@@ -254,7 +254,7 @@ template <typename Callable> void TraceThread(const char* name,  Callable func)
         throw;
     }
     catch (...) {
-        PrintExceptionContinue(nullptr, name);
+        PrintExceptionContinue(NULL, name);
         throw;
     }
 }

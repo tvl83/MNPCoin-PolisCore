@@ -712,7 +712,7 @@ UniValue gobject(const JSONRPCRequest& request)
         // FIND THE GOVERNANCE OBJECT THE USER IS LOOKING FOR
         CGovernanceObject* pGovObj = governance.FindGovernanceObject(hash);
 
-        if(pGovObj == nullptr)
+        if(pGovObj == NULL)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Unknown governance object");
 
         // REPORT BASIC OBJECT STATS
@@ -792,7 +792,7 @@ UniValue gobject(const JSONRPCRequest& request)
 
         CGovernanceObject* pGovObj = governance.FindGovernanceObject(hash);
 
-        if(pGovObj == nullptr) {
+        if(pGovObj == NULL) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Unknown governance-hash");
         }
 
@@ -835,7 +835,7 @@ UniValue gobject(const JSONRPCRequest& request)
 
         CGovernanceObject* pGovObj = governance.FindGovernanceObject(hash);
 
-        if(pGovObj == nullptr) {
+        if(pGovObj == NULL) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Unknown governance-hash");
         }
 

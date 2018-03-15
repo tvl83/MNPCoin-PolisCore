@@ -435,7 +435,7 @@ public:
         clear();
         if (!is_direct()) {
             free(_union.indirect);
-            _union.indirect = nullptr;
+            _union.indirect = NULL;
         }
     }
 

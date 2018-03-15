@@ -92,7 +92,7 @@ static leveldb::Options GetOptions(size_t nCacheSize)
 
 CDBWrapper::CDBWrapper(const boost::filesystem::path& path, size_t nCacheSize, bool fMemory, bool fWipe, bool obfuscate)
 {
-    penv = nullptr;
+    penv = NULL;
     readoptions.verify_checksums = true;
     iteroptions.verify_checksums = true;
     iteroptions.fill_cache = false;
@@ -144,15 +144,15 @@ CDBWrapper::CDBWrapper(const boost::filesystem::path& path, size_t nCacheSize, b
 CDBWrapper::~CDBWrapper()
 {
     delete pdb;
-    pdb = nullptr;
+    pdb = NULL;
     delete options.filter_policy;
-    options.filter_policy = nullptr;
+    options.filter_policy = NULL;
     delete options.info_log;
-    options.info_log = nullptr;
+    options.info_log = NULL;
     delete options.block_cache;
-    options.block_cache = nullptr;
+    options.block_cache = NULL;
     delete penv;
-    options.env = nullptr;
+    options.env = NULL;
 }
 
 bool CDBWrapper::WriteBatch(CDBBatch& batch, bool fSync)
