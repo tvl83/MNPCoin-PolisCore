@@ -49,7 +49,8 @@ public:
     enum Base58Type {
         PUBKEY_ADDRESS,
         SCRIPT_ADDRESS,
-        SECRET_KEY,     // BIP16
+        SECRET_KEY,
+        SCRIPT_ADDRESS2,   // BIP16
         EXT_PUBLIC_KEY, // BIP32
         EXT_SECRET_KEY, // BIP32
 

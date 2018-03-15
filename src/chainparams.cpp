@@ -209,9 +209,10 @@ public:
         // polis addresses start with 'P'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55);
         // polis script addresses start with '3'
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,05);
         // polis private keys start with '3' or 'p'
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,60);
+        base58Prefixes[SCRIPT_ADDRESS2] = std::vector<unsigned char>(1,117);
         // polis BIP32 pubkeys start with 'xpub' (Bitcoin defaults)
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
         // polis BIP32 prvkeys start with 'xprv' (Bitcoin defaults)
@@ -219,7 +220,7 @@ public:
 
         // polis BIP44 coin type is '5'
         nExtCoinType = 5;
-     
+
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
         fMiningRequiresPeers = true;
@@ -238,7 +239,7 @@ public:
             boost::assign::map_list_of
             ( 0, uint256S("0x000009701eb781a8113b1af1d814e2f060f6408a2c990db291bc5108a1345c1e"))
             ( 10, uint256S("0x000006f686844f1873f4fcf77516eaa0a11f5762b797314c5875438c97fe4562"))
-            ( 50, uint256S("0x00000547ca650f3be6ddf31871dfd5f76faafcd12b6083706e3d0a88c9a0cdbe"))  
+            ( 50, uint256S("0x00000547ca650f3be6ddf31871dfd5f76faafcd12b6083706e3d0a88c9a0cdbe"))
             ( 100, uint256S("0x000001c12d74ca8120d2751bb2846a5af44892045099750efe73a0cbb1eca860"))
             ( 200, uint256S("0x000000053db45327e7fcce9b8baf9060622c01456ac677121a6f8dcf15a98d7b"))
             ( 300, uint256S("0x00000000027d5a77e5c38e366465be2f21292fa3eb4d290efb6316eebcc5c0ca"))
@@ -252,7 +253,7 @@ public:
             ( 6000, uint256S("0x00000000000027ffb241efa3fafa43a3121216d70e79b28bc2afb8457d84cbfe"))
             ( 7000, uint256S("0x0000000000003a79e1b54fe39070e0d53799cdca901db726eb1c847ce8d0c890"))
             ( 8000, uint256S("0x000000000000045991733d2bc793d17a6fcafd7bfa35adb68b4036813b64fbf1"))
-                
+
         };
         chainTxData = ChainTxData{
             1514863421, // * UNIX timestamp of last checkpoint block
@@ -342,14 +343,14 @@ public:
         nDefaultPort = 21430;
         nDelayGetHeadersTime = 24 * 60 * 60;
         nPruneAfterHeight = 1000;
-      
+
         genesis = CreateGenesisBlock(1518833511, 113300, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x0000009038aeaea86784e959b0b4002793adad39fc9d6f8789ed2edf99ad5c8b"));
         assert(genesis.hashMerkleRoot == uint256S("0x5dc9bcf5d1e4802dad0045a88849e3ad97d07a5b8aaee1114ed5ae03b98c4bfc"));
 
 
-       
+
         vFixedSeeds.clear();
         vSeeds.clear();
 
@@ -386,8 +387,8 @@ public:
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
             (   0, uint256S("0x"))
-                
-                                
+
+
         };
         chainTxData = ChainTxData{
             0, // * UNIX timestamp of last checkpoint block
