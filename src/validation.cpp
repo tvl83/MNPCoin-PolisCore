@@ -1322,10 +1322,10 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
       for (int i = consensusParams.nSubsidyHalvingInterval; i <= nPrevHeight; i += consensusParams.nSubsidyHalvingInterval) {
           nSubsidy -= nSubsidy/14;
       }
-  
+
       // Hard fork to reduce the block reward by 10 extra percent (allowing budget/superblocks)
       CAmount nSuperblockPart = (nPrevHeight > consensusParams.nBudgetPaymentsStartBlock) ? nSubsidy/10 : 0;
-  
+
        return fSuperblockPartOnly ? nSuperblockPart : nSubsidy - nSuperblockPart;
    }
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
@@ -1491,8 +1491,9 @@ void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, int nHeight)
 
 bool CScriptCheck::operator()() {
     const CScript &scriptSig = ptxTo->vin[nIn].scriptSig;
-    if (!VerifyScript(scriptSig, scriptPubKey, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn, cacheStore), &error)) {
-        return false;
+    const CScriptWitness *witness = (nIn < ptxTo->wit.vtxinwit.size()) ? &ptxTo->wit.vtxinwit[nIn].scriptWitness : NULL;
+    if (!VerifyScript(scriptSig, scriptPubKey, witness, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn, cacheStore), &error)) {
+            return false;
     }
     return true;
 }
