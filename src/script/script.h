@@ -622,7 +622,6 @@ public:
     bool IsPayToPublicKeyHash() const;
 
     bool IsPayToScriptHash() const;
-     bool IsWitnessProgram(int& version, std::vector<unsigned char>& program) const;
 
     /** Used for obsolete pay-to-pubkey addresses indexing. */
     bool IsPayToPublicKey() const;
