@@ -622,8 +622,6 @@ public:
     bool IsPayToPublicKeyHash() const;
 
     bool IsPayToScriptHash() const;
-    bool IsCommitment(const std::vector<uint8_t> &data) const;
-    bool IsWitnessProgram(int &version, std::vector<uint8_t> &program) const;
 
     /** Used for obsolete pay-to-pubkey addresses indexing. */
     bool IsPayToPublicKey() const;
@@ -647,23 +645,6 @@ public:
         // The default std::vector::clear() does not release memory.
         CScriptBase().swap(*this);
     }
-};
-struct CScriptWitness {
-    // Note that this encodes the data elements being pushed, rather than
-    // encoding them as a CScript that pushes them.
-    std::vector<std::vector<uint8_t>> stack;
-
-    // Some compilers complain without a default constructor
-    CScriptWitness() {}
-
-    bool IsNull() const { return stack.empty(); }
-
-    void SetNull() {
-        stack.clear();
-        stack.shrink_to_fit();
-    }
-
-    std::string ToString() const;
 };
 
 class CReserveScript
