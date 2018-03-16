@@ -49,7 +49,7 @@ if 'ENABLE_UTILS' not in vars():
     ENABLE_UTILS=0
 if 'ENABLE_ZMQ' not in vars():
     ENABLE_ZMQ=0
-
+    
 # python-zmq may not be installed. Handle this gracefully and with some helpful info
 if ENABLE_ZMQ:
     try:
@@ -162,7 +162,6 @@ testScripts = [
     'importprunedfunds.py',
     'signmessages.py',
     'nulldummy.py',
-    'test_script_address2.py',
     'import-rescan.py',
     'rpcnamedargs.py',
     'listsinceblock.py',
