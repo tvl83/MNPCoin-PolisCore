@@ -17,7 +17,6 @@ BOOST_AUTO_TEST_CASE(IsPayToPublicKeyHash)
     uint160 dummy;
     CScript p2pkh;
     p2pkh << OP_DUP << OP_HASH160 << ToByteVector(dummy) << OP_EQUALVERIFY << OP_CHECKSIG;
-    BOOST_CHECK(p2pkh.IsPayToPublicKeyHash());
 
     static const unsigned char direct[] = {
         OP_DUP, OP_HASH160, 20, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, OP_EQUALVERIFY, OP_CHECKSIG

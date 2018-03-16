@@ -1268,10 +1268,10 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
       for (int i = consensusParams.nSubsidyHalvingInterval; i <= nPrevHeight; i += consensusParams.nSubsidyHalvingInterval) {
           nSubsidy -= nSubsidy/14;
       }
-  
+
       // Hard fork to reduce the block reward by 10 extra percent (allowing budget/superblocks)
       CAmount nSuperblockPart = (nPrevHeight > consensusParams.nBudgetPaymentsStartBlock) ? nSubsidy/10 : 0;
-  
+
        return fSuperblockPartOnly ? nSuperblockPart : nSubsidy - nSuperblockPart;
    }
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
@@ -2114,10 +2114,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
                     if (prevout.scriptPubKey.IsPayToScriptHash()) {
                         hashBytes = uint160(vector <unsigned char>(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22));
                         addressType = 2;
-                    } else if (prevout.scriptPubKey.IsPayToPublicKeyHash()) {
-                        hashBytes = uint160(vector <unsigned char>(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23));
-                        addressType = 1;
-                    } else {
+                    }  else {
                         hashBytes.SetNull();
                         addressType = 0;
                     }
@@ -3944,7 +3941,7 @@ bool LoadBlockIndex()
     return true;
 }
 
-bool InitBlockIndex(const CChainParams& chainparams) 
+bool InitBlockIndex(const CChainParams& chainparams)
 {
     LOCK(cs_main);
 
