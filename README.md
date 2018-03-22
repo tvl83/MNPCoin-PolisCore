@@ -1,7 +1,7 @@
-![Polis](https://github.com/polispay/polis/raw/master/src/qt/res/icons/bitcoin.png "Polis")
+![Polis](https://github.com/polispay/polis/raw/develop/src/qt/res/icons/bitcoin.png "Polis")
 POLIS Core integration/staging tree
 =====================================
-[![Build Status](https://travis-ci.org/polispay/polis.svg?branch=master)](https://travis-ci.org/polispay/polis)
+[![Build Status](https://travis-ci.org/polispay/polis.svg?branch=develop)](https://travis-ci.org/polispay/polis)
 
 
 http://www.polispay.org
