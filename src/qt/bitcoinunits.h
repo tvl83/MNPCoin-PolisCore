@@ -57,7 +57,7 @@ public:
      */
     enum Unit
     {
-        polis,
+        POLIS,
         mpolis,
         upolis,
         duffs

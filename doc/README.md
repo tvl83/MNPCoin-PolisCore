@@ -28,8 +28,8 @@ Drag polis-Qt to your applications folder, and then run polis-Qt.
 
 * See the [polis documentation](https://polispay.atlassian.net/wiki/display/DOC)
 for help and more information.
-* Ask for help on [#polispay](http://webchat.freenode.net?channels=polispay) on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net?channels=polispay).
-* Ask for help on the [polisTalk](https://polistalk.org/) forums.
+* Ask for help on [Polispay Discord](https://discord.gg/gwhHv8U)
+* Ask for help on the [Polis Forum](https://polispay.org/forum)
 
 Building
 ---------------------
@@ -46,30 +46,32 @@ Development
 The polis Core repo's [root README](/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
-- [Multiwallet Qt Development](multiwallet-qt.md)
 - [Release Notes](release-notes.md)
 - [Release Process](release-process.md)
 - Source Code Documentation ***TODO***
 - [Translation Process](translation_process.md)
 - [Translation Strings Policy](translation_strings_policy.md)
-- [Unit Tests](unit-tests.md)
+- [Travis CI](travis-ci.md)
 - [Unauthenticated REST Interface](REST-interface.md)
 - [Shared Libraries](shared-libraries.md)
 - [BIPS](bips.md)
 - [Dnsseed Policy](dnsseed-policy.md)
+- [Benchmarking](benchmarking.md)
 
 ### Resources
-* Discuss on the [polisTalk](https://polistalk.org/) forums, in the Development & Technical Discussion board.
-* Discuss on [#polispay](http://webchat.freenode.net/?channels=polispay) on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net/?channels=polispay).
+* Discuss on the [Polis  Forum](https://polispay.org/forum), in the Development & Technical Discussion board.
+* Discuss on [Polis Discord](https://discord.gg/gwhHv8U)
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)
 - [Files](files.md)
+- [Reduce Traffic](reduce-traffic.md)
 - [Tor Support](tor.md)
 - [Init Scripts (systemd/upstart/openrc)](init.md)
+- [ZMQ](zmq.md)
 
 License
 ---------------------
-Distributed under the [MIT software license](http://www.opensource.org/licenses/mit-license.php).
+Distributed under the [MIT software license](/COPYING).
 This product includes software developed by the OpenSSL Project for use in the [OpenSSL Toolkit](https://www.openssl.org/). This product includes
 cryptographic software written by Eric Young ([eay@cryptsoft.com](mailto:eay@cryptsoft.com)), and UPnP software written by Thomas Bernard.
