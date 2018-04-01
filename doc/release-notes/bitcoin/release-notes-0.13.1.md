@@ -392,7 +392,7 @@ Thanks to everyone who directly contributed to this release:
 - Justin Camarena
 - Kaz Wesley
 - leijurv
-- Luke Dashjr
+- Luke Polisjr
 - MarcoFalke
 - Marty Jones
 - Matt Corallo

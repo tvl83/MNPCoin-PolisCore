@@ -157,7 +157,7 @@ Thanks to everyone who directly contributed to this release:
 - jnewbery
 - Johnson Lau
 - Jonas Schnelli
-- Luke Dashjr
+- Luke Polisjr
 - maiiz
 - MarcoFalke
 - Masahiko Hyuga

@@ -2,7 +2,7 @@
 
 This issue tracker is only for technical issues related to Polis Core.
 
-General Polis questions and/or support requests and are best directed to the [Dashpay Reddit](https://www.reddit.com/r/polispay/).
+General Polis questions and/or support requests and are best directed to the [Polispay Reddit](https://www.reddit.com/r/polispay/).
 
 To report critical security issues, email infosec@polis.org instead of creating Github issues.
 

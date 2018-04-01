@@ -820,7 +820,7 @@ Thanks to everyone who directly contributed to this release:
 - Krzysztof Jurewicz
 - Leviathn
 - lewuathe
-- Luke Dashjr
+- Luke Polisjr
 - Luv Khemani
 - Marcel Krüger
 - Marco Falke
