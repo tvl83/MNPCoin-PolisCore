@@ -542,7 +542,7 @@ bool CMasternodeBroadcast::CheckOutpoint(int& nDos)
     }
 
     if (err == COLLATERAL_INVALID_AMOUNT) {
-        LogPrint("masternode", "CMasternodeBroadcast::CheckOutpoint -- Masternode UTXO should have 1000 DASH, masternode=%s\n", outpoint.ToStringShort());
+        LogPrint("masternode", "CMasternodeBroadcast::CheckOutpoint -- Masternode UTXO should have 1000 POLIS, masternode=%s\n", outpoint.ToStringShort());
         nDos = 33;
         return false;
     }

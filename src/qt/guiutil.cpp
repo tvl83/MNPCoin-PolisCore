@@ -154,7 +154,7 @@ void setupAmountWidget(QLineEdit *widget, QWidget *parent)
 bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
 {
     // return if URI is not valid or is no polis: URI
-    if(!uri.isValid() || uri.scheme() != QString("dash"))
+    if(!uri.isValid() || uri.scheme() != QString("polis"))
         return false;
 
     SendCoinsRecipient rv;

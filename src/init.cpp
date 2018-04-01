@@ -1802,15 +1802,15 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     fMasternodeMode = GetBoolArg("-masternode", false);
     // TODO: masternode should have no wallet
 
-    //lite mode disables all Dash-specific functionality
+    //lite mode disables all Polis-specific functionality
     fLiteMode = GetBoolArg("-litemode", false);
 
     if(fLiteMode) {
-        InitWarning(_("You are starting in lite mode, all Dash-specific functionality is disabled."));
+        InitWarning(_("You are starting in lite mode, all Polis-specific functionality is disabled."));
     }
 
     if((!fLiteMode && fTxIndex == false)
-       && chainparams.NetworkIDString() != CBaseChainParams::REGTEST) { // TODO remove this when pruning is fixed. See https://github.com/dashpay/dash/pull/1817 and https://github.com/dashpay/dash/pull/1743
+       && chainparams.NetworkIDString() != CBaseChainParams::REGTEST) { // TODO remove this when pruning is fixed. See https://github.com/polispay/polis/pull/1817 and https://github.com/polispay/polis/pull/1743
         return InitError(_("Transaction index can't be disabled in full mode. Either start with -litemode command line switch or enable transaction index."));
     }
 

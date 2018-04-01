@@ -572,7 +572,7 @@ UniValue listaddressbalances(const JSONRPCRequest& request)
             "1. minamount               (numeric, optional, default=0) Minimum balance in " + CURRENCY_UNIT + " an address should have to be shown in the list\n"
             "\nResult:\n"
             "{\n"
-            "  \"address\": amount,       (string) The dash address and the amount in " + CURRENCY_UNIT + "\n"
+            "  \"address\": amount,       (string) The polis address and the amount in " + CURRENCY_UNIT + "\n"
             "  ,...\n"
             "}\n"
             "\nExamples:\n"
@@ -2397,7 +2397,7 @@ UniValue getwalletinfo(const JSONRPCRequest& request)
             "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
             "  \"balance\": xxxxxxx,         (numeric) the total confirmed balance of the wallet in " + CURRENCY_UNIT + "\n"
             + (!fLiteMode ?
-            "  \"privatesend_balance\": xxxxxx, (numeric) the anonymized dash balance of the wallet in " + CURRENCY_UNIT + "\n" : "") +
+            "  \"privatesend_balance\": xxxxxx, (numeric) the anonymized polis balance of the wallet in " + CURRENCY_UNIT + "\n" : "") +
             "  \"unconfirmed_balance\": xxx, (numeric) the total unconfirmed balance of the wallet in " + CURRENCY_UNIT + "\n"
             "  \"immature_balance\": xxxxxx, (numeric) the total immature balance of the wallet in " + CURRENCY_UNIT + "\n"
             "  \"txcount\": xxxxxxx,         (numeric) the total number of transactions in the wallet\n"

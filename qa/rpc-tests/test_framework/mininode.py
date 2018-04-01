@@ -6,7 +6,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #
-# mininode.py - Dash P2P network half-a-node
+# mininode.py - Polis P2P network half-a-node
 #
 # This python code was modified from ArtForz' public domain  half-a-node, as
 # found in the mini-node branch of http://github.com/jgarzik/pynode.
@@ -37,7 +37,7 @@ from threading import Thread
 import logging
 import copy
 
-import dash_hash
+import polis_hash
 
 BIP0031_VERSION = 60000
 MY_VERSION = 70208  # current MIN_PEER_PROTO_VERSION
@@ -75,7 +75,7 @@ def hash256(s):
     return sha256(sha256(s))
 
 def polishash(s):
-    return dash_hash.getPoWHash(s)
+    return polis_hash.getPoWHash(s)
 
 def ser_compact_size(l):
     r = b""
@@ -1205,7 +1205,7 @@ class NodeConn(asyncore.dispatcher):
             vt.addrFrom.port = 0
             self.send_message(vt, True)
 
-        print('MiniNode: Connecting to Dash Node IP # ' + dstaddr + ':' \
+        print('MiniNode: Connecting to Polis Node IP # ' + dstaddr + ':' \
             + str(dstport))
 
         try:
