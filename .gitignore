@@ -81,7 +81,7 @@ libconftest.dylib*
 *.qm
 Makefile
 polis-qt
-polis-Qt.app
+Polis-Qt.app
 
 # Unit-tests
 Makefile.test
