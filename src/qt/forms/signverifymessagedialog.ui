@@ -352,7 +352,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../dash.qrc"/>
+  <include location="../polis.qrc"/>
  </resources>
  <connections/>
 </ui>

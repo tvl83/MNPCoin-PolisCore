@@ -216,7 +216,7 @@ void CMasternode::Check(bool fForce)
             return;
         }
 
-        // part 1: expire based on dashd ping
+        // part 1: expire based on polisd ping
         bool fSentinelPingActive = masternodeSync.IsSynced() && mnodeman.IsSentinelPingActive();
         bool fSentinelPingExpired = fSentinelPingActive && !IsPingedWithin(MASTERNODE_SENTINEL_PING_MAX_SECONDS);
         LogPrint("masternode", "CMasternode::Check -- outpoint=%s, GetAdjustedTime()=%d, fSentinelPingExpired=%d\n",
@@ -377,6 +377,9 @@ bool CMasternodeBroadcast::Create(const std::string& strService, const std::stri
 
     if (!pwalletMain->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex))
         return Log(strprintf("Could not allocate outpoint %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
+
+    if (sporkManager.IsSporkActive(SPORK_15_MASTERNODE_LOCK_NUMBER) && mnodeman.size() > sporkManager.GetSporkValue(SPORK_15_MASTERNODE_LOCK_NUMBER))
+	      return Log(strprintf("Masternode limit reached, masternodes enabled: %d ,cannot enable more masternodes. Current limit is %d",mnodeman.size(), sporkManager.GetSporkValue(SPORK_15_MASTERNODE_LOCK_NUMBER)));
 
     CService service;
     if (!Lookup(strService.c_str(), service, 0, false))
