@@ -649,7 +649,7 @@ UniValue gobject(const JSONRPCRequest& request)
 
         // SETUP BLOCK INDEX VARIABLE / RESULTS VARIABLE
 
-        UniValue objResult(UniValue::VARR);
+        objResult.push_back(Pair(pGovObj->GetHash().ToString(), bObj));
 
         // GET MATCHING GOVERNANCE OBJECTS
 
