@@ -2571,8 +2571,8 @@ UniValue listunspent(const JSONRPCRequest& request)
 
             "\nExamples:\n"
             + HelpExampleCli("listunspent", "")
-            + HelpExampleCli("listunspent", "6 9999999 \"[\\\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\\\",\\\"XuQQkwA4FYkq2XERzMY2CiAZhJTEDAbtcg\\\"]\"")
-            + HelpExampleRpc("listunspent", "6, 9999999 \"[\\\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\\\",\\\"XuQQkwA4FYkq2XERzMY2CiAZhJTEDAbtcg\\\"]\"")
+            + HelpExampleCli("listunspent", "6 9999999 \"[\\\"PBeFLKECmUQBVPQ6Z2UbLY3sEXJqgg8AMA\\\",\\\"PWf9F26d56DjfZEtRnuKLtboRrSJX7n6Fa\\\"]\"")
+            + HelpExampleRpc("listunspent", "6, 9999999 \"[\\\"PBeFLKECmUQBVPQ6Z2UbLY3sEXJqgg8AMA\\\",\\\"PWf9F26d56DjfZEtRnuKLtboRrSJX7n6Fa\\\"]\"")
         );
 
     int nMinDepth = 1;
