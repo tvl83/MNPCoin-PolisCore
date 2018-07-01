@@ -1,4 +1,4 @@
-Polis Core version 0.12.3
+Polis Core version 1.3.1
 ========================
 
 Release is now available from:
@@ -148,7 +148,7 @@ Command-line options
 --------------------
 
 New cmd-line options:
-- introduced in Polis Core 0.12.3: `allowprivatenet`, `bip9params`, `sporkaddr`, `devnet`;
+- introduced in Polis Core 1.3.1: `allowprivatenet`, `bip9params`, `sporkaddr`, `devnet`;
 - backported from Bitcoin Core 0.13/0.14: `blockreconstructionextratxn`, `maxtimeadjustment`, `maxtipage`,
 `incrementalrelayfee`, `dustrelayfee`, `blockmintxfee`.
 
@@ -205,8 +205,8 @@ The alert system was also kept in place for now. We are going to continue backpo
 A lot of refactoring, code cleanups and other small fixes were done in this release again. We are going to continue making code more reliable and easier to review in future releases as well.
 
 
-0.12.3 Change log
-=================
+0.12.3.1 Change log
+===================
 
 See detailed [change log](https://github.com/polispay/polis/compare/v0.12.2.3...polispay:v0.12.3) below.
 
@@ -491,4 +491,3 @@ These release are considered obsolete. Old release notes can be found here:
 - [v0.11.0](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.11.0.md) released Jan/15/2015
 - [v0.10.x](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.10.0.md) released Sep/25/2014
 - [v0.9.x](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.9.0.md) released Mar/13/2014
-
