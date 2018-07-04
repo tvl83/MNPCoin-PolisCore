@@ -1361,6 +1361,10 @@
         <translation>Mostrar pestaña Masternodes</translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Mostrar pestaña de Governance</translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Mostrar información y botones adicionales para PrivateSend en la pantalla de resumen.</translation>
     </message>

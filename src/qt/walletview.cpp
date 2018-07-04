@@ -222,6 +222,14 @@ void WalletView::gotoMasternodePage()
     }
 }
 
+void WalletView::gotoGovernancePage()
+{
+    QSettings settings;
+    if (!fLiteMode && settings.value("fShowGovernanceTab").toBool()) {
+        setCurrentWidget(governanceListPage);
+    }
+}
+
 void WalletView::gotoReceiveCoinsPage()
 {
     setCurrentWidget(receiveCoinsPage);

@@ -32,6 +32,7 @@
         <file alias="edit">res/icons/light/edit.png</file>
         <file alias="history">res/icons/light/history.png</file>
         <file alias="masternodes">res/icons/light/masternodes.png</file>
+        <file alias="governance">res/icons/light/governance.png</file>
         <file alias="overview">res/icons/light/overview.png</file>
         <file alias="export">res/icons/light/export.png</file>
         <file alias="synced">res/icons/light/synced.png</file>

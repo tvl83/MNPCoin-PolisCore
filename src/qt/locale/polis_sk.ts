@@ -1361,6 +1361,10 @@
         <translation>Ukázať záložku Masternodes</translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Ukázať záložku Governance</translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Na obrazovke s prehľadom zobraziť dodatočné informácie a tlačítka pre PrivateSend,</translation>
     </message>

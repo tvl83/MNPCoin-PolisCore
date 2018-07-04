@@ -1361,6 +1361,10 @@
         <translation>Näytä Masternodet Välilehti</translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Näytä Governancet Välilehti</translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Näytä PrivateSend laajennetut tiedot ja painikkeet yleisnäkymässä.</translation>
     </message>

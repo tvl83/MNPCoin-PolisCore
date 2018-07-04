@@ -1362,6 +1362,10 @@ Der Mixing-Prozeß läuft nach dem Start vollständig im Hintergrund, d.h. es is
         <translation>Masternode Tabulator anzeigen</translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Governance Tabulator anzeigen</translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Auf der Übersichtsseite Zusatzinformationen und Buttons für PrivateSend anzeigen.</translation>
     </message>

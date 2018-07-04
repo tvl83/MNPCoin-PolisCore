@@ -1361,6 +1361,10 @@
         <translation>Pokaż Zakładkę Mastenodów</translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Pokaż Zakładkę Governance</translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Pokazuj dodatkowe informacje i przyciski dla PrivateSend na ekranie przeglądu.</translation>
     </message>

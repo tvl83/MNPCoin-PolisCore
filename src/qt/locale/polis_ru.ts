@@ -1361,6 +1361,10 @@
         <translation>Показывать вкладку с мастернодами</translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Показывать вкладку с Governance</translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Показывать дополнительную информацию и кнопки для PrivateSend на обзорной вкладке.</translation>
     </message>

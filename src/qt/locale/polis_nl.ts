@@ -1361,6 +1361,10 @@
         <translation>Toon Masternodes tab</translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Toon Governance tab</translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Toon extra informatie en knoppen voor PrivateSend op het overzichtscherm.</translation>
     </message>

@@ -1357,6 +1357,10 @@
         <translation>Mostrar a aba Masternodes</translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Mostrar a aba Governance</translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Mostre informações adicionais e botões para PrivateSend na tela.</translation>
     </message>

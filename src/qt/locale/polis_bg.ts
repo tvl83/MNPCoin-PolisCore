@@ -1361,6 +1361,10 @@
         <translation>Показване на раздел Masternodes </translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Показване на раздел Governance </translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Показване на допълнителна информация и бутон PrivateSend на основния екран.</translation>
     </message>

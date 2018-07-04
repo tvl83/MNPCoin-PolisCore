@@ -1361,6 +1361,10 @@
         <translation>Mostra la Tabella dei Masternode</translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Mostra la Tabella dei Governance</translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Mostra informazioni aggiuntive e i pulsanti per il PrivateSend nella schermata di sintesi.</translation>
     </message>

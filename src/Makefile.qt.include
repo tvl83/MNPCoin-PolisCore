@@ -33,6 +33,7 @@ QT_FORMS_UI = \
   qt/forms/coincontroldialog.ui \
   qt/forms/darksendconfig.ui \
   qt/forms/editaddressdialog.ui \
+  qt/forms/governancelist.ui \
   qt/forms/helpmessagedialog.ui \
   qt/forms/intro.ui \
   qt/forms/modaloverlay.ui \
@@ -64,6 +65,7 @@ QT_MOC_CPP = \
   qt/moc_csvmodelwriter.cpp \
   qt/moc_darksendconfig.cpp \
   qt/moc_editaddressdialog.cpp \
+  qt/moc_governancelist.cpp \
   qt/moc_guiutil.cpp \
   qt/moc_intro.cpp \
   qt/moc_macdockiconhandler.cpp \
@@ -134,6 +136,7 @@ BITCOIN_QT_H = \
   qt/csvmodelwriter.h \
   qt/darksendconfig.h \
   qt/editaddressdialog.h \
+  qt/governancelist.h \
   qt/guiconstants.h \
   qt/guiutil.h \
   qt/intro.h \
@@ -217,6 +220,7 @@ RES_ICONS = \
   qt/res/icons/light/lock_closed.png \
   qt/res/icons/light/lock_open.png \
   qt/res/icons/light/masternodes.png \
+  qt/res/icons/light/governance.png \
   qt/res/icons/light/overview.png \
   qt/res/icons/light/quit.png \
   qt/res/icons/light/receive.png \
@@ -273,6 +277,7 @@ BITCOIN_QT_WALLET_CPP = \
   qt/coincontroltreewidget.cpp \
   qt/darksendconfig.cpp \
   qt/editaddressdialog.cpp \
+  qt/governancelist.cpp \
   qt/masternodelist.cpp \
   qt/openuridialog.cpp \
   qt/overviewpage.cpp \

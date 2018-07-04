@@ -1361,6 +1361,10 @@
         <translation>Hiển thị trang Masternodes</translation>
     </message>
     <message>
+        <source>Show Governance Tab</source>
+        <translation>Hiển thị trang Governance</translation>
+    </message>
+    <message>
         <source>Show additional information and buttons for PrivateSend on overview screen.</source>
         <translation>Hiển thị thêm thông tin và các nút cho PrivateSend trên màn hình tổng quát.</translation>
     </message>
