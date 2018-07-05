@@ -18,10 +18,9 @@ GovernanceList::GovernanceList(const PlatformStyle *platformStyle, QWidget *pare
 {
     ui->setupUi(this);
 
-    int columnName = 200;
-    int columnUrl = 200;
+    int columnName = 250;
+    int columnUrl = 250;
     int columnAmount = 120;
-    int columnPayment = 250;
     int columnvoteYes = 80;
     int columnvoteNo = 80;
     int columnAbsoluteYes = 150;
@@ -30,11 +29,10 @@ GovernanceList::GovernanceList(const PlatformStyle *platformStyle, QWidget *pare
     ui->tableWidgetGobjects->setColumnWidth(0, columnName);
     ui->tableWidgetGobjects->setColumnWidth(1, columnUrl);
     ui->tableWidgetGobjects->setColumnWidth(2, columnAmount);
-    ui->tableWidgetGobjects->setColumnWidth(3, columnPayment);
-    ui->tableWidgetGobjects->setColumnWidth(4, columnvoteYes);
-    ui->tableWidgetGobjects->setColumnWidth(5, columnvoteNo);
-    ui->tableWidgetGobjects->setColumnWidth(6, columnAbsoluteYes);
-    ui->tableWidgetGobjects->setColumnWidth(7, columnFund);
+    ui->tableWidgetGobjects->setColumnWidth(3, columnvoteYes);
+    ui->tableWidgetGobjects->setColumnWidth(4, columnvoteNo);
+    ui->tableWidgetGobjects->setColumnWidth(5, columnAbsoluteYes);
+    ui->tableWidgetGobjects->setColumnWidth(6, columnFund);
 
 
     contextMenu = new QMenu();
@@ -117,8 +115,9 @@ void GovernanceList::updateGobjects()
             std::string HexStr = pGovObj->GetDataAsHexString();
             std::vector<unsigned char> v = ParseHex(HexStr);
             std::string s(v.begin(), v.end());
-	          std::cout<< s;
-
+            std::string nameStr = getValue(s, "name", true);
+            std::string urlStr = getValue(s, "url", true);
+            int amountStr = getNumericValue(s, "payment_amount");
 
 
             // Define "Funding" for Vote count
@@ -129,16 +128,14 @@ void GovernanceList::updateGobjects()
                 vFunding = "Yes";
             } else {vFunding = "No";}
 
-            QString name =  QString::fromStdString(pGovObj->GetDataAsPlainString());
-            QString url = QString::fromStdString("https://" + s);
-            QString amount = QString::fromStdString(pGovObj->GetDataAsPlainString());
-            QString address = QString::fromStdString(pGovObj->GetDataAsPlainString());
+            QString name =  QString::fromStdString(nameStr);
+            QString url = QString::fromStdString(urlStr);
+            QString amount = QString::number(amountStr);
 
 
         QTableWidgetItem *nameItem = new QTableWidgetItem(name);
         QTableWidgetItem *urlItem = new QTableWidgetItem(url);
         QTableWidgetItem *amounItem = new QTableWidgetItem(amount);
-        QTableWidgetItem *paymentAddrsItem = new QTableWidgetItem(address);
         QTableWidgetItem *voteYes = new QTableWidgetItem(QString::number(pGovObj->GetYesCount(VoteCountType)));
         QTableWidgetItem *voteNo = new QTableWidgetItem(QString::number(pGovObj->GetNoCount(VoteCountType)));
         QTableWidgetItem *AbsoluteYes = new QTableWidgetItem(QString::number(pGovObj->GetAbsoluteYesCount(VoteCountType)));
@@ -148,7 +145,6 @@ void GovernanceList::updateGobjects()
         {
             strToFilter =   nameItem->text() + " " +
                             amounItem->text() + " " +
-                            paymentAddrsItem->text() + " " +
                             voteYes->text() + " " +
                             voteNo->text() + " " +
                             AbsoluteYes->text() + " " +
@@ -160,11 +156,10 @@ void GovernanceList::updateGobjects()
         ui->tableWidgetGobjects->setItem(0, 0, nameItem);
         ui->tableWidgetGobjects->setItem(0, 1, urlItem);
         ui->tableWidgetGobjects->setItem(0, 2, amounItem);
-        ui->tableWidgetGobjects->setItem(0, 3, paymentAddrsItem);
-        ui->tableWidgetGobjects->setItem(0, 4, voteYes);
-        ui->tableWidgetGobjects->setItem(0, 5, voteNo);
-        ui->tableWidgetGobjects->setItem(0, 6, AbsoluteYes);
-        ui->tableWidgetGobjects->setItem(0, 7, fundingStatus);
+        ui->tableWidgetGobjects->setItem(0, 3, voteYes);
+        ui->tableWidgetGobjects->setItem(0, 4, voteNo);
+        ui->tableWidgetGobjects->setItem(0, 5, AbsoluteYes);
+        ui->tableWidgetGobjects->setItem(0, 6, fundingStatus);
         }
     }
 
@@ -198,4 +193,37 @@ void GovernanceList::on_QRButton_clicked()
         gobjectSingle = ui->tableWidgetGobjects->item(nSelectedRow, 0)->text().toStdString();
     }
 
+}
+
+std::string getValue(std::string str,std::string key, bool format) {
+  std::string s_pattern = "\"" + key + "\"";
+
+  int beg = str.find(s_pattern);
+  /*for (int i = 0; i < str.size(); ++i) {
+      cout<< i<< ".- "<<str.at(i)<<endl;
+  }*/
+  int f_comma = str.find("\"", beg+s_pattern.size());
+  int s_comma = str.find("\"", f_comma+1);
+
+  //cout<<f_comma<<", "<<s_comma<<endl;
+  std::string s2 = str.substr(f_comma+1, s_comma-f_comma-1);
+  return s2;
+    return s2;
+}
+
+int getNumericValue(std::string str, std::string key) {
+    std::string s_pattern = "\"" + key + "\"";
+
+    int beg = str.find(s_pattern);
+    /*for (int i = 0; i < str.size(); ++i) {
+        cout<< i<< ".- "<<str.at(i)<<endl;
+    }*/
+    int f_comma = str.find(":", beg+s_pattern.size());
+    int s_comma = str.find(",", f_comma+1);
+
+    //cout<<f_comma<<", "<<s_comma<<endl;
+    std::string s2 = str.substr(f_comma+1, s_comma-f_comma-1);
+
+    int i_dec = std::stoi (s2);
+    return i_dec;
 }

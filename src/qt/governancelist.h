@@ -21,7 +21,8 @@ class WalletModel;
 QT_BEGIN_NAMESPACE
 class QModelIndex;
 QT_END_NAMESPACE;
-
+std::string getValue(std::string, std::string, bool);
+int getNumericValue(std::string str, std::string key);
 /** Governance Manager page widget */
 class GovernanceList : public QWidget
 {

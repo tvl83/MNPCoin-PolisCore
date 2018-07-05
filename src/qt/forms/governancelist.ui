@@ -71,11 +71,6 @@
      </column>
      <column>
       <property name="text">
-       <string>Payment Address</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
        <string>Yes</string>
       </property>
      </column>
