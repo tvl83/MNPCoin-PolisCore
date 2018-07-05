@@ -106,7 +106,6 @@ void GovernanceList::updateGobjects()
 
     for (const auto& pGovObj : objs)
     {
-        // Convert "Funding" Boolean to std::string
         int gobject = pGovObj->GetObjectType();
 
         if (gobject == 1) {
@@ -125,8 +124,6 @@ void GovernanceList::updateGobjects()
             // Define "Funding" for Vote count
             vote_signal_enum_t VoteCountType = vote_signal_enum_t(1);
 
-            // Convert "Funding" Boolean to std::string
-            int gobject = pGovObj->GetObjectType();
             std::string vFunding;
             if (pGovObj->IsSetCachedFunding()) {
                 vFunding = "Yes";
