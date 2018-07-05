@@ -360,7 +360,7 @@ void BitcoinGUI::createActions()
     }
     if (!fLiteMode && settings.value("fShowGovernanceTab").toBool()) {
         governanceAction = new QAction(QIcon(":/icons/" + theme + "/governance"), tr("&Governance"), this);
-        governanceAction->setStatusTip(tr("Browse masternodes"));
+        governanceAction->setStatusTip(tr("Show governance items"));
         governanceAction->setToolTip(governanceAction->statusTip());
         governanceAction->setCheckable(true);
 #ifdef Q_OS_MAC
