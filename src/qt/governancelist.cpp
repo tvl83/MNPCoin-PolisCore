@@ -106,7 +106,8 @@ void GovernanceList::updateGobjects()
 
     for (const auto& pGovObj : objs)
     {
-
+        // Convert "Funding" Boolean to std::string
+        int gobject = pGovObj->GetObjectType();
 
         if (gobject == 1) {
         // populate list
@@ -117,7 +118,8 @@ void GovernanceList::updateGobjects()
             std::string HexStr = pGovObj->GetDataAsHexString();
             std::vector<unsigned char> v = ParseHex(HexStr);
             std::string s(v.begin(), v.end());
-  
+	          std::cout<< s;
+
 
 
             // Define "Funding" for Vote count
