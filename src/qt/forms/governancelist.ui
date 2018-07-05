@@ -76,6 +76,21 @@
      </column>
      <column>
       <property name="text">
+       <string>Yes</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>No</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Absolute Yes</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>Funding</string>
       </property>
      </column>
@@ -109,6 +124,30 @@
         </size>
        </property>
       </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="UpdateButton">
+       <property name="text">
+        <string>Update Governance</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

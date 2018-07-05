@@ -204,6 +204,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     if(cachedTxLocks != nCompleteTXLocks){
         cachedTxLocks = nCompleteTXLocks;
         ui->listTransactions->update();
+
     }
 }
 
@@ -254,7 +255,7 @@ void OverviewPage::setWalletModel(WalletModel *model)
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
         updateWatchOnlyLabels(model->haveWatchOnly());
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
-
+        updateAdvancedPSUI(model->getOptionsModel()->getShowAdvancedPSUI());
 
     }
 }
@@ -287,7 +288,11 @@ void OverviewPage::showOutOfSyncWarning(bool fShow)
     ui->labelTransactionsStatus->setVisible(fShow);
 }
 
+void OverviewPage::updateAdvancedPSUI(bool fShowAdvancedPSUI) {
+    int nNumItems = (fLiteMode || !fShowAdvancedPSUI) ? NUM_ITEMS : NUM_ITEMS_ADV;
+    SetupTransactionList(nNumItems);
 
+}
 
 void OverviewPage::SetupTransactionList(int nNumItems) {
     ui->listTransactions->setMinimumHeight(nNumItems * (DECORATION_SIZE + 2));
