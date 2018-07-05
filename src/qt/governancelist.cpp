@@ -2,8 +2,9 @@
 #include "ui_governancelist.h"
 #include "../governance.h"
 #include "../governance-object.h"
+#include "../governance-classes.h"
 #include "clientmodel.h"
-
+#include "../validation.h"
 #include <QTimer>
 #include <QMessageBox>
 
@@ -38,6 +39,7 @@ GovernanceList::GovernanceList(const PlatformStyle *platformStyle, QWidget *pare
 
     contextMenu = new QMenu();
     connect(ui->tableWidgetGobjects, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showContextMenu(const QPoint&)));
+    connect(ui->tableWidgetGobjects, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_QRButton_clicked()));
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateGobjects()));
@@ -88,30 +90,52 @@ void GovernanceList::updateGobjects()
     ui->tableWidgetGobjects->setSortingEnabled(false);
     ui->tableWidgetGobjects->clearContents();
     ui->tableWidgetGobjects->setRowCount(0);
-    int nStartTime = 0; //list
+
+    // Get Last SuperBlock time to filter Gobjects from that time.
+
+    //int nLastSuperblock = 0, nNextSuperblock = 0;
+    //int nBlockHeight = chainActive.Height();
+    //CSuperblock::GetNearestSuperblocksHeights(nBlockHeight, nLastSuperblock, nNextSuperblock);
+    //int nLastSuperBlockTime = 0;
+    //int64_t CBlock::GetBlockTime(nLastSuperblock);
+
+
+
+    int nStartTime = 0; //All
     std::vector<const CGovernanceObject*> objs = governance.GetAllNewerThan(nStartTime);
 
     for (const auto& pGovObj : objs)
     {
 
-        // Define "Funding" for Vote count
-        vote_signal_enum_t VoteCountType = vote_signal_enum_t(1);
-
-        // Convert "Funding" Boolean to std::string
-        int gobject = pGovObj->GetObjectType();
-        std::string vFunding;
-        if (pGovObj->IsSetCachedFunding()) {
-            vFunding = "Yes";
-        } else {vFunding = "No";}
-
-        QString name = QString::fromStdString(pGovObj->GetDataAsPlainString());
-        QString url = QString::fromStdString(pGovObj->GetDataAsPlainString());
-        QString amount = QString::fromStdString(pGovObj->GetDataAsPlainString());
-        QString address = QString::fromStdString(pGovObj->GetDataAsPlainString());
 
         if (gobject == 1) {
         // populate list
         // Address, Protocol, Status, Active Seconds, Last Seen, Pub Key
+
+
+            // Get Object as Hex annd convert to std::string
+            std::string HexStr = pGovObj->GetDataAsHexString();
+            std::vector<unsigned char> v = ParseHex(HexStr);
+            std::string s(v.begin(), v.end());
+  
+
+
+            // Define "Funding" for Vote count
+            vote_signal_enum_t VoteCountType = vote_signal_enum_t(1);
+
+            // Convert "Funding" Boolean to std::string
+            int gobject = pGovObj->GetObjectType();
+            std::string vFunding;
+            if (pGovObj->IsSetCachedFunding()) {
+                vFunding = "Yes";
+            } else {vFunding = "No";}
+
+            QString name =  QString::fromStdString(pGovObj->GetDataAsPlainString());
+            QString url = QString::fromStdString("https://" + s);
+            QString amount = QString::fromStdString(pGovObj->GetDataAsPlainString());
+            QString address = QString::fromStdString(pGovObj->GetDataAsPlainString());
+
+
         QTableWidgetItem *nameItem = new QTableWidgetItem(name);
         QTableWidgetItem *urlItem = new QTableWidgetItem(url);
         QTableWidgetItem *amounItem = new QTableWidgetItem(amount);
@@ -157,4 +181,22 @@ void GovernanceList::setClientModel(ClientModel *model)
 void GovernanceList::on_UpdateButton_clicked()
 {
     updateGobjects();
+}
+
+void GovernanceList::on_QRButton_clicked()
+{
+    std::string gobjectSingle;
+    {
+        LOCK(cs_gobjlist);
+        // Find selected gobject
+        QItemSelectionModel* selectionModel = ui->tableWidgetGobjects->selectionModel();
+        QModelIndexList selected = selectionModel->selectedRows();
+
+        if(selected.count() == 0) return;
+
+        QModelIndex index = selected.at(0);
+        int nSelectedRow = index.row();
+        gobjectSingle = ui->tableWidgetGobjects->item(nSelectedRow, 0)->text().toStdString();
+    }
+
 }

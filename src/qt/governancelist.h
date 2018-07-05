@@ -10,7 +10,7 @@
 #include <QTimer>
 #include <QWidget>
 
-#define GOBJECT_UPDATE_SECONDS                 60
+#define GOBJECT_UPDATE_SECONDS                 15
 
 namespace Ui {
     class GovernanceList;
@@ -41,6 +41,9 @@ private:
 public Q_SLOTS:
     void updateGobjects();
 
+Q_SIGNALS:
+    void doubleClicked(const QModelIndex&);
+
 private:
     QTimer *timer;
     Ui::GovernanceList *ui;
@@ -54,6 +57,7 @@ private:
 
 private Q_SLOTS:
     void showContextMenu(const QPoint &);
+    void on_QRButton_clicked();
     void on_UpdateButton_clicked();
 
 };
