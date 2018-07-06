@@ -5,6 +5,10 @@
 #include "../governance-classes.h"
 #include "clientmodel.h"
 #include "../validation.h"
+#include "../uint256.h"
+#include "qrdialog.h"
+#include "guiutil.h"
+
 #include <QTimer>
 #include <QMessageBox>
 
@@ -17,7 +21,7 @@ GovernanceList::GovernanceList(const PlatformStyle *platformStyle, QWidget *pare
         walletModel(0)
 {
     ui->setupUi(this);
-
+    int columnHash = 50;
     int columnName = 250;
     int columnUrl = 250;
     int columnAmount = 120;
@@ -26,13 +30,14 @@ GovernanceList::GovernanceList(const PlatformStyle *platformStyle, QWidget *pare
     int columnAbsoluteYes = 150;
     int columnFund = 50;
 
-    ui->tableWidgetGobjects->setColumnWidth(0, columnName);
-    ui->tableWidgetGobjects->setColumnWidth(1, columnUrl);
-    ui->tableWidgetGobjects->setColumnWidth(2, columnAmount);
-    ui->tableWidgetGobjects->setColumnWidth(3, columnvoteYes);
-    ui->tableWidgetGobjects->setColumnWidth(4, columnvoteNo);
-    ui->tableWidgetGobjects->setColumnWidth(5, columnAbsoluteYes);
-    ui->tableWidgetGobjects->setColumnWidth(6, columnFund);
+    ui->tableWidgetGobjects->setColumnWidth(0, columnHash);
+    ui->tableWidgetGobjects->setColumnWidth(1, columnName);
+    ui->tableWidgetGobjects->setColumnWidth(2, columnUrl);
+    ui->tableWidgetGobjects->setColumnWidth(3, columnAmount);
+    ui->tableWidgetGobjects->setColumnWidth(4, columnvoteYes);
+    ui->tableWidgetGobjects->setColumnWidth(5, columnvoteNo);
+    ui->tableWidgetGobjects->setColumnWidth(6, columnAbsoluteYes);
+    ui->tableWidgetGobjects->setColumnWidth(7, columnFund);
 
 
     contextMenu = new QMenu();
@@ -71,13 +76,15 @@ void GovernanceList::updateGobjects()
 
     static int64_t nTimeListUpdated = GetTime();
 
-    // to prevent high cpu usage update only once in MASTERNODELIST_UPDATE_SECONDS seconds
-    // or MASTERNODELIST_FILTER_COOLDOWN_SECONDS seconds after filter was last changed
+    // to prevent high cpu usage update only once in GOBJECT_UPDATE_SECONDS seconds
+    // or GOBJECT_COOLDOWN_SECONDS seconds after filter was last changed
     int64_t nSecondsToWait = fFilterUpdated
-                            ? nTimeFilterUpdated - GetTime() + GOBJECT_UPDATE_SECONDS
+                            ? nTimeFilterUpdated - GetTime() + GOBJECT_COOLDOWN_SECONDS
                             : nTimeListUpdated - GetTime() + GOBJECT_UPDATE_SECONDS;
 
     if(fFilterUpdated) ui->countGobjectLabel->setText(QString::fromStdString(strprintf("Please wait... %d", nSecondsToWait)));
+    if(!fFilterUpdated) ui->countGobjectLabel->setText(QString::fromStdString(strprintf("Please wait... %d", nSecondsToWait)));
+
     if(nSecondsToWait > 0) return;
 
     nTimeListUpdated = GetTime();
@@ -88,15 +95,6 @@ void GovernanceList::updateGobjects()
     ui->tableWidgetGobjects->setSortingEnabled(false);
     ui->tableWidgetGobjects->clearContents();
     ui->tableWidgetGobjects->setRowCount(0);
-
-    // Get Last SuperBlock time to filter Gobjects from that time.
-
-    //int nLastSuperblock = 0, nNextSuperblock = 0;
-    //int nBlockHeight = chainActive.Height();
-    //CSuperblock::GetNearestSuperblocksHeights(nBlockHeight, nLastSuperblock, nNextSuperblock);
-    //int nLastSuperBlockTime = 0;
-    //int64_t CBlock::GetBlockTime(nLastSuperblock);
-
 
 
     int nStartTime = 0; //All
@@ -111,7 +109,7 @@ void GovernanceList::updateGobjects()
         // Address, Protocol, Status, Active Seconds, Last Seen, Pub Key
 
 
-            // Get Object as Hex annd convert to std::string
+            // Get Object as Hex and convert to std::string
             std::string HexStr = pGovObj->GetDataAsHexString();
             std::vector<unsigned char> v = ParseHex(HexStr);
             std::string s(v.begin(), v.end());
@@ -131,8 +129,9 @@ void GovernanceList::updateGobjects()
             QString name =  QString::fromStdString(nameStr);
             QString url = QString::fromStdString(urlStr);
             QString amount = QString::fromStdString(amountStr);
+            std::string hash = pGovObj->GetHash().GetHex();
 
-
+        QTableWidgetItem *Hash = new QTableWidgetItem(QString::fromStdString(hash));
         QTableWidgetItem *nameItem = new QTableWidgetItem(name);
         QTableWidgetItem *urlItem = new QTableWidgetItem(url);
         QTableWidgetItem *amounItem = new QTableWidgetItem(amount);
@@ -143,7 +142,8 @@ void GovernanceList::updateGobjects()
 
        if (strCurrentFilter != "")
         {
-            strToFilter =   nameItem->text() + " " +
+            strToFilter =   Hash->text() + " " +
+                            nameItem->text() + " " +
                             amounItem->text() + " " +
                             voteYes->text() + " " +
                             voteNo->text() + " " +
@@ -153,13 +153,14 @@ void GovernanceList::updateGobjects()
         }
 
         ui->tableWidgetGobjects->insertRow(0);
-        ui->tableWidgetGobjects->setItem(0, 0, nameItem);
-        ui->tableWidgetGobjects->setItem(0, 1, urlItem);
-        ui->tableWidgetGobjects->setItem(0, 2, amounItem);
-        ui->tableWidgetGobjects->setItem(0, 3, voteYes);
-        ui->tableWidgetGobjects->setItem(0, 4, voteNo);
-        ui->tableWidgetGobjects->setItem(0, 5, AbsoluteYes);
-        ui->tableWidgetGobjects->setItem(0, 6, fundingStatus);
+        ui->tableWidgetGobjects->setItem(0, 0, Hash);
+        ui->tableWidgetGobjects->setItem(0, 1, nameItem);
+        ui->tableWidgetGobjects->setItem(0, 2, urlItem);
+        ui->tableWidgetGobjects->setItem(0, 3, amounItem);
+        ui->tableWidgetGobjects->setItem(0, 4, voteYes);
+        ui->tableWidgetGobjects->setItem(0, 5, voteNo);
+        ui->tableWidgetGobjects->setItem(0, 6, AbsoluteYes);
+        ui->tableWidgetGobjects->setItem(0, 7, fundingStatus);
         }
     }
 
@@ -176,6 +177,13 @@ void GovernanceList::on_UpdateButton_clicked()
 {
     updateGobjects();
 }
+void GovernanceList::on_filterLineEdit_textChanged(const QString &strFilterIn)
+{
+    strCurrentFilter = strFilterIn;
+    nTimeFilterUpdated = GetTime();
+    fFilterUpdated = true;
+    ui->countGobjectLabel->setText(QString::fromStdString(strprintf("Please wait... %d", GOBJECT_UPDATE_SECONDS)));
+}
 
 void GovernanceList::on_QRButton_clicked()
 {
@@ -191,39 +199,120 @@ void GovernanceList::on_QRButton_clicked()
         QModelIndex index = selected.at(0);
         int nSelectedRow = index.row();
         gobjectSingle = ui->tableWidgetGobjects->item(nSelectedRow, 0)->text().toStdString();
-    }
 
+    }
+         uint256 parsedGobjectHash;
+         parsedGobjectHash.SetHex(gobjectSingle);
+         ShowQRCode(parsedGobjectHash);
+}
+
+void GovernanceList::ShowQRCode(uint256 gobjectSingle) {
+
+    if(!walletModel || !walletModel->getOptionsModel())
+        return;
+
+    // Get private key for this alias
+    //std::string strMNPrivKey = "";
+    //std::string strCollateral = "";
+    //std::string strIP = "";
+    CGovernanceObject* pGovObj = governance.FindGovernanceObject(gobjectSingle);
+
+    //bool fFound = false;
+    //for (const auto& mne : masternodeConfig.getEntries()) {
+    //    if (gobjectSingle != pGobObj.FindGovernanceObject()) {
+    //        continue;
+    //    }
+    //    else {
+    //        strMNPrivKey = mne.getPrivKey();
+    //        strCollateral = mne.getTxHash() + "-" + mne.getOutputIndex();
+    //        strIP = mne.getIp();
+    //        fFound = mnodeman.Get(COutPoint(uint256S(mne.getTxHash()), atoi(mne.getOutputIndex())), mn);
+    //        break;
+    //    }
+    //}
+
+    // Title of popup window
+    QString strWindowtitle = tr("Additional information for Governance Object");
+
+    // Title above QR-Code
+    QString strQRCodeTitle = "Governance Object";
+    vote_signal_enum_t VotesFunding = vote_signal_enum_t(1);
+    vote_signal_enum_t VotesValid = vote_signal_enum_t(2);
+    vote_signal_enum_t VotesDelete = vote_signal_enum_t(3);
+    vote_signal_enum_t VotesEndorsed = vote_signal_enum_t(4);
+
+
+    std::string s = pGovObj->GetDataAsPlainString();
+    std::string dataString = pGovObj->GetDataAsPlainString();
+    std::string dataHex = pGovObj->GetDataAsHexString();
+    std::string name = getValue(s,"name", true);
+    std::string url = getValue(s,"url", true);
+    std::string amount = getNumericValue(s,"payment_amount");
+    std::string hash = gobjectSingle.ToString();
+    // Funding Variables
+    std::string FundingYes = std::to_string(pGovObj->GetYesCount(VotesFunding));
+    std::string FundingNo = std::to_string(pGovObj->GetNoCount(VotesFunding));
+    std::string FundingAbstain = std::to_string(pGovObj->GetAbstainCount(VotesFunding));
+    std::string FundingAbYes = std::to_string(pGovObj->GetAbsoluteYesCount(VotesFunding));
+    // Valid Variables
+    std::string ValidYes = std::to_string(pGovObj->GetYesCount(VotesValid));
+    std::string ValidNo = std::to_string(pGovObj->GetNoCount(VotesValid));
+    std::string ValidAbstain = std::to_string(pGovObj->GetAbstainCount(VotesValid));
+    std::string ValidAbYes = std::to_string(pGovObj->GetAbsoluteYesCount(VotesValid));
+    // Delete Variables
+    std::string DeleteYes = std::to_string(pGovObj->GetYesCount(VotesDelete));
+    std::string DeleteNo = std::to_string(pGovObj->GetNoCount(VotesDelete));
+    std::string DeleteAbstain = std::to_string(pGovObj->GetAbstainCount(VotesDelete));
+    std::string DeleteAbYes = std::to_string(pGovObj->GetAbsoluteYesCount(VotesDelete));
+    // Endorse Variables
+    std::string EndorseYes = std::to_string(pGovObj->GetYesCount(VotesEndorsed));
+    std::string EndorseNo = std::to_string(pGovObj->GetNoCount(VotesEndorsed));
+    std::string EndorseAbstain = std::to_string(pGovObj->GetAbstainCount(VotesEndorsed));
+    std::string EndorseAbYes = std::to_string(pGovObj->GetAbsoluteYesCount(VotesEndorsed));
+    // Create dialog text as HTML
+    QString strHTML = "<html><font face='verdana, arial, helvetica, sans-serif'>";
+    strHTML += "<b>" + tr("Hash") +          ": </b>" + GUIUtil::HtmlEscape(hash) + "<br>";
+    strHTML += "<b>" + tr("Proposal Name") +      ": </b>" + GUIUtil::HtmlEscape(name) + "<br>";
+    strHTML += "<b>" + tr("Proposal Url") +       ": </b>" + GUIUtil::HtmlEscape(url) + "<br>";
+    strHTML += "<b>" + tr("Payment Amount") +     ": </b>" + GUIUtil::HtmlEscape(amount) + "<br>";
+    strHTML += "<p><b>" + tr("Funding Votes") +":</b>" + "<br><span>Yes: " + GUIUtil::HtmlEscape(FundingYes) + "</span>" + "<br><span>No: " + GUIUtil::HtmlEscape(FundingNo) + "</span>" + "<br><span>Abstain: " + GUIUtil::HtmlEscape(FundingAbstain) + "</span>" + "<br><span>Absolute Yes: " + GUIUtil::HtmlEscape(FundingAbYes) + "</span></p>";
+    strHTML += "<p><b>" + tr("Valid Votes") +":</b>" + "<br><span>Yes: " + GUIUtil::HtmlEscape(ValidYes) + "</span>" + "<br><span>No: " + GUIUtil::HtmlEscape(ValidNo) + "</span>" + "<br><span>Abstain: " + GUIUtil::HtmlEscape(ValidAbstain) + "</span>" + "<br><span>Absolute Yes: " + GUIUtil::HtmlEscape(ValidAbYes) + "</span></p>";
+    strHTML += "<p><b>" + tr("Delete Votes") +":</b>" + "<br><span>Yes: " + GUIUtil::HtmlEscape(DeleteYes) + "</span>" + "<br><span>No: " + GUIUtil::HtmlEscape(DeleteNo) + "</span>" + "<br><span>Abstain: " + GUIUtil::HtmlEscape(DeleteAbstain) + "</span>" + "<br><span>Absolute Yes: " + GUIUtil::HtmlEscape(DeleteAbYes) + "</span></p>";
+    strHTML += "<p><b>" + tr("Endorse Votes") +":</b>" + "<br><span>Yes: " + GUIUtil::HtmlEscape(EndorseYes) + "</span>" + "<br><span>No: " + GUIUtil::HtmlEscape(EndorseNo) + "</span>" + "<br><span>Abstain: " + GUIUtil::HtmlEscape(EndorseAbstain) + "</span>" + "<br><span>Absolute Yes: " + GUIUtil::HtmlEscape(EndorseAbYes) + "</span></p>";
+    strHTML += "<b>" + tr("Raw Information (Hex)") +     ": </b>" + GUIUtil::HtmlEscape(dataHex) + "<br>";
+    strHTML += "<b>" + tr("Raw Information (String)") +     ": </b>" + GUIUtil::HtmlEscape(dataString) + "<br>";
+    //strHTML += "<b>" + tr("Sentinel") +     ": </b>" + (mn.lastPing.nSentinelVersion > DEFAULT_SENTINEL_VERSION ? GUIUtil::HtmlEscape(SafeIntVersionToString(mn.lastPing.nSentinelVersion)) : tr("Unknown")) + "<br>";
+    //strHTML += "<b>" + tr("Status") +       ": </b>" + GUIUtil::HtmlEscape(CMasternode::StateToString(mn.nActiveState)) + "<br>";
+    //strHTML += "<b>" + tr("Payee") +        ": </b>" + GUIUtil::HtmlEscape(CBitcoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString()) + "<br>";
+    //strHTML += "<b>" + tr("Active") +       ": </b>" + GUIUtil::HtmlEscape(DurationToDHMS(mn.lastPing.sigTime - mn.sigTime)) + "<br>";
+    //strHTML += "<b>" + tr("Last Seen") +    ": </b>" + GUIUtil::HtmlEscape(DateTimeStrFormat("%Y-%m-%d %H:%M", mn.lastPing.sigTime + GetOffsetFromUtc())) + "<br>";
+
+    // Open QR dialog
+    QRDialog *dialog = new QRDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setModel(walletModel->getOptionsModel());
+    dialog->setInfo(strWindowtitle, strWindowtitle,strHTML, "");
+    dialog->show();
 }
 
 std::string getValue(std::string str,std::string key, bool format) {
   std::string s_pattern = "\"" + key + "\"";
 
   int beg = str.find(s_pattern);
-  /*for (int i = 0; i < str.size(); ++i) {
-      cout<< i<< ".- "<<str.at(i)<<endl;
-  }*/
   int f_comma = str.find("\"", beg+s_pattern.size());
   int s_comma = str.find("\"", f_comma+1);
-
-  //cout<<f_comma<<", "<<s_comma<<endl;
   std::string s2 = str.substr(f_comma+1, s_comma-f_comma-1);
   return s2;
-    return s2;
 }
+
+
 
 std::string getNumericValue(std::string str, std::string key){
     std::string s_pattern = "\"" + key + "\"";
 
     int beg = str.find(s_pattern);
-    /*for (int i = 0; i < str.size(); ++i) {
-        cout<< i<< ".- "<<str.at(i)<<endl;
-    }*/
     int f_comma = str.find(":", beg+s_pattern.size());
     int s_comma = str.find(",", f_comma+1);
-
-    //cout<<f_comma<<", "<<s_comma<<endl;
     std::string s2 = str.substr(f_comma+1, s_comma-f_comma-1);
-
-    //int i_dec = std::stoi (s2);
     return s2;
 }

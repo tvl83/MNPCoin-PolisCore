@@ -11,6 +11,7 @@
 #include <QWidget>
 
 #define GOBJECT_UPDATE_SECONDS                 15
+#define GOBJECT_COOLDOWN_SECONDS               3
 
 namespace Ui {
     class GovernanceList;
@@ -35,7 +36,7 @@ public:
     ~GovernanceList();
     void setClientModel(ClientModel *clientModel);
     void setWalletModel(WalletModel *walletModel);
-    void ShowQRCode(std::string gobjectSingle);
+    void ShowQRCode(uint256 gobjectSingle);
 
 
 private:
@@ -62,6 +63,7 @@ private:
 
 private Q_SLOTS:
     void showContextMenu(const QPoint &);
+    void on_filterLineEdit_textChanged(const QString &strFilterIn);
     void on_QRButton_clicked();
     void on_UpdateButton_clicked();
 
