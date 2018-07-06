@@ -1,12 +1,18 @@
 #include "governancelist.h"
 #include "ui_governancelist.h"
-#include "../governance.h"
-#include "../governance-object.h"
-#include "../governance-classes.h"
+#include "masternode.h"
+#include "masternode-sync.h"
+#include "masternodeconfig.h"
+#include "masternodeman.h"
+#include "governance.h"
+#include "governance-vote.h"
+#include "governance-classes.h"
+#include "governance-validators.h"
+#include "messagesigner.h"
 #include "clientmodel.h"
 #include "../validation.h"
 #include "../uint256.h"
-#include "qrdialog.h"
+#include "governancedialog.h"
 #include "guiutil.h"
 
 #include <QTimer>
@@ -42,7 +48,7 @@ GovernanceList::GovernanceList(const PlatformStyle *platformStyle, QWidget *pare
 
     contextMenu = new QMenu();
     connect(ui->tableWidgetGobjects, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showContextMenu(const QPoint&)));
-    connect(ui->tableWidgetGobjects, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_QRButton_clicked()));
+    connect(ui->tableWidgetGobjects, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_GovernanceButton_clicked()));
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateGobjects()));
@@ -50,6 +56,194 @@ GovernanceList::GovernanceList(const PlatformStyle *platformStyle, QWidget *pare
 
     fFilterUpdated = false;
     nTimeFilterUpdated = GetTime();
+}
+
+void GovernanceList::on_voteYesButton_clicked()
+{
+    std::string gobjectSingle;
+    {
+        LOCK(cs_gobjlist);
+        // Find selected gobject
+        QItemSelectionModel* selectionModel = ui->tableWidgetGobjects->selectionModel();
+        QModelIndexList selected = selectionModel->selectedRows();
+
+        if(selected.count() == 0) return;
+
+        QModelIndex index = selected.at(0);
+        int nSelectedRow = index.row();
+        gobjectSingle = ui->tableWidgetGobjects->item(nSelectedRow, 0)->text().toStdString();
+
+    }
+    uint256 parsedGobjectHash;
+    parsedGobjectHash.SetHex(gobjectSingle);
+    // Display message box
+    QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Confirm YES vote"),
+                                                               tr("Are you sure you want vote YES on this proposal with all your masternodes?"),
+                                                               QMessageBox::Yes | QMessageBox::Cancel,
+                                                               QMessageBox::Cancel);
+
+    if(retval != QMessageBox::Yes) return;
+
+    WalletModel::EncryptionStatus encStatus = walletModel->getEncryptionStatus();
+
+    if(encStatus == walletModel->Locked || encStatus == walletModel->UnlockedForMixingOnly) {
+        WalletModel::UnlockContext ctx(walletModel->requestUnlock());
+
+        if(!ctx.isValid()) return; // Unlock wallet was cancelled
+        vote_outcome_enum_t VoteValue = vote_outcome_enum_t(1);
+        Vote(parsedGobjectHash, VoteValue);
+        return;
+    }
+    vote_outcome_enum_t VoteValue = vote_outcome_enum_t(1);
+    Vote(parsedGobjectHash, VoteValue);
+}
+
+void GovernanceList::on_voteNoButton_clicked()
+{
+    std::string gobjectSingle;
+    {
+        LOCK(cs_gobjlist);
+        // Find selected gobject
+        QItemSelectionModel* selectionModel = ui->tableWidgetGobjects->selectionModel();
+        QModelIndexList selected = selectionModel->selectedRows();
+
+        if(selected.count() == 0) return;
+
+        QModelIndex index = selected.at(0);
+        int nSelectedRow = index.row();
+        gobjectSingle = ui->tableWidgetGobjects->item(nSelectedRow, 0)->text().toStdString();
+
+    }
+    uint256 parsedGobjectHash;
+    parsedGobjectHash.SetHex(gobjectSingle);
+    // Display message box
+    QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Confirm NO vote"),
+                                                               tr("Are you sure you want vote NO on this proposal with all your masternodes?"),
+                                                               QMessageBox::Yes | QMessageBox::Cancel,
+                                                               QMessageBox::Cancel);
+
+    if(retval != QMessageBox::Yes) return;
+
+    WalletModel::EncryptionStatus encStatus = walletModel->getEncryptionStatus();
+
+    if(encStatus == walletModel->Locked || encStatus == walletModel->UnlockedForMixingOnly) {
+        WalletModel::UnlockContext ctx(walletModel->requestUnlock());
+
+        if(!ctx.isValid()) return; // Unlock wallet was cancelled
+        vote_outcome_enum_t VoteValue = vote_outcome_enum_t(2);
+        Vote(parsedGobjectHash, VoteValue);
+        return;
+    }
+    vote_outcome_enum_t VoteValue = vote_outcome_enum_t(2);
+    Vote(parsedGobjectHash, VoteValue);
+}
+
+void GovernanceList::on_voteAbstainButton_clicked()
+{
+    std::string gobjectSingle;
+    {
+        LOCK(cs_gobjlist);
+        // Find selected gobject
+        QItemSelectionModel* selectionModel = ui->tableWidgetGobjects->selectionModel();
+        QModelIndexList selected = selectionModel->selectedRows();
+
+        if(selected.count() == 0) return;
+
+        QModelIndex index = selected.at(0);
+        int nSelectedRow = index.row();
+        gobjectSingle = ui->tableWidgetGobjects->item(nSelectedRow, 0)->text().toStdString();
+
+    }
+    uint256 parsedGobjectHash;
+    parsedGobjectHash.SetHex(gobjectSingle);
+    // Display message box
+    QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Confirm ABSTAIN vote"),
+                                                               tr("Are you sure you want vote ABSTAIN on this proposal with all your masternodes?"),
+                                                               QMessageBox::Yes | QMessageBox::Cancel,
+                                                               QMessageBox::Cancel);
+
+    if(retval != QMessageBox::Yes) return;
+
+    WalletModel::EncryptionStatus encStatus = walletModel->getEncryptionStatus();
+
+    if(encStatus == walletModel->Locked || encStatus == walletModel->UnlockedForMixingOnly) {
+        WalletModel::UnlockContext ctx(walletModel->requestUnlock());
+
+        if(!ctx.isValid()) return; // Unlock wallet was cancelled
+        vote_outcome_enum_t VoteValue = vote_outcome_enum_t(3);
+        Vote(parsedGobjectHash, VoteValue);
+        return;
+    }
+    vote_outcome_enum_t VoteValue = vote_outcome_enum_t(3);
+    Vote(parsedGobjectHash, VoteValue);
+}
+
+void GovernanceList::Vote(uint256 nHash, vote_outcome_enum_t eVoteOutcome)
+{
+    int nSuccessful = 0;
+    int nFailed = 0;
+    int nStatus = 0;
+    vote_signal_enum_t eVoteSignal = CGovernanceVoting::ConvertVoteSignal("funding");
+
+    for (const auto& mne : masternodeConfig.getEntries()) {
+        std::string strError;
+        std::vector<unsigned char> vchMasterNodeSignature;
+        std::string strMasterNodeSignMessage;
+
+        CPubKey pubKeyCollateralAddress;
+        CKey keyCollateralAddress;
+        CPubKey pubKeyMasternode;
+        CKey keyMasternode;
+
+
+        if(!CMessageSigner::GetKeysFromSecret(mne.getPrivKey(), keyMasternode, pubKeyMasternode)){
+            nFailed++;
+            nStatus = 100;
+            continue;
+        }
+
+        uint256 nTxHash;
+        nTxHash.SetHex(mne.getTxHash());
+
+        int nOutputIndex = 0;
+        if(!ParseInt32(mne.getOutputIndex(), &nOutputIndex)) {
+            continue;
+        }
+
+        COutPoint outpoint(nTxHash, nOutputIndex);
+
+        CMasternode mn;
+        bool fMnFound = mnodeman.Get(outpoint, mn);
+
+        if(!fMnFound) {
+            nFailed++;
+            nStatus = 200;
+            continue;
+        }
+
+        CGovernanceVote vote(mn.outpoint, nHash, eVoteSignal, eVoteOutcome);
+        if(!vote.Sign(keyMasternode, pubKeyMasternode)){
+            nFailed++;
+            nStatus = 300;
+            continue;
+        }
+
+        CGovernanceException exception;
+        if(governance.ProcessVoteAndRelay(vote, exception, *g_connman)) {
+            nSuccessful++;
+        }
+        else {
+            nFailed++;
+            nStatus = 400;
+        }
+
+    }
+    std::string returnObj;
+    returnObj = strprintf("Successfully vote %d masternodes, failed to vote %d, total %d. Error Code:%d", nSuccessful, nFailed, nFailed + nSuccessful, nStatus);
+    QMessageBox msg;
+    msg.setText(QString::fromStdString(returnObj));
+    msg.exec();
+    update();
 }
 
 GovernanceList::~GovernanceList()
@@ -185,7 +379,7 @@ void GovernanceList::on_filterLineEdit_textChanged(const QString &strFilterIn)
     ui->countGobjectLabel->setText(QString::fromStdString(strprintf("Please wait... %d", GOBJECT_UPDATE_SECONDS)));
 }
 
-void GovernanceList::on_QRButton_clicked()
+void GovernanceList::on_GovernanceButton_clicked()
 {
     std::string gobjectSingle;
     {
@@ -203,10 +397,10 @@ void GovernanceList::on_QRButton_clicked()
     }
          uint256 parsedGobjectHash;
          parsedGobjectHash.SetHex(gobjectSingle);
-         ShowQRCode(parsedGobjectHash);
+         ShowGovernanceObject(parsedGobjectHash);
 }
 
-void GovernanceList::ShowQRCode(uint256 gobjectSingle) {
+void GovernanceList::ShowGovernanceObject(uint256 gobjectSingle) {
 
     if(!walletModel || !walletModel->getOptionsModel())
         return;
@@ -287,8 +481,8 @@ void GovernanceList::ShowQRCode(uint256 gobjectSingle) {
     //strHTML += "<b>" + tr("Active") +       ": </b>" + GUIUtil::HtmlEscape(DurationToDHMS(mn.lastPing.sigTime - mn.sigTime)) + "<br>";
     //strHTML += "<b>" + tr("Last Seen") +    ": </b>" + GUIUtil::HtmlEscape(DateTimeStrFormat("%Y-%m-%d %H:%M", mn.lastPing.sigTime + GetOffsetFromUtc())) + "<br>";
 
-    // Open QR dialog
-    QRDialog *dialog = new QRDialog(this);
+    // Open Governance dialog
+    GovernanceDialog *dialog = new GovernanceDialog(this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->setModel(walletModel->getOptionsModel());
     dialog->setInfo(strWindowtitle, strWindowtitle,strHTML, "");

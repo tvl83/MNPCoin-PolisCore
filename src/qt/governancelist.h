@@ -5,6 +5,7 @@
 #include "platformstyle.h"
 #include "sync.h"
 #include "util.h"
+#include "governance.h"
 
 #include <QMenu>
 #include <QTimer>
@@ -36,7 +37,8 @@ public:
     ~GovernanceList();
     void setClientModel(ClientModel *clientModel);
     void setWalletModel(WalletModel *walletModel);
-    void ShowQRCode(uint256 gobjectSingle);
+    void ShowGovernanceObject(uint256 gobjectSingle);
+    void Vote(uint256 nHash, vote_outcome_enum_t eVoteOutcome);
 
 
 private:
@@ -46,6 +48,7 @@ private:
 
 public Q_SLOTS:
     void updateGobjects();
+
 
 Q_SIGNALS:
     void doubleClicked(const QModelIndex&);
@@ -64,8 +67,11 @@ private:
 private Q_SLOTS:
     void showContextMenu(const QPoint &);
     void on_filterLineEdit_textChanged(const QString &strFilterIn);
-    void on_QRButton_clicked();
+    void on_GovernanceButton_clicked();
     void on_UpdateButton_clicked();
+    void on_voteYesButton_clicked();
+    void on_voteNoButton_clicked();
+    void on_voteAbstainButton_clicked();
 
 };
 #endif // GOVERNANCELIST_H
