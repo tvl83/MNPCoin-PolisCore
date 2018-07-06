@@ -20,9 +20,11 @@ class WalletModel;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
-QT_END_NAMESPACE;
+QT_END_NAMESPACE
+
 std::string getValue(std::string, std::string, bool);
 std::string getNumericValue(std::string str, std::string key);
+
 /** Governance Manager page widget */
 class GovernanceList : public QWidget
 {
@@ -33,6 +35,8 @@ public:
     ~GovernanceList();
     void setClientModel(ClientModel *clientModel);
     void setWalletModel(WalletModel *walletModel);
+    void ShowQRCode(std::string gobjectSingle);
+
 
 private:
     QMenu *contextMenu;
