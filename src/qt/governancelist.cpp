@@ -117,7 +117,7 @@ void GovernanceList::updateGobjects()
             std::string s(v.begin(), v.end());
             std::string nameStr = getValue(s, "name", true);
             std::string urlStr = getValue(s, "url", true);
-            int amountStr = getNumericValue(s, "payment_amount");
+            std::string amountStr = getNumericValue(s, "payment_amount");
 
 
             // Define "Funding" for Vote count
@@ -130,7 +130,7 @@ void GovernanceList::updateGobjects()
 
             QString name =  QString::fromStdString(nameStr);
             QString url = QString::fromStdString(urlStr);
-            QString amount = QString::number(amountStr);
+            QString amount = QString::fromStdString(amountStr);
 
 
         QTableWidgetItem *nameItem = new QTableWidgetItem(name);
@@ -211,7 +211,7 @@ std::string getValue(std::string str,std::string key, bool format) {
     return s2;
 }
 
-int getNumericValue(std::string str, std::string key) {
+std::string getNumericValue(std::string str, std::string key){
     std::string s_pattern = "\"" + key + "\"";
 
     int beg = str.find(s_pattern);
@@ -224,6 +224,6 @@ int getNumericValue(std::string str, std::string key) {
     //cout<<f_comma<<", "<<s_comma<<endl;
     std::string s2 = str.substr(f_comma+1, s_comma-f_comma-1);
 
-    int i_dec = std::stoi (s2);
-    return i_dec;
+    //int i_dec = std::stoi (s2);
+    return s2;
 }
