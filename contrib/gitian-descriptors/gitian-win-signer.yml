@@ -1,5 +1,5 @@
 ---
-name: "polis-win-signer"
+name: "poliscore-win-signer"
 suites:
 - "trusty"
 architectures:
