@@ -23,7 +23,7 @@ packages:
 - "python"
 remotes:
 - "url": "https://github.com/polispay/polis.git"
-  "dir": "poliscore"
+  "dir": "polis"
 files: []
 script: |
   WRAP_DIR=$HOME/wrapped
