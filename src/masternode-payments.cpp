@@ -14,7 +14,7 @@
 #include "spork.h"
 #include "util.h"
 
-#include <boost/lexical_cast.hpp>
+#include <string>
 
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments mnpayments;
@@ -455,7 +455,7 @@ bool CMasternodePaymentVote::Sign()
         }
     } else {
         std::string strMessage = masternodeOutpoint.ToStringShort() +
-                    boost::lexical_cast<std::string>(nBlockHeight) +
+                    std::to_string(nBlockHeight) +
                     ScriptToAsmStr(payee);
 
         if(!CMessageSigner::SignMessage(strMessage, vchSig, activeMasternode.keyMasternode)) {
@@ -905,7 +905,7 @@ bool CMasternodePaymentVote::CheckSignature(const CPubKey& pubKeyMasternode, int
         if (!CHashSigner::VerifyHash(hash, pubKeyMasternode, vchSig, strError)) {
             // could be a signature in old format
             std::string strMessage = masternodeOutpoint.ToStringShort() +
-                        boost::lexical_cast<std::string>(nBlockHeight) +
+                        std::to_string(nBlockHeight) +
                         ScriptToAsmStr(payee);
             if(!CMessageSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, strError)) {
                 // nope, not in old format either
@@ -921,7 +921,7 @@ bool CMasternodePaymentVote::CheckSignature(const CPubKey& pubKeyMasternode, int
         }
     } else {
         std::string strMessage = masternodeOutpoint.ToStringShort() +
-                    boost::lexical_cast<std::string>(nBlockHeight) +
+                    std::to_string(nBlockHeight) +
                     ScriptToAsmStr(payee);
 
         if (!CMessageSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, strError)) {
@@ -1009,12 +1009,11 @@ void CMasternodePayments::RequestLowDataPaymentBlocks(CNode* pnode, CConnman& co
         pindex = pindex->pprev;
     }
 
-    auto it = mapMasternodeBlocks.begin();
-
-    while(it != mapMasternodeBlocks.end()) {
+    for (auto& mnBlockPayees : mapMasternodeBlocks) {
+        int nBlockHeight = mnBlockPayees.first;
         int nTotalVotes = 0;
         bool fFound = false;
-        for (const auto& payee : it->second.vecPayees) {
+        for (const auto& payee : mnBlockPayees.second.vecPayees) {
             if(payee.GetVoteCount() >= MNPAYMENTS_SIGNATURES_REQUIRED) {
                 fFound = true;
                 break;
@@ -1025,24 +1024,23 @@ void CMasternodePayments::RequestLowDataPaymentBlocks(CNode* pnode, CConnman& co
         // or no clear winner was found but there are at least avg number of votes
         if(fFound || nTotalVotes >= (MNPAYMENTS_SIGNATURES_TOTAL + MNPAYMENTS_SIGNATURES_REQUIRED)/2) {
             // so just move to the next block
-            ++it;
             continue;
         }
         // DEBUG
         DBG (
             // Let's see why this failed
-            for (const auto& payee : it->second.vecPayees) {
+            for (const auto& payee : mnBlockPayees.second.vecPayees) {
                 CTxDestination address1;
                 ExtractDestination(payee.GetPayee(), address1);
                 CBitcoinAddress address2(address1);
                 printf("payee %s votes %d\n", address2.ToString().c_str(), payee.GetVoteCount());
             }
-            printf("block %d votes total %d\n", it->first, nTotalVotes);
+            printf("block %d votes total %d\n", nBlockHeight, nTotalVotes);
         )
         // END DEBUG
         // Low data block found, let's try to sync it
         uint256 hash;
-        if(GetBlockHash(hash, it->first)) {
+        if(GetBlockHash(hash, nBlockHeight)) {
             vToFetch.push_back(CInv(MSG_MASTERNODE_PAYMENT_BLOCK, hash));
         }
         // We should not violate GETDATA rules
@@ -1052,7 +1050,6 @@ void CMasternodePayments::RequestLowDataPaymentBlocks(CNode* pnode, CConnman& co
             // Start filling new batch
             vToFetch.clear();
         }
-        ++it;
     }
     // Ask for the rest of it
     if(!vToFetch.empty()) {

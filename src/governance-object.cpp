@@ -15,6 +15,7 @@
 #include "util.h"
 
 #include <univalue.h>
+#include <string>
 
 CGovernanceObject::CGovernanceObject():
     cs(),
@@ -225,8 +226,8 @@ std::string CGovernanceObject::GetSignatureMessage() const
 {
     LOCK(cs);
     std::string strMessage = nHashParent.ToString() + "|" +
-        boost::lexical_cast<std::string>(nRevision) + "|" +
-        boost::lexical_cast<std::string>(nTime) + "|" +
+        std::to_string(nRevision) + "|" +
+        std::to_string(nTime) + "|" +
         GetDataAsHexString() + "|" +
         masternodeOutpoint.ToStringShort() + "|" +
         nCollateralHash.ToString();
@@ -776,7 +777,7 @@ void CGovernanceObject::CheckOrphanVotes(CConnman& connman)
             continue;
         }
         CGovernanceException exception;
-        if(!ProcessVote(NULL, vote, exception, connman)) {
+        if(!ProcessVote(nullptr, vote, exception, connman)) {
             LogPrintf("CGovernanceObject::CheckOrphanVotes -- Failed to add orphan vote: %s\n", exception.what());
         }
         else {

@@ -5,7 +5,7 @@ Release is now available from:
 
   <https://www.polis.org/downloads/#wallets>
 
-This is a new major version release, bringing new features, various bugfixes and other
+This is a new minor version release, bringing various bugfixes and other
 improvements.
 
 Please report bugs using the issue tracker at github:
@@ -35,10 +35,11 @@ the database if you decide to use any pre-0.12.2.2 version.
 
 Wallet forward or backward compatibility was not affected.
 
-### Downgrade to 0.12.2.2/3
+### Downgrade to 0.12.2.2/3, 0.12.3.1
 
 Downgrading to these versions does not require any additional actions, should be
 fully compatible.
+
 
 Notable changes
 ===============
@@ -202,10 +203,11 @@ Note that some features were already backported earlier (per-UTXO fix, -assumeva
 (SegWit and feefilter, you can read more about why we did so [here](https://blog.polis.org/segwit-lighting-rbf-in-polis-9536868ca861) and [here](https://github.com/polispay/polis/pull/2025)).
 The alert system was also kept in place for now. We are going to continue backporting the most notable fixes and improvements from Bitcoin Core versions 0.15 and 0.16 in future releases.
 
-A lot of refactoring, code cleanups and other small fixes were done in this release again. We are going to continue making code more reliable and easier to review in future releases as well.
+We also lifted multiple ports restriction on devnet and also incuded other fixes which should improve
+connectivity on devnets which are using nodes with multiple different ports.
 
 
-0.12.3.1 Change log
+0.12.3.2 Change log
 ===================
 
 See detailed [change log](https://github.com/polispay/polis/compare/v0.12.2.3...polispay:v0.12.3) below.
@@ -439,23 +441,10 @@ Credits
 Thanks to everyone who directly contributed to this release:
 
 - Alexander Block
-- Chris Adam
-- Codarren Velvindron
-- crowning-
-- gladcow
-- InhumanPerfection
-- Kamil Woźniak
-- Nathan Marley
-- Oleg Girko
 - PaulieD
-- Semen Martynov
-- Spencer Lievens
-- thephez
 - UdjinM6
 
-As well as Bitcoin Core Developers and everyone who submitted issues,
-reviewed pull requests or helped translating on
-[Transifex](https://www.transifex.com/projects/p/polis/).
+As well as everyone who submitted issues and reviewed pull requests.
 
 
 Older releases
@@ -481,13 +470,14 @@ Polis Core tree 0.12.1.x was a fork of Bitcoin Core tree 0.12.
 
 These release are considered obsolete. Old release notes can be found here:
 
-- [v0.12.2.3](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.12.2.3.md) released Jan/12/2018
-- [v0.12.2.2](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.12.2.2.md) released Dec/17/2017
-- [v0.12.2](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.12.2.md) released Nov/08/2017
-- [v0.12.1](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.12.1.md) released Feb/06/2017
-- [v0.12.0](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.12.0.md) released Jun/15/2015
-- [v0.11.2](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.11.2.md) released Mar/04/2015
-- [v0.11.1](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.11.1.md) released Feb/10/2015
-- [v0.11.0](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.11.0.md) released Jan/15/2015
-- [v0.10.x](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.10.0.md) released Sep/25/2014
-- [v0.9.x](https://github.com/polispay/polis/blob/master/doc/release-notes/polis/release-notes-0.9.0.md) released Mar/13/2014
+- [v0.12.3.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.3.1.md) released Jul/03/2018
+- [v0.12.2.3](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.2.3.md) released Jan/12/2018
+- [v0.12.2.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.2.2.md) released Dec/17/2017
+- [v0.12.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.2.md) released Nov/08/2017
+- [v0.12.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.1.md) released Feb/06/2017
+- [v0.12.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.0.md) released Jun/15/2015
+- [v0.11.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.11.2.md) released Mar/04/2015
+- [v0.11.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.11.1.md) released Feb/10/2015
+- [v0.11.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.11.0.md) released Jan/15/2015
+- [v0.10.x](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.10.0.md) released Sep/25/2014
+- [v0.9.x](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.9.0.md) released Mar/13/2014
