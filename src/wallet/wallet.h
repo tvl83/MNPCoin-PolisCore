@@ -649,6 +649,10 @@ private:
     int64_t nNextResend;
     int64_t nLastResend;
     bool fBroadcastTransactions;
+    // Stake Settings
+    unsigned int nHashDrift;
+    unsigned int nHashInterval;
+    int nStakeSetUpdateTime;
 
     mutable bool fAnonymizableTallyCached;
     mutable std::vector<CompactTallyItem> vecAnonymizableTallyCached;
@@ -674,7 +678,14 @@ private:
 
     /* HD derive new child key (on internal or external chain) */
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
+    bool CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
+                               unsigned int nBits, const CBlock& blockFrom,
+                               unsigned int nTxPrevOffset, std::shared_ptr< const CTransaction> &txPrev,
+                               const COutPoint& prevout, unsigned int &nTimeTx,  bool fPrintProofOfStake) const;
 
+    void FillCoinStakePayments(CMutableTransaction &transaction,
+                               const CScript &kernelScript,
+                               const COutPoint &stakePrevout, CAmount blockReward) const;
     bool fFileBacked;
 
     std::set<int64_t> setInternalKeyPool;
@@ -764,6 +775,12 @@ public:
         fAnonymizableTallyCachedNonDenom = false;
         vecAnonymizableTallyCached.clear();
         vecAnonymizableTallyCachedNonDenom.clear();
+
+        // Stake Settings
+        nHashDrift = 45;
+        nStakeSplitThreshold = 2000;
+        nHashInterval = 22;
+        nStakeSetUpdateTime = 300; // 5 minutes
     }
 
     std::map<uint256, CWalletTx> mapWallet;
@@ -783,6 +800,7 @@ public:
     std::set<COutPoint> setLockedCoins;
 
     int64_t nKeysLeftSinceAutoBackup;
+    uint64_t nStakeSplitThreshold;
 
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
 
@@ -803,6 +821,9 @@ public:
      * assembled
      */
     bool SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int nConfTheirs, uint64_t nMaxAncestors, std::vector<COutput> vCoins, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, CAmount& nValueRet, bool fUseInstantSend = false) const;
+    using StakeCoinsSet = std::set<std::pair<const CWalletTx*, unsigned int> >;
+    bool MintableCoins();
+    bool SelectStakeCoins(StakeCoinsSet& setCoins, CAmount nTargetAmount, const CScript &scriptFilterPubKey = CScript()) const;
 
     // Coin selection
     bool SelectCoinsByDenominations(int nDenom, CAmount nValueMin, CAmount nValueMax, std::vector<CTxDSIn>& vecTxDSInRet, std::vector<COutput>& vCoinsRet, CAmount& nValueRet, int nPrivateSendRoundsMin, int nPrivateSendRoundsMax);
@@ -937,7 +958,8 @@ public:
     bool CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, int& nChangePosInOut,
                            std::string& strFailReason, const CCoinControl *coinControl = NULL, bool sign = true, AvailableCoinsType nCoinType=ALL_COINS, bool fUseInstantSend=false);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, CConnman* connman, CValidationState& state, const std::string& strCommand="tx");
-
+    bool CreateCoinStake(unsigned int nBits, CAmount blockReward,
+                         CMutableTransaction& txNew, unsigned int& nTxNewTime);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);
     bool ConvertList(std::vector<CTxIn> vecTxIn, std::vector<CAmount>& vecAmounts);
 

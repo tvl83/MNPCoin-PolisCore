@@ -150,6 +150,15 @@ public:
         consensus.fPowNoRetargeting = false;
         consensus.nPowKGWHeight = 551;
         consensus.nPowDGWHeight = 551;
+
+        // Stake information
+        consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
+        consensus.nPosTargetTimespan = 60 * 40;
+        consensus.nStakeMinAge = 60 * 60;
+        consensus.nStakeMaxAge = 60 * 60 * 24; // one day
+        // POS hard fork date
+        //consensus.nLastPoWBlock = 183620;
+        consensus.nLastPoWBlock = 181014;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -302,6 +311,16 @@ public:
         consensus.fPowNoRetargeting = false;
         consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
         consensus.nPowDGWHeight = 4001;
+
+        // Stake info
+        // Stake information
+
+        consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
+        consensus.nPosTargetTimespan = 60 * 40;
+        consensus.nStakeMinAge = 60 * 60;
+        consensus.nStakeMaxAge = 60 * 60 * 24; // one day
+        consensus.nLastPoWBlock = 75;
+
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -431,6 +450,18 @@ public:
         consensus.fPowNoRetargeting = false;
         consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
         consensus.nPowDGWHeight = 4001;
+
+        // Stake info
+
+        // Stake information
+
+        consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
+        consensus.nPosTargetTimespan = 60 * 40;
+        consensus.nStakeMinAge = 60 * 60;
+        consensus.nStakeMaxAge = 60 * 60 * 24; // one day
+        consensus.nLastPoWBlock = 180675;
+
+
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;

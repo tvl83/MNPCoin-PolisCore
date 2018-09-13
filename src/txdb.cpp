@@ -359,22 +359,34 @@ bool CBlockTreeDB::LoadBlockIndexGuts(boost::function<CBlockIndex*(const uint256
             if (pcursor->GetValue(diskindex)) {
                 // Construct block index object
                 CBlockIndex* pindexNew = insertBlockIndex(diskindex.GetBlockHash());
-                pindexNew->pprev          = insertBlockIndex(diskindex.hashPrev);
-                pindexNew->nHeight        = diskindex.nHeight;
-                pindexNew->nFile          = diskindex.nFile;
-                pindexNew->nDataPos       = diskindex.nDataPos;
-                pindexNew->nUndoPos       = diskindex.nUndoPos;
-                pindexNew->nVersion       = diskindex.nVersion;
-                pindexNew->hashMerkleRoot = diskindex.hashMerkleRoot;
-                pindexNew->nTime          = diskindex.nTime;
-                pindexNew->nBits          = diskindex.nBits;
-                pindexNew->nNonce         = diskindex.nNonce;
-                pindexNew->nStatus        = diskindex.nStatus;
-                pindexNew->nTx            = diskindex.nTx;
+                pindexNew->pprev            = insertBlockIndex(diskindex.hashPrev);
+                pindexNew->nHeight          = diskindex.nHeight;
+                pindexNew->nFile            = diskindex.nFile;
+                pindexNew->nDataPos         = diskindex.nDataPos;
+                pindexNew->nUndoPos         = diskindex.nUndoPos;
+                pindexNew->nVersion         = diskindex.nVersion;
+                pindexNew->hashMerkleRoot   = diskindex.hashMerkleRoot;
+                pindexNew->nTime            = diskindex.nTime;
+                pindexNew->nBits            = diskindex.nBits;
+                pindexNew->nNonce           = diskindex.nNonce;
+                pindexNew->nStatus          = diskindex.nStatus;
+                pindexNew->nTx              = diskindex.nTx;
+                //Proof Of Stake
+                pindexNew->nMint            = diskindex.nMint;
+                pindexNew->nMoneySupply     = diskindex.nMoneySupply;
+                pindexNew->nFlags           = diskindex.nFlags;
+                pindexNew->nStakeModifier   = diskindex.nStakeModifier;
+                pindexNew->prevoutStake     = diskindex.prevoutStake;
+                pindexNew->nStakeTime       = diskindex.nStakeTime;
+                pindexNew->hashProofOfStake = diskindex.hashProofOfStake;
 
-                if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, Params().GetConsensus()))
-                    return error("%s: CheckProofOfWork failed: %s", __func__, pindexNew->ToString());
-
+                if(pindexNew->nHeight <= Params().GetConsensus().nLastPoWBlock)
+                {
+                    if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, Params().GetConsensus()))
+                    {
+                        return error("%s: CheckProofOfWork failed: %s", __func__, pindexNew->ToString());
+                    }
+                }
                 pcursor->Next();
             } else {
                 return error("%s: failed to read value", __func__);

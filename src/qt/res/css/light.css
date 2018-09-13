@@ -694,6 +694,11 @@ qproperty-alignment: 'AlignVCenter | AlignLeft';
 margin-left:3px;
 }
 
+QWidget .QFrame#frame .QLabel#labelStakeStatus { /* Wallet Sync Status */
+    qproperty-alignment: 'AlignVCenter | AlignLeft';
+    margin-left:3px;
+}
+
 QWidget .QFrame#frame .QLabel#labelSpendable { /* Spendable Header */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:12px;
@@ -707,7 +712,7 @@ margin-left:16px;
 }
 
 QWidget .QFrame#frame .QLabel#labelBalanceText { /* Available Balance Label */
-qproperty-alignment: 'AlignVCenter | AlignRight';
+qproperty-alignment: 'AlignVCenter | AlignCenter';
 min-width:160px;
 background-color:#2E4D7C;
 color:#ffffff;
@@ -716,6 +721,42 @@ padding-right:5px;
 font-size:14px;
 font-weight: bold;
 min-height:35px;
+}
+
+QWidget .QFrame#frame .QLabel#labelStakeInfo { /* Available Balance Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    background-color:#2E4D7C;
+    color:#ffffff;
+    margin-right:5px;
+    padding-right:5px;
+    font-size:14px;
+    font-weight: bold;
+    min-height:35px;
+}
+
+QWidget .QFrame#frame .QLabel#labelWalletInfo { /* Available Balance Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    background-color:#2E4D7C;
+    color:#ffffff;
+    margin-right:5px;
+    padding-right:5px;
+    font-size:14px;
+    font-weight: bold;
+    min-height:35px;
+}
+
+QWidget .QFrame#frame .QLabel#labelChainInfoText { /* Available Balance Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    background-color:#2E4D7C;
+    color:#ffffff;
+    margin-right:5px;
+    padding-right:5px;
+    font-size:14px;
+    font-weight: bold;
+    min-height:35px;
 }
 
 QWidget .QFrame#frame .QLabel#labelBalance { /* Available Balance */
@@ -733,12 +774,89 @@ margin-left:16px;
 }
 
 QWidget .QFrame#frame .QLabel#labelPendingText { /* Pending Balance Label */
-qproperty-alignment: 'AlignVCenter | AlignRight';
+qproperty-alignment: 'AlignVCenter | AlignCenter';
 min-width:160px;
 font-size:12px;
 background-color:#F8F6F6;
 margin-right:5px;
 padding-right:5px;
+}
+
+QWidget .QFrame#frame .QLabel#labelStakeText { /* Stake Balance Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    font-size:12px;
+    background-color:#F8F6F6;
+    margin-right:5px;
+    padding-right:5px;
+}
+
+QWidget .QFrame#frame .QLabel#labelStakeStatusText { /* Stake Balance Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    font-size:12px;
+    background-color:#F8F6F6;
+    margin-right:5px;
+    padding-right:5px;
+}
+
+QWidget .QFrame#frame .QLabel#labelWalletStatusText { /* Wallet Status Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    font-size:12px;
+    background-color:#F8F6F6;
+    margin-right:5px;
+    padding-right:5px;
+}
+
+QWidget .QFrame#frame .QLabel#labelHeadersText { /* Headers Status Label */
+     qproperty-alignment: 'AlignVCenter | AlignCenter';
+     min-width:160px;
+     font-size:12px;
+     background-color:#F8F6F6;
+     margin-right:5px;
+     padding-right:5px;
+ }
+
+QWidget .QFrame#frame .QLabel#labelBlocksText { /* Blocks Status Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    font-size:12px;
+    background-color:#F8F6F6;
+    margin-right:5px;
+    padding-right:5px;
+}
+
+QWidget .QFrame#frame .QLabel#labelMnListText { /* Masternode List Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    font-size:12px;
+    background-color:#F8F6F6;
+    margin-right:5px;
+    padding-right:5px;
+}
+
+QWidget .QFrame#frame .QLabel#labelGobjectListText { /* Gobject List Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    font-size:12px;
+    background-color:#F8F6F6;
+    margin-right:5px;
+    padding-right:5px;
+}
+
+QWidget .QFrame#frame .QLabel#labelGobjectList { /* Governance List Sync Status */
+    qproperty-alignment: 'AlignVCenter | AlignLeft';
+    margin-left:3px;
+}
+
+QWidget .QFrame#frame .QLabel#labelTransactionsStatusText{ /* Transactions Status Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    font-size:12px;
+    background-color:#F8F6F6;
+    margin-right:5px;
+    padding-right:5px;
 }
 
 QWidget .QFrame#frame .QLabel#labelUnconfirmed { /* Pending Balance */
@@ -754,7 +872,7 @@ margin-left:16px;
 }
 
 QWidget .QFrame#frame .QLabel#labelImmatureText { /* Immature Balance Label */
-qproperty-alignment: 'AlignVCenter | AlignRight';
+qproperty-alignment: 'AlignVCenter | AlignCenter';
 min-width:160px;
 font-size:12px;
 background-color:#F8F6F6;
@@ -775,7 +893,7 @@ margin-left:16px;
 }
 
 QWidget .QFrame#frame .QLabel#labelTotalText { /* Total Balance Label */
-qproperty-alignment: 'AlignVCenter | AlignRight';
+qproperty-alignment: 'AlignVCenter | AlignCenter';
 min-width:160px;
 font-size:12px;
 background-color:#F8F6F6;
@@ -820,14 +938,16 @@ font-size:15px;
 min-height:24px;
 }
 
-QWidget .QFrame#frame_2 .QLabel#labelTransactionsStatus { /* Recent Transactions Sync Status */
-qproperty-alignment: 'AlignBottom | AlignRight';
-min-width:93px;
-margin-top:83px;
-margin-left:16px;
-margin-right:5px;
-min-height:16px;
+QWidget .QFrame#frame .QLabel#labelTransactionsStatus { /* Transaction Sync Status */
+    qproperty-alignment: 'AlignVCenter | AlignLeft';
+    margin-left:3px;
 }
+
+QWidget .QFrame#frame .QLabel#labelMnList { /* Masternode List Sync Status */
+    qproperty-alignment: 'AlignVCenter | AlignLeft';
+    margin-left:3px;
+}
+
 
 QWidget .QFrame#frame_2 QListView { /* Transaction List */
 font-weight:normal;

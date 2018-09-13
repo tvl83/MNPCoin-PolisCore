@@ -428,7 +428,7 @@ void CSuperblockManager::CreateSuperblock(CMutableTransaction& txNewRet, int nBl
     DBG( std::cout << "CSuperblockManager::CreateSuperblock End" << std::endl; );
 }
 
-bool CSuperblockManager::IsValid(const CTransaction& txNew, int nBlockHeight, CAmount blockReward)
+bool CSuperblockManager::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward)
 {
     // GET BEST SUPERBLOCK, SHOULD MATCH
     LOCK(governance.cs);
@@ -661,7 +661,7 @@ CAmount CSuperblock::GetPaymentsTotalAmount()
 *   - Does this transaction match the superblock?
 */
 
-bool CSuperblock::IsValid(const CTransaction& txNew, int nBlockHeight, CAmount blockReward)
+bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward)
 {
     // TODO : LOCK(cs);
     // No reason for a lock here now since this method only accesses data
@@ -677,7 +677,7 @@ bool CSuperblock::IsValid(const CTransaction& txNew, int nBlockHeight, CAmount b
 
     // CONFIGURE SUPERBLOCK OUTPUTS
 
-    int nOutputs = txNew.vout.size();
+    int nOutputs = txNew->vout.size();
     int nPayments = CountPayments();
     int nMinerPayments = nOutputs - nPayments;
 
@@ -704,7 +704,7 @@ bool CSuperblock::IsValid(const CTransaction& txNew, int nBlockHeight, CAmount b
     }
 
     // miner should not get more than he would usually get
-    CAmount nBlockValue = txNew.GetValueOut();
+    CAmount nBlockValue = txNew->GetValueOut();
     if(nBlockValue > blockReward + nPaymentsTotalAmount) {
         LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid, block value limit exceeded: block %lld, limit %lld\n", nBlockValue, blockReward + nPaymentsTotalAmount);
         return false;
@@ -723,8 +723,8 @@ bool CSuperblock::IsValid(const CTransaction& txNew, int nBlockHeight, CAmount b
 
         for (int j = nVoutIndex; j < nOutputs; j++) {
             // Find superblock payment
-            fPaymentMatch = ((payment.script == txNew.vout[j].scriptPubKey) &&
-                             (payment.nAmount == txNew.vout[j].nValue));
+            fPaymentMatch = ((payment.script == txNew->vout[j].scriptPubKey) &&
+                             (payment.nAmount == txNew->vout[j].nValue));
 
             if (fPaymentMatch) {
                 nVoutIndex = j;

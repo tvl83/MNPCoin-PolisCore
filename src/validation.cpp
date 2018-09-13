@@ -2032,6 +2032,10 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
             view.SetBestBlock(pindex->GetBlockHash());
         return true;
     }
+    if (pindex->nHeight > Params().GetConsensus().nLastPoWBlock && block.IsProofOfWork()) {
+        return state.DoS(100, error("ConnectBlock() : PoW period ended"),
+                         REJECT_INVALID, "PoW-ended");
+    }
 
     bool fScriptChecks = true;
     if (!hashAssumeValid.IsNull()) {
@@ -2307,8 +2311,9 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError)) {
         return state.DoS(0, error("ConnectBlock(POLIS): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }
+    const auto& coinbaseTransaction = (pindex->nHeight > Params().GetConsensus().nLastPoWBlock ? block.vtx[1] : block.vtx[0]);
 
-    if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockReward)) {
+    if (!IsBlockPayeeValid(coinbaseTransaction, pindex->nHeight, blockReward)) {
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("ConnectBlock(POLIS): couldn't find masternode or superblock payments"),
                                 REJECT_INVALID, "bad-cb-payee");
@@ -3632,8 +3637,10 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
 
 bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock> pblock, bool fForceProcessing, bool *fNewBlock)
 {
+    (cs_main);
+
     {
-        CBlockIndex *pindex = NULL;
+        CBlockIndex *pindex = nullptr;
         if (fNewBlock) *fNewBlock = false;
         CValidationState state;
         // Ensure that CheckBlock() passes before calling AcceptBlock, as
@@ -3644,12 +3651,11 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
 
         if (ret) {
             // Store to disk
-            ret = AcceptBlock(pblock, state, chainparams, &pindex, fForceProcessing, NULL, fNewBlock);
+            ret = AcceptBlock(pblock, state, chainparams, &pindex, fForceProcessing, nullptr, fNewBlock);
         }
-        CheckBlockIndex(chainparams.GetConsensus());
         if (!ret) {
             GetMainSignals().BlockChecked(*pblock, state);
-            return error("%s: AcceptBlock FAILED", __func__);
+            return error("%s: AcceptBlock FAILED (%s)", __func__, FormatStateMessage(state));
         }
     }
 
@@ -3657,9 +3663,8 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
 
     CValidationState state; // Only used to report errors, not invalidity - ignore it
     if (!ActivateBestChain(state, chainparams, pblock))
-        return error("%s: ActivateBestChain failed", __func__);
+        return error("%s: ActivateBestChain failed (%s)", __func__, FormatStateMessage(state));
 
-    LogPrintf("%s : ACCEPTED\n", __func__);
     return true;
 }
 
