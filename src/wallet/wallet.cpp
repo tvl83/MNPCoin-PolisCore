@@ -204,9 +204,9 @@ CAmount GetStakeReward(CAmount blockReward, unsigned int percentage)
     return (blockReward / 100) * percentage;
 }
 
-bool CWallet::CreateCoinStakeKernel(CScript &kernelScript,const CScript &stakeScript,
+bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
                                     unsigned int nBits, const CBlock &blockFrom,
-                                    unsigned int nTxPrevOffset, std::shared_ptr< const CTransaction> &txPrev,
+                                    unsigned int nTxPrevOffset, const CTransactionRef &txPrev,
                                     const COutPoint &prevout, unsigned int &nTimeTx, bool fPrintProofOfStake) const
 {
     unsigned int nTryTime = 0;
@@ -4018,7 +4018,8 @@ void CWallet::ListAccountCreditDebit(const std::string& strAccount, std::list<CA
 bool CWallet::CreateCoinStake(unsigned int nBits,
                               CAmount blockReward,
                               CMutableTransaction &txNew,
-                              unsigned int &nTxNewTime)
+                              unsigned int &nTxNewTime,
+                              std::vector<CWalletTx*> &vwtxPrev)
 {
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences
@@ -4051,13 +4052,12 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
             return error("Failed to select coins for staking");
         }
 
+        LogPrintf("Selected %d coins for staking\n", setStakeCoins.size());
         nLastStakeSetUpdate = GetTime();
     }
 
     if (setStakeCoins.empty())
         return error("CreateCoinStake() : No Coins to stake");
-
-    std::vector< std::pair<const CWalletTx*, unsigned int> > vwtxPrev;
 
     //prevent staking a time that won't be accepted
     if (GetAdjustedTime() <= chainActive.Tip()->nTime)
@@ -4074,8 +4074,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
         if (it != mapBlockIndex.end())
             pindex = it->second;
         else {
-            if (fDebug)
-                LogPrintf("CreateCoinStake() failed to find block index \n");
+            LogPrintf("failed to find block index ");
             continue;
         }
 
@@ -4087,13 +4086,13 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
         //iterates each utxo inside of CheckStakeKernelHash()
         CScript kernelScript;
         auto stakeScript = pcoin.first->tx->vout[pcoin.second].scriptPubKey;
-        std::shared_ptr <const CTransaction> toSharedtx = std::make_shared<const CTransaction>(*pcoin.first->tx);
         fKernelFound = CreateCoinStakeKernel(kernelScript, stakeScript, nBits,
-                                             block, sizeof(CBlock), toSharedtx,
+                                             block, sizeof(CBlock), pcoin.first->tx,
                                              prevoutStake, nTxNewTime, false);
 
         if(fKernelFound)
         {
+
             FillCoinStakePayments(txNew, kernelScript, prevoutStake, blockReward);
             break;
         }
@@ -4101,17 +4100,15 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
 
     if(!fKernelFound)
     {
-        if(fDebug) {
-            LogPrintf("CreateCoinStake() : Failed to find coinstake kernel\n");
-        }
+        LogPrintf("Failed to find coinstake kernel");
         return false;
     }
 
     // Limit size
     unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
-    if (nBytes >= DEFAULT_BLOCK_MAX_SIZE / 5){
-        return error("CreateCoinStake() : exceeded coinstake size limit");
-    }
+    //    if (nBytes >= DEFAULT_BLOCK_MAX_SIZE / 5){
+    //        return error("CreateCoinStake() : exceeded coinstake size limit");
+    //    }
 
     // Update coinbase transaction with additional info about masternode and governance payments,
     // get some info back to pass to getblocktemplate
@@ -4122,16 +4119,6 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     AdjustMasternodePayment(txNew, txoutMasternode);
     LogPrintf("CreateCoinStake -- nBlockHeight %d blockReward %lld txoutMasternode %s txNew %s",
               nHeight, blockReward, txoutMasternode.ToString(), txNew.ToString());
-
-    // Sign
-    int nIn = 0;
-    for(const auto &pcoinEntry : vwtxPrev)
-    {
-        if(!SignSignature(*this, *pcoinEntry.first, txNew, nIn++))
-        {
-            continue;
-        }
-    }
 
     nLastStakeSetUpdate = 0; //this will trigger stake set to repopulate next round
     return true;

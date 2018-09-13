@@ -680,8 +680,8 @@ private:
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
     bool CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
                                unsigned int nBits, const CBlock& blockFrom,
-                               unsigned int nTxPrevOffset, std::shared_ptr< const CTransaction> &txPrev,
-                               const COutPoint& prevout, unsigned int &nTimeTx,  bool fPrintProofOfStake) const;
+                               unsigned int nTxPrevOffset, const CTransactionRef &txPrev,
+                               const COutPoint& prevout, unsigned int &nTimeTx, bool fPrintProofOfStake) const;
 
     void FillCoinStakePayments(CMutableTransaction &transaction,
                                const CScript &kernelScript,
@@ -959,7 +959,8 @@ public:
                            std::string& strFailReason, const CCoinControl *coinControl = NULL, bool sign = true, AvailableCoinsType nCoinType=ALL_COINS, bool fUseInstantSend=false);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, CConnman* connman, CValidationState& state, const std::string& strCommand="tx");
     bool CreateCoinStake(unsigned int nBits, CAmount blockReward,
-                         CMutableTransaction& txNew, unsigned int& nTxNewTime);
+                         CMutableTransaction& txNew, unsigned int& nTxNewTime,
+                         std::vector<CWalletTx *> &vwtxPrev);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);
     bool ConvertList(std::vector<CTxIn> vecTxIn, std::vector<CAmount>& vecAmounts);
 

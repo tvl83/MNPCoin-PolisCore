@@ -113,6 +113,7 @@ void BlockAssembler::resetBlock()
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, const CChainParams& chainparams, const CScript& scriptPubKeyIn, bool fProofOfStake)
 {
     int64_t nTimeStart = GetTimeMicros();
+    LogPrintf("CreateNewBlock");
 
     resetBlock();
 
@@ -162,24 +163,27 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
     coinbaseTx.vin[0].prevout.SetNull();
     coinbaseTx.vout.resize(1);
     coinbaseTx.vout[0].scriptPubKey = scriptPubKeyIn;
+    CAmount blockReward = nFees + GetBlockSubsidy(pindexPrev->nBits, pindexPrev->nHeight, Params().GetConsensus());
+    std::vector<CWalletTx*> vwtxPrev;
 
     // NOTE: unlike in bitcoin, we need to pass PREVIOUS block height here
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
-    CAmount blockReward = nFees + GetBlockSubsidy(pindexPrev->nBits, pindexPrev->nHeight, Params().GetConsensus());
     if (fProofOfStake)
     {
         boost::this_thread::interruption_point();
         pblock->nBits = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus());
-        CMutableTransaction txCoinStake;
+        CMutableTransaction coinstakeTx;
         int64_t nSearchTime = pblock->nTime; // search to current time
         bool fStakeFound = false;
         if (nSearchTime >= nLastCoinStakeSearchTime) {
             unsigned int nTxNewTime = 0;
-            if (wallet->CreateCoinStake(pblock->nBits, blockReward, txCoinStake, nTxNewTime))
+            if (wallet->CreateCoinStake(pblock->nBits, blockReward,
+                                        coinstakeTx, nTxNewTime,
+                                        vwtxPrev))
             {
                 pblock->nTime = nTxNewTime;
                 coinbaseTx.vout[0].SetEmpty();
-                pblock->vtx.emplace_back(MakeTransactionRef(txCoinStake));
+                pblock->vtx.emplace_back(MakeTransactionRef(coinstakeTx));
                 fStakeFound = true;
             }
 
@@ -211,9 +215,9 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
     pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(*pblock->vtx[0]);
 
     CValidationState state;
-    if (!TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
-        throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, FormatStateMessage(state)));
-    }
+    // if (!TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
+    //    throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, FormatStateMessage(state)));
+    // }
     int64_t nTime2 = GetTimeMicros();
 
     LogPrint("bench", "CreateNewBlock() packages: %.2fms (%d packages, %d updated descendants), validity: %.2fms (total %.2fms)\n", 0.001 * (nTime1 - nTimeStart), nPackagesSelected, nDescendantsUpdated, 0.001 * (nTime2 - nTime1), 0.001 * (nTime2 - nTimeStart));
@@ -670,17 +674,20 @@ void static BitcoinMiner(const CChainParams& chainparams, CConnman& connman,
                 } while (true);
             }
 
-            if(fProofOfStake)
-            {
-                if (chainActive.Tip()->nHeight < chainparams.GetConsensus().nLastPoWBlock ||
-                    pwallet->IsLocked() || !masternodeSync.IsSynced())
-                {
-                    nLastCoinStakeSearchInterval = 0;
-                    MilliSleep(5000);
-                    continue;
-                }
-
-            }
+           //  if(fProofOfStake)
+           //  {
+           //     if (chainActive.Tip()->nHeight < chainparams.GetConsensus().nLastPoWBlock ||
+           //         pwallet->IsLocked()
+                    // || !masternodeSync.IsSynced()
+           //             )
+           //     {
+           //         LogPrintf("Not capable staking");
+           //         nLastCoinStakeSearchInterval = 0;
+           //         MilliSleep(5000);
+           //         continue;
+           //     }
+            //
+           // }
 
             if(!fProofOfStake && chainActive.Tip()->nHeight >= chainparams.GetConsensus().nLastPoWBlock)
             {
@@ -723,13 +730,14 @@ void static BitcoinMiner(const CChainParams& chainparams, CConnman& connman,
             }
 
             // check if block is valid
-            CValidationState state;
-            if (!TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
-                throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, FormatStateMessage(state)));
-            }
+            // CValidationState state;
+            // if (!TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
+            //    throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, FormatStateMessage(state)));
+            // }
 
             // process proof of stake block
             if(fProofOfStake) {
+                LogPrintf("Processing POS block");
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
                 bool ret = ProcessBlockFound(pblock, chainparams);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);

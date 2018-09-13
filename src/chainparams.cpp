@@ -157,8 +157,8 @@ public:
         consensus.nStakeMinAge = 60 * 60;
         consensus.nStakeMaxAge = 60 * 60 * 24; // one day
         // POS hard fork date
-        //consensus.nLastPoWBlock = 183620;
-        consensus.nLastPoWBlock = 181014;
+         consensus.nLastPoWBlock = 183620;
+         // consensus.nLastPoWBlock = 181040;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -313,8 +313,6 @@ public:
         consensus.nPowDGWHeight = 4001;
 
         // Stake info
-        // Stake information
-
         consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
         consensus.nPosTargetTimespan = 60 * 40;
         consensus.nStakeMinAge = 60 * 60;
@@ -451,7 +449,6 @@ public:
         consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
         consensus.nPowDGWHeight = 4001;
 
-        // Stake info
 
         // Stake information
 
@@ -603,6 +600,13 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_BIP147].bit = 2;
         consensus.vDeployments[Consensus::DEPLOYMENT_BIP147].nStartTime = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_BIP147].nTimeout = 999999999999ULL;
+
+        // Stake info
+        consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
+        consensus.nPosTargetTimespan = 60 * 40;
+        consensus.nStakeMinAge = 50;
+        consensus.nStakeMaxAge = 60 * 60 * 24; // one day
+        consensus.nLastPoWBlock = 12;
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
