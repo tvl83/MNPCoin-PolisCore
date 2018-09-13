@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "chain.h"
+#include "util.h"
 
 /**
  * CChain implementation
@@ -110,7 +111,7 @@ unsigned int CBlockIndex::GetStakeEntropyBit() const
 {
     unsigned int nEntropyBit = (UintToArith256(GetBlockHash()).GetLow64() & 1);
     if (GetBoolArg("-printstakemodifier", false))
-        LogPrintf("GetStakeEntropyBit: nHeight=%u hashBlock=%s nEntropyBit=%u\n", nHeight, GetBlockHash().ToString().c_str(), nEntropyBit);
+         LogPrintf("GetStakeEntropyBit: nHeight=%u hashBlock=%s nEntropyBit=%u\n", nHeight, GetBlockHash().ToString().c_str(), nEntropyBit);
 
     return nEntropyBit;
 }
