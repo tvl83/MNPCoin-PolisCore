@@ -145,7 +145,7 @@ public:
         consensus.DIP0001Height = 12096;
         consensus.powLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000");
         consensus.nPowTargetTimespan = 24 * 60 * 60; // polis: 1 day
-        consensus.nPowTargetSpacing = 120 ; // polis: 2.5 minutes
+        consensus.nPowTargetSpacing = 120 ; // polis: 2 minutes
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nPowKGWHeight = 551;
@@ -306,18 +306,18 @@ public:
         consensus.DIP0001Height = 5500;
         consensus.powLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000");
         consensus.nPowTargetTimespan = 60 * 60 * 24; // polis: 1 day
-        consensus.nPowTargetSpacing = 40; // polis: 2.5 minutes
+        consensus.nPowTargetSpacing = 2 * 60; // polis: 2 minutes
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
         consensus.nPowDGWHeight = 4001;
 
         // Stake info
-        consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
+        consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
         consensus.nPosTargetTimespan = 60 * 40;
-        consensus.nStakeMinAge = 60 * 60;
+        consensus.nStakeMinAge = 60;
         consensus.nStakeMaxAge = 60 * 60 * 24; // one day
-        consensus.nLastPoWBlock = 75;
+        consensus.nLastPoWBlock = 50;
 
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
