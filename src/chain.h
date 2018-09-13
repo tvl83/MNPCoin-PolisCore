@@ -239,6 +239,14 @@ public:
         nSequenceId = 0;
         nTimeMax = 0;
 
+        nMint = 0;
+        nMoneySupply = 0;
+        nFlags = 0;
+        nStakeModifier = 0;
+        nStakeModifierChecksum = 0;
+        prevoutStake.SetNull();
+        nStakeTime = 0;
+
         nVersion       = 0;
         hashMerkleRoot = uint256();
         nTime          = 0;
@@ -260,6 +268,7 @@ public:
         nTime          = block.nTime;
         nBits          = block.nBits;
         nNonce         = block.nNonce;
+
         //Proof of Stake
         bnChainTrust = uint256();
         nMint = 0;

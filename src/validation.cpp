@@ -1518,8 +1518,8 @@ int GetSpendHeight(const CCoinsViewCache& inputs)
 }
 
 namespace Consensus {
-bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight)
-{
+    bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight)
+    {
         // This doesn't trigger the DoS code on purpose; if it did, it would make it easier
         // for an attacker to attempt to split the network.
         if (!inputs.HaveInputs(tx))
@@ -1534,11 +1534,11 @@ bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoins
             assert(!coin.IsSpent());
 
             // If prev is coinbase, check that it's matured
-            if (coin.IsCoinBase()) {
+            if (coin.IsCoinBase() || coin.IsCoinStake()) {
                 if (nSpendHeight - coin.nHeight < COINBASE_MATURITY)
                     return state.Invalid(false,
-                        REJECT_INVALID, "bad-txns-premature-spend-of-coinbase",
-                        strprintf("tried to spend coinbase at depth %d", nSpendHeight - coin.nHeight));
+                                         REJECT_INVALID, "bad-txns-premature-spend-of-coinbase",
+                                         strprintf("tried to spend coinbase at depth %d", nSpendHeight - coin.nHeight));
             }
 
             // Check for negative or overflow input values
@@ -1548,19 +1548,22 @@ bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoins
 
         }
 
-        if (nValueIn < tx.GetValueOut())
-            return state.DoS(100, false, REJECT_INVALID, "bad-txns-in-belowout", false,
-                strprintf("value in (%s) < value out (%s)", FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())));
+        if (!tx.IsCoinStake()) {
+            if (nValueIn < tx.GetValueOut())
+                return state.DoS(100, false, REJECT_INVALID, "bad-txns-in-belowout", false,
+                                 strprintf("value in (%s) < value out (%s)", FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())));
 
-        // Tally transaction fees
-        CAmount nTxFee = nValueIn - tx.GetValueOut();
-        if (nTxFee < 0)
-            return state.DoS(100, false, REJECT_INVALID, "bad-txns-fee-negative");
-        nFees += nTxFee;
-        if (!MoneyRange(nFees))
-            return state.DoS(100, false, REJECT_INVALID, "bad-txns-fee-outofrange");
-    return true;
-}
+            // Tally transaction fees
+            CAmount nTxFee = nValueIn - tx.GetValueOut();
+            if (nTxFee < 0)
+                return state.DoS(100, false, REJECT_INVALID, "bad-txns-fee-negative");
+            nFees += nTxFee;
+            if (!MoneyRange(nFees))
+                return state.DoS(100, false, REJECT_INVALID, "bad-txns-fee-outofrange");
+        }
+
+        return true;
+    }
 }// namespace Consensus
 
 bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsViewCache &inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck> *pvChecks)
