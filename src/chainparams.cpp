@@ -581,7 +581,7 @@ public:
         consensus.DIP0001Height = 2000;
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 24 * 60 * 60; // polis: 1 day
-        consensus.nPowTargetSpacing = 2.5 * 60; // polis: 2.5 minutes
+        consensus.nPowTargetSpacing = 120; // polis: 2.5 minutes
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
         consensus.nPowKGWHeight = 15200; // same as mainnet
@@ -602,11 +602,11 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_BIP147].nTimeout = 999999999999ULL;
 
         // Stake info
-        consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
+        consensus.nPosTargetSpacing = 30; // PoSW: 1 minutes
         consensus.nPosTargetTimespan = 60 * 40;
-        consensus.nStakeMinAge = 50;
+        consensus.nStakeMinAge = 2;
         consensus.nStakeMaxAge = 60 * 60 * 24; // one day
-        consensus.nLastPoWBlock = 12;
+        consensus.nLastPoWBlock = 15;
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
