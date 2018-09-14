@@ -258,7 +258,7 @@ void CWallet::FillCoinStakePayments(CMutableTransaction &transaction,
     //                if(!tposContract.IsValid())
     auto nCoinStakeReward = nCredit + GetStakeReward(blockReward, percentage);
 
-    transaction.vin.push_back(CTxIn(stakePrevout));
+    transaction.vin.emplace_back(CTxIn(stakePrevout));
 
     //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
 
@@ -2904,6 +2904,30 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const int nConfMin
 
     return true;
 }
+
+bool CWallet::MintableCoins()
+{
+    //    CAmount nBalance = GetBalance();
+    //    if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
+    //        return error("MintableCoins() : invalid reserve balance amount");
+    //    if (nBalance <= nReserveBalance)
+    //        return false;
+
+    std::vector<COutput> vCoins;
+    LOCK2(cs_main, cs_wallet);
+    AvailableCoins(vCoins, true);
+
+    for (const COutput& out : vCoins)
+    {
+        if (GetTime() - out.tx->GetTxTime() > Params().GetConsensus().nStakeMinAge)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool CWallet::SelectStakeCoins(StakeCoinsSet &setCoins, CAmount nTargetAmount, const CScript &scriptFilterPubKey) const
 {
     std::vector<COutput> vCoins;
@@ -4030,7 +4054,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     // Mark coin stake transaction
     CScript scriptEmpty;
     scriptEmpty.clear();
-    txNew.vout.push_back(CTxOut(0, scriptEmpty));
+    txNew.vout.emplace_back(CTxOut(0, scriptEmpty));
     // Choose coins to use
     CAmount nBalance = GetBalance();
 

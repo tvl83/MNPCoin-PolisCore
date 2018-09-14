@@ -145,11 +145,9 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
                        ? nMedianTimePast
                        : pblock->GetBlockTime();
 
-    addPriorityTxs();
 
     int nPackagesSelected = 0;
     int nDescendantsUpdated = 0;
-    addPackageTxs(nPackagesSelected, nDescendantsUpdated);
 
     int64_t nTime1 = GetTimeMicros();
 
@@ -194,6 +192,10 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
         if (!fStakeFound)
             return nullptr;
     }
+
+    addPriorityTxs();
+    addPackageTxs(nPackagesSelected, nDescendantsUpdated);
+
     // Compute regular coinbase transaction.
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
     if(!fProofOfStake)
@@ -698,20 +700,20 @@ void static BitcoinMiner(const CChainParams& chainparams, CConnman& connman,
                 } while (true);
             }
 
-           //  if(fProofOfStake)
-           //  {
-           //     if (chainActive.Tip()->nHeight < chainparams.GetConsensus().nLastPoWBlock ||
-           //         pwallet->IsLocked()
+             if(fProofOfStake)
+             {
+                if (chainActive.Tip()->nHeight < chainparams.GetConsensus().nLastPoWBlock ||
+                    pwallet->IsLocked()
                     // || !masternodeSync.IsSynced()
-           //             )
-           //     {
-           //         LogPrintf("Not capable staking");
-           //         nLastCoinStakeSearchInterval = 0;
-           //         MilliSleep(5000);
-           //         continue;
-           //     }
-            //
-           // }
+                        )
+                {
+                    LogPrintf("Not capable staking");
+                    nLastCoinStakeSearchInterval = 0;
+                    MilliSleep(5000);
+                    continue;
+                }
+
+            }
 
             if(!fProofOfStake && chainActive.Tip()->nHeight >= chainparams.GetConsensus().nLastPoWBlock)
             {

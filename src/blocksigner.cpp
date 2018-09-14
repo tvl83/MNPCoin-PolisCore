@@ -2,6 +2,7 @@
 #include "keystore.h"
 #include "primitives/block.h"
 #include "utilstrencodings.h"
+#include "util.h"
 
 CBlockSigner::CBlockSigner(CBlock &block, const CKeyStore &keystore) :
         refBlock(block),
@@ -16,11 +17,9 @@ bool CBlockSigner::SignBlock()
     txnouttype whichType;
 
     CKey keySecret;
-
     if(refBlock.IsProofOfStake())
     {
         const CTxOut& txout = refBlock.vtx[1]->vout[1];
-
         if (!Solver(txout.scriptPubKey, whichType, vSolutions))
             return false;
         else
