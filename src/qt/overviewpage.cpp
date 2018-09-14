@@ -226,7 +226,6 @@ void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
     ui->labelWatchAvailable->setVisible(showWatchOnly); // show watch-only available balance
     ui->labelWatchPending->setVisible(showWatchOnly);   // show watch-only pending balance
     ui->labelWatchTotal->setVisible(showWatchOnly);     // show watch-only total balance
-    ui->labelStake->setIndent(20);
 
     if (!showWatchOnly){
         ui->labelWatchImmature->hide();
@@ -236,6 +235,7 @@ void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
         ui->labelUnconfirmed->setIndent(20);
         ui->labelImmature->setIndent(20);
         ui->labelTotal->setIndent(20);
+        ui->labelStake->setIndent(20);
     }
 }
 

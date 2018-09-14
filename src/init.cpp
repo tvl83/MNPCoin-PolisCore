@@ -1987,12 +1987,12 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 
     SetRPCWarmupFinished();
     uiInterface.InitMessage(_("Done loading"));
-
+    if (chainActive.Height() >= chainparams.GetConsensus().nLastPoWBlock)
+        threadGroup.create_thread(std::bind(&ThreadStakeMinter, boost::ref(chainparams), boost::ref(connman), pwalletMain));
 #ifdef ENABLE_WALLET
     if (pwalletMain)
         pwalletMain->postInitProcess(threadGroup);
-    if (chainActive.Height() >= chainparams.GetConsensus().nLastPoWBlock)
-    threadGroup.create_thread(std::bind(&ThreadStakeMinter, boost::ref(chainparams), boost::ref(connman), pwalletMain));
+
 
 #endif
     threadGroup.create_thread(boost::bind(&ThreadSendAlert, boost::ref(connman)));
