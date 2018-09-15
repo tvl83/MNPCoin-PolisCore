@@ -1100,10 +1100,10 @@ void AdjustMasternodePayment(CMutableTransaction &tx, const CTxOut &txoutMastern
 
     if(it != std::end(tx.vout))
     {
-        int mnPaymentOutIndex = std::distance(std::begin(tx.vout), it);
+        long mnPaymentOutIndex = std::distance(std::begin(tx.vout), it);
         auto masternodePayment = tx.vout[mnPaymentOutIndex].nValue;
 
-        int i = tx.vout.size() - 2;
-            tx.vout[i].nValue -= masternodePayment; // last vout is mn payment.
+        long i = tx.vout.size() - 2;
+        tx.vout[i].nValue -= masternodePayment; // last vout is mn payment.
     }
 }

@@ -365,8 +365,8 @@ public:
 
 
 
-        vFixedSeeds.clear();
-        vSeeds.clear();
+        vSeeds.push_back(CDNSSeedData("testnetseed.poliscentral.org", "testnetseed.poliscentral.org"));
+        vSeeds.push_back(CDNSSeedData("testnetseed2.poliscentral.org", "testnetseed2.poliscentral.org"));
 
 
         // Testnet polis addresses start with 'y'
@@ -395,7 +395,7 @@ public:
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
 
 
-        strSporkAddress = "ycMRXhDJC9iNxrMK5ywM8PpyEH2A4o28e7";
+        strSporkAddress = "yMCScEFCuhFGQL8aBS8UPXnKriFtjMVWra";
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of

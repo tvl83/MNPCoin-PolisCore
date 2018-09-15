@@ -53,23 +53,17 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         CTxDestination address;
         if (!ExtractDestination(wtx.tx->vout[1].scriptPubKey, address))
             return parts;
+
         const CTxOut& txout = wtx.tx->vout[1];
         isminetype mine = wallet->IsMine(txout);
-        if (mine)
+        if (!IsMine(*wallet, address))
         {
-            //if the address is not yours then it means you have a tx sent to you in someone elses coinstake tx
-            // this might be masternode reward, or tpos block reward.
-
-            // if last output was ours, it means that it's tpos reward
-            CAmount stakeAmount = 0;
-            CAmount commissionAmount = 0;
-            CTxDestination tposAddress;
-            CTxDestination merchantAddress;
+            {
                 for (unsigned int i = 1; i < wtx.tx->vout.size(); i++) {
                     CTxDestination outAddress;
                     if (ExtractDestination(wtx.tx->vout[i].scriptPubKey, outAddress)) {
-                        if (mine) {
-                            //isminetype mine = wallet->IsMine(wtx.tx->vout[i]);
+                        if (IsMine(*wallet, outAddress)) {
+                            isminetype mine = wallet->IsMine(wtx.tx->vout[i]);
                             sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
                             sub.type = TransactionRecord::MNReward;
                             sub.address = CBitcoinAddress(outAddress).ToString();
@@ -77,22 +71,25 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                         }
                     }
                 }
+            }
         }
         else
         {
             //stake reward
             CAmount stakeAmount = 0;
             CAmount commissionAmount = 0;
-            CTxDestination tposAddress;
-            CTxDestination merchantAddress;
+            CBitcoinAddress tposAddress;
+            CBitcoinAddress merchantAddress;
+            isminetype mine = wallet->IsMine(wtx.tx->vout[1]);
             sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
-            sub.address = CBitcoinAddress(address).ToString();
-            sub.credit = nCredit - nDebit;
-            sub.type = TransactionRecord::StakeMint;
+                sub.address = CBitcoinAddress(address).ToString();
+                sub.credit = wtx.GetCredit(ISMINE_SPENDABLE) - wtx.GetDebit(ISMINE_SPENDABLE);
+                sub.type = TransactionRecord::StakeMint;
+
         }
         parts.append(sub);
     }
-    if (nNet > 0 || wtx.IsCoinBase())
+    else if (nNet > 0 || wtx.IsCoinBase())
     {
         //
         // Credit
