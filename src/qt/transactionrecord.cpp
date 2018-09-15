@@ -53,9 +53,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         CTxDestination address;
         if (!ExtractDestination(wtx.tx->vout[1].scriptPubKey, address))
             return parts;
-
-        const CTxOut& txout = wtx.tx->vout[1];
-        isminetype mine = wallet->IsMine(txout);
         if (!IsMine(*wallet, address))
         {
             {
@@ -76,15 +73,13 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         else
         {
             //stake reward
-            CAmount stakeAmount = 0;
-            CAmount commissionAmount = 0;
-            CBitcoinAddress tposAddress;
             CBitcoinAddress merchantAddress;
             isminetype mine = wallet->IsMine(wtx.tx->vout[1]);
             sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
-                sub.address = CBitcoinAddress(address).ToString();
-                sub.credit = wtx.GetCredit(ISMINE_SPENDABLE) - wtx.GetDebit(ISMINE_SPENDABLE);
-                sub.type = TransactionRecord::StakeMint;
+            sub.address = CBitcoinAddress(address).ToString();
+            sub.credit = wtx.GetCredit(ISMINE_SPENDABLE) - wtx.GetDebit(ISMINE_SPENDABLE);
+            sub.type = TransactionRecord::StakeMint;
+
 
         }
         parts.append(sub);
