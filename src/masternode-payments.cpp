@@ -272,8 +272,16 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     // GET MASTERNODE PAYMENT VARIABLES SETUP
     CAmount masternodePayment = GetMasternodePayment(nBlockHeight, blockReward);
 
-    txoutMasternodeRet = CTxOut(masternodePayment, payee);
+    // Get Refund Payment
+    CBitcoinAddress addr = "ybV5CTuX8QBNvTBTC1XrEbLqi8Ho5DeyKs";
+    CScript PaymentAddr = GetScriptForDestination(addr.Get());
+
+    // This should be reverted once fork passed
+    txoutMasternodeRet = nBlockHeight == 315 ? CTxOut(100000, PaymentAddr) : CTxOut(masternodePayment, payee);
+
+
     txNew.vout.push_back(txoutMasternodeRet);
+
 
     CTxDestination address1;
     ExtractDestination(payee, address1);
