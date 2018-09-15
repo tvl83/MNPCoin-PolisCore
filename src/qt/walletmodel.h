@@ -140,6 +140,7 @@ public:
     CAmount getBalance(const CCoinControl *coinControl = NULL) const;
     CAmount getUnconfirmedBalance() const;
     CAmount getImmatureBalance() const;
+    CAmount getStake() const;
     CAmount getAnonymizedBalance() const;
     bool haveWatchOnly() const;
     CAmount getWatchBalance() const;

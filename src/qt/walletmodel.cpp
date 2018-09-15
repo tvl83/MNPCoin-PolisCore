@@ -104,6 +104,11 @@ CAmount WalletModel::getImmatureBalance() const
     return wallet->GetImmatureBalance();
 }
 
+CAmount WalletModel::getStake() const
+{
+    return wallet->GetStake();
+}
+
 bool WalletModel::haveWatchOnly() const
 {
     return fHaveWatchOnly;
