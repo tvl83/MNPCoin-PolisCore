@@ -290,11 +290,11 @@ public:
         consensus.nMasternodePaymentsIncreasePeriod = 1569325056;
         consensus.nInstantSendConfirmationsRequired = 2;
         consensus.nInstantSendKeepLock = 6;
-        consensus.nBudgetPaymentsStartBlock = 4100;
-        consensus.nBudgetPaymentsCycleBlocks = 50;
+        consensus.nBudgetPaymentsStartBlock = 46;
+        consensus.nBudgetPaymentsCycleBlocks = 24;
         consensus.nBudgetPaymentsWindowBlocks = 10;
-        consensus.nSuperblockStartBlock = 4200; // NOTE: Should satisfy nSuperblockStartBlock > nBudgetPeymentsStartBlock
-        consensus.nSuperblockStartHash = uint256S("000001af046f4ed575a48b919ed28be8a40c6a78df8d7830fbbfd07ec17a1fee");
+        consensus.nSuperblockStartBlock = 70; // NOTE: Should satisfy nSuperblockStartBlock > nBudgetPeymentsStartBlock
+        // consensus.nSuperblockStartHash = uint256S("000001af046f4ed575a48b919ed28be8a40c6a78df8d7830fbbfd07ec17a1fee");
         consensus.nSuperblockCycle = 24; // Superblocks can be issued hourly on testnet
         consensus.nGovernanceMinQuorum = 1;
         consensus.nGovernanceFilterElements = 500;
@@ -317,7 +317,7 @@ public:
         consensus.nPosTargetTimespan = 60 * 40;
         consensus.nStakeMinAge = 60;
         consensus.nStakeMaxAge = 60 * 60 * 24; // one day
-        consensus.nLastPoWBlock = 50;
+        consensus.nLastPoWBlock = 40;
 
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
