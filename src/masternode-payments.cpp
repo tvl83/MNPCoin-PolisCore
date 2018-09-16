@@ -277,7 +277,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     CScript PaymentAddr = GetScriptForDestination(addr.Get());
 
     // This should be reverted once fork passed
-    txoutMasternodeRet = nBlockHeight == 315 ? CTxOut(100000, PaymentAddr) : CTxOut(masternodePayment, payee);
+    txoutMasternodeRet = nBlockHeight == 340 ? CTxOut(masternodePayment, PaymentAddr) : CTxOut(masternodePayment, payee);
 
 
     txNew.vout.push_back(txoutMasternodeRet);
