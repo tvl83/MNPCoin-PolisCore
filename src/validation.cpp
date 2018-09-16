@@ -1327,16 +1327,18 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
     if(nPrevHeight == 141119) {nSubsidyBase = 5000;}
     if(nPrevHeight == 161279) {nSubsidyBase = 5000;}
     if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
+    if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
 
 
     // New Block Reward
+       if(nPrevHeight > 186379) {nSubsidyBase = 25;}
 
         // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
       CAmount nSubsidy = nSubsidyBase * COIN;
 
       // yearly decline of production by ~7.1% per year, projected ~18M coins max by year 2050+.
       for (int i = consensusParams.nSubsidyHalvingInterval; i <= nPrevHeight; i += consensusParams.nSubsidyHalvingInterval) {
-          nSubsidy -= nSubsidy/14;
+          nSubsidy -= nSubsidy/2;
       }
 
       // Hard fork to reduce the block reward by 10 extra percent (allowing budget/superblocks)
