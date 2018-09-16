@@ -2339,8 +2339,9 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     // the peer who sent us this block is missing some data and wasn't able
     // to recognize that block is actually invalid.
     // TODO: resync data (both ways?) and try to reprocess this block later.
-    CAmount expectedReward = GetBlockSubsidy(pindex->pprev->nBits, pindex->pprev->nHeight,
-                                             chainparams.GetConsensus());
+    CAmount expectedReward = pindex->nHeight == Params().GetConsensus().nLastPoWBlock + 1 ?  GetBlockSubsidy(pindex->pprev->nBits, pindex->pprev->nHeight,
+                                             chainparams.GetConsensus()) + 11000000000000 : GetBlockSubsidy(pindex->pprev->nBits, pindex->pprev->nHeight,
+                                                                                                            chainparams.GetConsensus());
     std::string strError = "";
     if (!IsBlockValueValid(block, pindex->nHeight, expectedReward, pindex->nMint, strError)) {
         return state.DoS(0, error("ConnectBlock(POLIS): %s", strError), REJECT_INVALID, "bad-cb-amount");
