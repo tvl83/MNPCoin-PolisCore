@@ -71,7 +71,7 @@ public:
     static void ExecuteBestSuperblock(int nBlockHeight);
 
     static std::string GetRequiredPaymentsString(int nBlockHeight);
-    static bool IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward);
+    static bool IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount expectedReward, CAmount actualReward);
 };
 
 /**
@@ -183,7 +183,7 @@ public:
     bool GetPayment(int nPaymentIndex, CGovernancePayment& paymentRet);
     CAmount GetPaymentsTotalAmount();
 
-    bool IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward);
+    bool IsValid(const CTransactionRef &txNew, int nBlockHeight, CAmount expectedReward, CAmount actualReward);
     bool IsExpired();
 };
 

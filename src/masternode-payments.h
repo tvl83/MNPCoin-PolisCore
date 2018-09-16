@@ -33,8 +33,8 @@ extern CCriticalSection cs_mapMasternodePayeeVotes;
 extern CMasternodePayments mnpayments;
 
 /// TODO: all 4 functions do not belong here really, they should be refactored/moved somewhere (main.cpp ?)
-bool IsBlockValueValid(const CBlock& block, int nBlockHeight, CAmount blockReward, std::string& strErrorRet);
-bool IsBlockPayeeValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward);
+bool IsBlockValueValid(const CBlock& block, int nBlockHeight, CAmount expectedReward, CAmount actualReward, std::string& strErrorRet);
+bool IsBlockPayeeValid(const CTransactionRef& txNew, int nBlockHeight, CAmount expectedReward, CAmount actualReward);
 void FillBlockPayments(CMutableTransaction& txNew, int nBlockHeight, CAmount blockReward, CTxOut& txoutMasternodeRet, std::vector<CTxOut>& voutSuperblockRet);
 void AdjustMasternodePayment(CMutableTransaction &tx, const CTxOut& txoutMasternodePayment);
 

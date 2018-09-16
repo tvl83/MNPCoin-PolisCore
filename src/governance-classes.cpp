@@ -373,16 +373,13 @@ bool CSuperblockManager::GetBestSuperblock(CSuperblock_sptr& pSuperblockRet, int
 
 void CSuperblockManager::CreateSuperblock(CMutableTransaction& txNewRet, int nBlockHeight, std::vector<CTxOut>& voutSuperblockRet)
 {
-    DBG( std::cout << "CSuperblockManager::CreateSuperblock Start" << std::endl; );
-
+    DBG( cout << "CSuperblockManager::CreateSuperblock Start" << endl; );
     LOCK(governance.cs);
 
     // GET THE BEST SUPERBLOCK FOR THIS BLOCK HEIGHT
-
     CSuperblock_sptr pSuperblock;
     if(!CSuperblockManager::GetBestSuperblock(pSuperblock, nBlockHeight)) {
-        LogPrint("gobject", "CSuperblockManager::CreateSuperblock -- Can't find superblock for height %d\n", nBlockHeight);
-        DBG( std::cout << "CSuperblockManager::CreateSuperblock Failed to get superblock for height, returning" << std::endl; );
+        DBG( cout << "CSuperblockManager::CreateSuperblock Failed to get superblock for height, returning" << endl; );
         return;
     }
 
@@ -390,9 +387,8 @@ void CSuperblockManager::CreateSuperblock(CMutableTransaction& txNewRet, int nBl
     voutSuperblockRet.clear();
 
     // CONFIGURE SUPERBLOCK OUTPUTS
-
     // Superblock payments are appended to the end of the coinbase vout vector
-    DBG( std::cout << "CSuperblockManager::CreateSuperblock Number payments: " << pSuperblock->CountPayments() << std::endl; );
+    DBG( cout << "CSuperblockManager::CreateSuperblock Number payments: " << pSuperblock->CountPayments() << endl; );
 
     // TODO: How many payments can we add before things blow up?
     //       Consider at least following limits:
@@ -400,9 +396,9 @@ void CSuperblockManager::CreateSuperblock(CMutableTransaction& txNewRet, int nBl
     //          - max "budget" available
     for(int i = 0; i < pSuperblock->CountPayments(); i++) {
         CGovernancePayment payment;
-        DBG( std::cout << "CSuperblockManager::CreateSuperblock i = " << i << std::endl; );
+        DBG( cout << "CSuperblockManager::CreateSuperblock i = " << i << endl; );
         if(pSuperblock->GetPayment(i, payment)) {
-            DBG( std::cout << "CSuperblockManager::CreateSuperblock Payment found " << std::endl; );
+            DBG( cout << "CSuperblockManager::CreateSuperblock Payment found " << endl; );
             // SET COINBASE OUTPUT TO SUPERBLOCK SETTING
 
             CTxOut txout = CTxOut(payment.nAmount, payment.script);
@@ -415,27 +411,24 @@ void CSuperblockManager::CreateSuperblock(CMutableTransaction& txNewRet, int nBl
             ExtractDestination(payment.script, address1);
             CBitcoinAddress address2(address1);
 
-            // TODO: PRINT NICE N.N POLIS OUTPUT
-
-            DBG( std::cout << "CSuperblockManager::CreateSuperblock Before LogPrintf call, nAmount = " << payment.nAmount << std::endl; );
-            LogPrintf("NEW Superblock : output %d (addr %s, amount %d)\n", i, address2.ToString(), payment.nAmount);
-            DBG( std::cout << "CSuperblockManager::CreateSuperblock After LogPrintf call " << std::endl; );
+            DBG( cout << "CSuperblockManager::CreateSuperblock Before LogPrintf call, nAmount = " << payment.nAmount << endl; );
+            DBG( cout << "CSuperblockManager::CreateSuperblock After LogPrintf call " << endl; );
         } else {
-            DBG( std::cout << "CSuperblockManager::CreateSuperblock Payment not found " << std::endl; );
+            DBG( cout << "CSuperblockManager::CreateSuperblock Payment not found " << endl; );
         }
     }
 
-    DBG( std::cout << "CSuperblockManager::CreateSuperblock End" << std::endl; );
+    DBG( cout << "CSuperblockManager::CreateSuperblock End" << endl; );
 }
 
-bool CSuperblockManager::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward)
+bool CSuperblockManager::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount expectedReward, CAmount actualReward)
 {
     // GET BEST SUPERBLOCK, SHOULD MATCH
     LOCK(governance.cs);
 
     CSuperblock_sptr pSuperblock;
     if(CSuperblockManager::GetBestSuperblock(pSuperblock, nBlockHeight)) {
-        return pSuperblock->IsValid(txNew, nBlockHeight, blockReward);
+        return pSuperblock->IsValid(txNew, nBlockHeight, expectedReward, actualReward);
     }
 
     return false;
@@ -661,7 +654,7 @@ CAmount CSuperblock::GetPaymentsTotalAmount()
 *   - Does this transaction match the superblock?
 */
 
-bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward)
+bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount expectedReward, CAmount actualReward)
 {
     // TODO : LOCK(cs);
     // No reason for a lock here now since this method only accesses data
@@ -681,8 +674,7 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
     int nPayments = CountPayments();
     int nMinerPayments = nOutputs - nPayments;
 
-    LogPrint("gobject", "CSuperblock::IsValid nOutputs = %d, nPayments = %d, GetDataAsHexString = %s\n",
-             nOutputs, nPayments, GetGovernanceObject()->GetDataAsHexString());
+    LogPrintf("CSuperblock::IsValid nOutputs = %d, nPayments = %d, strData = %s\n", nOutputs, nPayments, GetGovernanceObject()->GetDataAsHexString());
 
     // We require an exact match (including order) between the expected
     // superblock payments and the payments actually in the block.
@@ -704,9 +696,9 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
     }
 
     // miner should not get more than he would usually get
-    CAmount nBlockValue = txNew->GetValueOut();
-    if(nBlockValue > blockReward + nPaymentsTotalAmount) {
-        LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid, block value limit exceeded: block %lld, limit %lld\n", nBlockValue, blockReward + nPaymentsTotalAmount);
+    CAmount nBlockValue = actualReward;
+    if(nBlockValue > expectedReward + nPaymentsTotalAmount) {
+        LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid, block value limit exceeded: block %lld, limit %lld\n", nBlockValue, expectedReward + nPaymentsTotalAmount);
         return false;
     }
 
