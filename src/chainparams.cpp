@@ -123,10 +123,10 @@ public:
     CMainParams() {
         strNetworkID = "main";
 
-        consensus.nSubsidyHalvingInterval = 1569325056; // Note: actual number of blocks per calendar year with DGW v3 is ~200700 (for example 449750 - 249050)
+        consensus.nSubsidyHalvingInterval = 262800; // Note: actual number of blocks per calendar year with DGW v3 is ~200700 (for example 449750 - 249050)
         consensus.nMasternodePaymentsStartBlock = 15; // not true, but it's ok as long as it's less then nMasternodePaymentsIncreaseBlock
-        consensus.nMasternodePaymentsIncreaseBlock = 1569325056; // actual historical value
-        consensus.nMasternodePaymentsIncreasePeriod = 1569325056; // 17280 - actual historical value
+        // consensus.nMasternodePaymentsIncreaseBlock = 1569325056; // actual historical value
+        // consensus.nMasternodePaymentsIncreasePeriod = 1569325056; // 17280 - actual historical value
         consensus.nInstantSendConfirmationsRequired = 6;
         consensus.nInstantSendKeepLock = 24;
         consensus.nBudgetPaymentsStartBlock = 32800; // actual historical value
@@ -157,8 +157,7 @@ public:
         consensus.nStakeMinAge = 60 * 60;
         consensus.nStakeMaxAge = 60 * 60 * 24; // one day
         // POS hard fork date
-         consensus.nLastPoWBlock = 183620;
-         // consensus.nLastPoWBlock = 181040;
+        consensus.nLastPoWBlock = 186380;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
