@@ -4154,7 +4154,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     std::vector<CTxOut> voutSuperblock;
     int nHeight = chainActive.Tip()->nHeight + 1;
     FillBlockPayments(txNew, nHeight, blockReward, txoutMasternode, voutSuperblock);
-    AdjustMasternodePayment(txNew, txoutMasternode, nHeight);
+    AdjustMasternodePayment(txNew, txoutMasternode);
     LogPrintf("CreateCoinStake -- nBlockHeight %d blockReward %lld txoutMasternode %s txNew %s",
               nHeight, blockReward, txoutMasternode.ToString(), txNew.ToString());
 

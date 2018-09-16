@@ -201,7 +201,6 @@ void FillBlockPayments(CMutableTransaction& txNew, int nBlockHeight, CAmount blo
             CSuperblockManager::CreateSuperblock(txNew, nBlockHeight, voutSuperblockRet);
             return;
     }
-
     // FILL BLOCK PAYEE WITH MASTERNODE PAYMENT OTHERWISE
     mnpayments.FillBlockPayee(txNew, nBlockHeight, blockReward, txoutMasternodeRet);
     LogPrint("mnpayments", "FillBlockPayments -- nBlockHeight %d blockReward %lld txoutMasternodeRet %s txNew %s",
@@ -271,15 +270,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
 
     // GET MASTERNODE PAYMENT VARIABLES SETUP
     CAmount masternodePayment = GetMasternodePayment(nBlockHeight, blockReward);
-
-    // Get Refund Payment
-    CBitcoinAddress addr = Params().SporkAddress();
-    CScript PaymentAddr = GetScriptForDestination(addr.Get());
-
-    // This should be reverted once fork passed
-    txoutMasternodeRet = nBlockHeight == 780 ? CTxOut(masternodePayment, PaymentAddr) : CTxOut(masternodePayment, payee);
-
-
+    txoutMasternodeRet = CTxOut(masternodePayment, payee);
     txNew.vout.push_back(txoutMasternodeRet);
 
 
@@ -1099,7 +1090,7 @@ void CMasternodePayments::UpdatedBlockTip(const CBlockIndex *pindex, CConnman& c
     CheckBlockVotes(nFutureBlock - 1);
     ProcessBlock(nFutureBlock, connman);
 }
-void AdjustMasternodePayment(CMutableTransaction &tx, const CTxOut &txoutMasternodePayment, int nHeight)
+void AdjustMasternodePayment(CMutableTransaction &tx, const CTxOut &txoutMasternodePayment)
 {
     auto it = std::find(std::begin(tx.vout), std::end(tx.vout), txoutMasternodePayment);
 
@@ -1108,7 +1099,7 @@ void AdjustMasternodePayment(CMutableTransaction &tx, const CTxOut &txoutMastern
         long mnPaymentOutIndex = std::distance(std::begin(tx.vout), it);
         auto masternodePayment = tx.vout[mnPaymentOutIndex].nValue;
         // For the special transaction the vout of MNpayemnt is the first.
-        long i = nHeight == 780 ? tx.vout.size() - 1 : tx.vout.size() - 2;
+        long i = tx.vout.size() - 2;
         tx.vout[i].nValue -= masternodePayment; // last vout is mn payment.
     }
 }

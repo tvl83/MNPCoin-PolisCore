@@ -1309,10 +1309,6 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
     if(nPrevHeight == 9) {nSubsidyBase = 1;}
     if(nPrevHeight == 19) {nSubsidyBase = 1;}
     if(nPrevHeight == 719) {nSubsidyBase = 1000;}
-
-    // Test HardCodedTX
-    if(nPrevHeight == 779) {nSubsidyBase = 110000;}
-
     if(nPrevHeight == 1439) {nSubsidyBase = 1000;}
     if(nPrevHeight == 2159) {nSubsidyBase = 1000;}
     if(nPrevHeight == 2879) {nSubsidyBase = 1000;}
@@ -2268,9 +2264,11 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
             }
 
 
-            if (!tx.IsCoinStake())
+            if (!tx.IsCoinStake()) {
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
-            nValueIn += view.GetValueIn(tx);
+                nValueIn += view.GetValueIn(tx);
+            }
+
 
             std::vector<CScriptCheck> vChecks;
             bool fCacheResults = fJustCheck; /* Don't cache results if we're actually connecting blocks (still consult the cache, though) */
@@ -2312,17 +2310,23 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
 
             }
         }
-
+        nValueOut += tx.GetValueOut();
         CTxUndo undoDummy;
         if (i > 0) {
             blockundo.vtxundo.push_back(CTxUndo());
         }
         UpdateCoins(tx, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
-
         vPos.push_back(std::make_pair(tx.GetHash(), pos));
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
+
+    CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
+    pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
+    pindex->nMint = nMoneySupplyPrev - pindex->nMoneySupply;
+
+
     int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
+
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime3 - nTime2), 0.001 * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * 0.000001);
 
     // POLIS : MODIFIED TO CHECK MASTERNODE PAYMENTS AND SUPERBLOCKS
