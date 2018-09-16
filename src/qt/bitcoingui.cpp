@@ -38,6 +38,7 @@
 #include "util.h"
 #include "masternode-sync.h"
 #include "masternodelist.h"
+#include "miner.h"
 
 #include <iostream>
 
@@ -87,6 +88,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     clientModel(0),
     walletFrame(0),
     unitDisplayControl(0),
+    labelStakingIcon(0),
     labelWalletEncryptionIcon(0),
     labelWalletHDStatusIcon(0),
     labelConnectionsIcon(0),
@@ -1337,6 +1339,20 @@ void BitcoinGUI::setHDStatus(int hdEnabled)
 
     // eventually disable the QLabel to set its opacity to 50%
     labelWalletHDStatusIcon->setEnabled(hdEnabled);
+}
+
+void BitcoinGUI::setStakingStatus()
+{
+    QString theme = GUIUtil::getThemeName();
+   // if (nLastCoinStakeSearchInterval) {
+   //     labelStakingIcon->show();
+   //     labelStakingIcon->setPixmap(QIcon(QString(":/icons/%1/staking_active").arg(theme)).pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+   //     labelStakingIcon->setToolTip(tr("Staking is active\n"));
+   // } else {
+   //     labelStakingIcon->show();
+   //     labelStakingIcon->setPixmap(QIcon(QString(":/icons/%1/staking_inactive").arg(theme)).pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+   //     labelStakingIcon->setToolTip(tr("Staking is inactive\n"));
+   //  }
 }
 
 void BitcoinGUI::setEncryptionStatus(int status)
