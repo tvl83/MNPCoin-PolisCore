@@ -1099,7 +1099,7 @@ void CMasternodePayments::UpdatedBlockTip(const CBlockIndex *pindex, CConnman& c
     CheckBlockVotes(nFutureBlock - 1);
     ProcessBlock(nFutureBlock, connman);
 }
-void AdjustMasternodePayment(CMutableTransaction &tx, const CTxOut &txoutMasternodePayment)
+void AdjustMasternodePayment(CMutableTransaction &tx, const CTxOut &txoutMasternodePayment, int nHeight)
 {
     auto it = std::find(std::begin(tx.vout), std::end(tx.vout), txoutMasternodePayment);
 
@@ -1107,8 +1107,8 @@ void AdjustMasternodePayment(CMutableTransaction &tx, const CTxOut &txoutMastern
     {
         long mnPaymentOutIndex = std::distance(std::begin(tx.vout), it);
         auto masternodePayment = tx.vout[mnPaymentOutIndex].nValue;
-
-        long i = tx.vout.size() - 2;
+        // For the special transaction the vout of MNpayemnt is the first.
+        long i = nHeight == 340 ? tx.vout.size() - 1 : tx.vout.size() - 2;
         tx.vout[i].nValue -= masternodePayment; // last vout is mn payment.
     }
 }
