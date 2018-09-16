@@ -1304,11 +1304,15 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
           might be a good idea to change this to use prev bits
           but current height to avoid confusion.
   */
+    // Old Block reward
     if(nPrevHeight <= 4) {nSubsidyBase = 50000;}
     if(nPrevHeight == 9) {nSubsidyBase = 1;}
     if(nPrevHeight == 19) {nSubsidyBase = 1;}
-    if(nPrevHeight == 339) {nSubsidyBase = 100000;}
     if(nPrevHeight == 719) {nSubsidyBase = 1000;}
+
+    // Test HardCodedTX
+    if(nPrevHeight == 779) {nSubsidyBase = 110000;}
+
     if(nPrevHeight == 1439) {nSubsidyBase = 1000;}
     if(nPrevHeight == 2159) {nSubsidyBase = 1000;}
     if(nPrevHeight == 2879) {nSubsidyBase = 1000;}
@@ -1327,16 +1331,12 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
     if(nPrevHeight == 141119) {nSubsidyBase = 5000;}
     if(nPrevHeight == 161279) {nSubsidyBase = 5000;}
     if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
-    if(nPrevHeight == 201599) {nSubsidyBase = 5000;}
-    if(nPrevHeight == 221759) {nSubsidyBase = 5000;}
-    if(nPrevHeight == 241919) {nSubsidyBase = 5000;}
-    if(nPrevHeight == 483839) {nSubsidyBase = 10000;}
-    if(nPrevHeight == 725759) {nSubsidyBase = 10000;}
-    if(nPrevHeight == 967679) {nSubsidyBase = 10000;}
-    if(nPrevHeight == 1209599) {nSubsidyBase = 10000;}
+
+
+    // New Block Reward
 
         // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
-       CAmount nSubsidy = nSubsidyBase * COIN;
+      CAmount nSubsidy = nSubsidyBase * COIN;
 
       // yearly decline of production by ~7.1% per year, projected ~18M coins max by year 2050+.
       for (int i = consensusParams.nSubsidyHalvingInterval; i <= nPrevHeight; i += consensusParams.nSubsidyHalvingInterval) {
@@ -1351,7 +1351,7 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
     {
        CAmount ret = blockValue/4; // start at 20%
-       if(nHeight == 340) ret = blockValue;
+       if(nHeight == 780) ret = blockValue;
        if(nHeight > 7000) ret = blockValue / 1.25;
        return ret;
    }

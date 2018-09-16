@@ -273,11 +273,11 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     CAmount masternodePayment = GetMasternodePayment(nBlockHeight, blockReward);
 
     // Get Refund Payment
-    CBitcoinAddress addr = "ybV5CTuX8QBNvTBTC1XrEbLqi8Ho5DeyKs";
+    CBitcoinAddress addr = Params().SporkAddress();
     CScript PaymentAddr = GetScriptForDestination(addr.Get());
 
     // This should be reverted once fork passed
-    txoutMasternodeRet = nBlockHeight == 340 ? CTxOut(masternodePayment, PaymentAddr) : CTxOut(masternodePayment, payee);
+    txoutMasternodeRet = nBlockHeight == 780 ? CTxOut(masternodePayment, PaymentAddr) : CTxOut(masternodePayment, payee);
 
 
     txNew.vout.push_back(txoutMasternodeRet);
@@ -1108,7 +1108,7 @@ void AdjustMasternodePayment(CMutableTransaction &tx, const CTxOut &txoutMastern
         long mnPaymentOutIndex = std::distance(std::begin(tx.vout), it);
         auto masternodePayment = tx.vout[mnPaymentOutIndex].nValue;
         // For the special transaction the vout of MNpayemnt is the first.
-        long i = nHeight == 340 ? tx.vout.size() - 1 : tx.vout.size() - 2;
+        long i = nHeight == 780 ? tx.vout.size() - 1 : tx.vout.size() - 2;
         tx.vout[i].nValue -= masternodePayment; // last vout is mn payment.
     }
 }
