@@ -316,7 +316,7 @@ public:
         consensus.nPosTargetTimespan = 60 * 40;
         consensus.nStakeMinAge = 60;
         consensus.nStakeMaxAge = 60 * 60 * 24; // one day
-        consensus.nLastPoWBlock = 80;
+        consensus.nLastPoWBlock = 100;
 
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
