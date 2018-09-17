@@ -1329,16 +1329,15 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
     if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
     if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
 
-
     // New Block Reward
-       if(nPrevHeight > 186379) {nSubsidyBase = 25;}
+       if(nPrevHeight > 185493) {nSubsidyBase = 20;}
 
         // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
       CAmount nSubsidy = nSubsidyBase * COIN;
 
-      // yearly decline of production by ~7.1% per year, projected ~18M coins max by year 2050+.
+      // yearly decline of production by ~20% per year, projected ~25M coins max by year 2043+.
       for (int i = consensusParams.nSubsidyHalvingInterval; i <= nPrevHeight; i += consensusParams.nSubsidyHalvingInterval) {
-          nSubsidy -= nSubsidy/2;
+          nSubsidy -= nSubsidy/5;
       }
 
       // Hard fork to reduce the block reward by 10 extra percent (allowing budget/superblocks)
@@ -2266,10 +2265,10 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
             }
 
 
-            if (!tx.IsCoinStake()) {
+            if (!tx.IsCoinStake())
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
-                nValueIn += view.GetValueIn(tx);
-            }
+
+            nValueIn += view.GetValueIn(tx);
 
 
             std::vector<CScriptCheck> vChecks;
@@ -2324,7 +2323,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
 
     CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
     pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
-    pindex->nMint = nMoneySupplyPrev - pindex->nMoneySupply;
+    pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev;
 
 
     int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
