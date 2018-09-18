@@ -1180,7 +1180,7 @@ static const CRPCCommand commands[] =
     { "util",               "createmultisig",         &createmultisig,         true,  {"nrequired","keys"} },
     { "util",               "verifymessage",          &verifymessage,          true,  {"address","signature","message"} },
     { "util",               "signmessagewithprivkey", &signmessagewithprivkey, true,  {"privkey","message"} },
-    { "util",               "getstakingstatus",       &getstakingstatus,       {} },
+    { "util",               "getstakingstatus",       &getstakingstatus,       true,  {} },
     { "blockchain",         "getspentinfo",           &getspentinfo,           false, {"json"} },
 
     /* Address index */
