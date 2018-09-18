@@ -256,6 +256,13 @@ void SendCoinsDialog::on_sendButton_clicked()
     recipients[0].fUseInstantSend = false;
 
 
+    if(ui->checkUseInstantSend->isChecked()) {
+        recipients[0].fUseInstantSend = true;
+        strFunds += " ";
+        strFunds += tr("and InstantSend");
+    } else {
+        recipients[0].fUseInstantSend = false;
+    }
 
     fNewRecipientAllowed = false;
     // request unlock only if was locked or unlocked for mixing:

@@ -27,7 +27,7 @@
 
 #define ICON_OFFSET 16
 #define DECORATION_SIZE 54
-#define NUM_ITEMS 5
+#define NUM_ITEMS 10
 #define NUM_ITEMS_ADV 10
 
 class TxViewDelegate : public QAbstractItemDelegate
@@ -144,18 +144,6 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
 
     connect(ui->listTransactions, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTransactionClicked(QModelIndex)));
 
-    QString lastBlock = QString::fromStdString(std::to_string(chainActive.Height()));
-    ui->labelBlocks->setText(lastBlock);
-
-    // init "syncing" warning labels
-    // Wallet Status
-    ui->labelWalletStatus->setText(tr("<font color='darkred'>syncing...</font>") );
-    // Transaction Status
-    ui->labelTransactionsStatus->setText(tr("<font color='darkred'>syncing...</font>") );
-    // Masternode List Status
-    ui->labelMnList->setText(tr("<font color='darkred'>syncing...</font>") );
-    // Gobject List Status
-    ui->labelGobjectList->setText(tr("<font color='darkred'>syncing...</font>") );
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
@@ -190,7 +178,6 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     ui->labelBalance->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, balance, false, BitcoinUnits::separatorAlways));
     ui->labelUnconfirmed->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, unconfirmedBalance, false, BitcoinUnits::separatorAlways));
     ui->labelImmature->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, immatureBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelStake->setText(BitcoinUnits::formatWithUnit(nDisplayUnit, getStake, false, BitcoinUnits::separatorAlways));
     ui->labelTotal->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, balance + unconfirmedBalance + immatureBalance, false, BitcoinUnits::separatorAlways));
     ui->labelWatchAvailable->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, watchOnlyBalance, false, BitcoinUnits::separatorAlways));
     ui->labelWatchPending->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, watchUnconfBalance, false, BitcoinUnits::separatorAlways));
@@ -235,7 +222,6 @@ void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
         ui->labelUnconfirmed->setIndent(20);
         ui->labelImmature->setIndent(20);
         ui->labelTotal->setIndent(20);
-        ui->labelStake->setIndent(20);
     }
 }
 
@@ -261,7 +247,6 @@ void OverviewPage::setWalletModel(WalletModel *model)
         setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(), model->getAnonymizedBalance(),
                    model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance(), model->getStake());
         connect(model, SIGNAL(balanceChanged(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)), this, SLOT(setBalance(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)));
-
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
         updateWatchOnlyLabels(model->haveWatchOnly());
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
@@ -294,37 +279,12 @@ void OverviewPage::updateAlerts(const QString &warnings)
 
 void OverviewPage::showOutOfSyncWarning(bool fShow)
 {
-    QString lastBlock = QString::fromStdString(std::to_string(chainActive.Height()));
-    ui->labelBlocks->setText(lastBlock);
-    ui->labelWalletStatus->setVisible(fShow);
-    ui->labelTransactionsStatus->setVisible(fShow);
-    ui->labelMnList->setVisible(fShow);
-    ui->labelGobjectList->setVisible(fShow);
 
-    if (!fShow) {
-        ui->labelWalletStatus->setVisible(true);
-        ui->labelTransactionsStatus->setVisible(true);
-        ui->labelMnList->setVisible(true);
-        ui->labelGobjectList->setVisible(true);
-        // Change new status
-        // Wallet Status
-        ui->labelWalletStatus->setText(tr("<font color='darkgreen'>ready</font>") );
-        // Transaction Status
-        ui->labelTransactionsStatus->setText(tr("<font color='darkgreen'>ready</font>") );
-        // Masternode List Status
-        if (masternodeSync.IsMasternodeListSynced()) {
-            ui->labelMnList->setText(tr("<font color='darkgreen'>ready</font>") );
-        } else if (masternodeSync.IsFailed()) {
-            ui->labelMnList->setText(tr("<font color='darkred'>failed</font>") );
-            ui->labelGobjectList->setText(tr("<font color='darkred'>failed</font>") );
 
-        }
-        if (masternodeSync.IsSynced()) {
-            ui->labelGobjectList->setText(tr("<font color='darkgreen'>ready</font>") );
-        }
-        // Gobject List Status
-    }
+
 }
+
+
 
 void OverviewPage::updateAdvancedPSUI(bool fShowAdvancedPSUI) {
     int nNumItems = (fLiteMode || !fShowAdvancedPSUI) ? NUM_ITEMS : NUM_ITEMS_ADV;

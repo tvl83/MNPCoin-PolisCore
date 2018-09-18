@@ -699,6 +699,11 @@ QWidget .QFrame#frame .QLabel#labelStakeStatus { /* Wallet Sync Status */
     margin-left:3px;
 }
 
+QWidget .QFrame#frame .QLabel#labelStakeInputs { /* Wallet Sync Status */
+    qproperty-alignment: 'AlignVCenter | AlignLefts';
+    margin-left:3px;
+}
+
 QWidget .QFrame#frame .QLabel#labelSpendable { /* Spendable Header */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:12px;
@@ -792,6 +797,15 @@ QWidget .QFrame#frame .QLabel#labelStakeText { /* Stake Balance Label */
 }
 
 QWidget .QFrame#frame .QLabel#labelStakeStatusText { /* Stake Balance Label */
+    qproperty-alignment: 'AlignVCenter | AlignCenter';
+    min-width:160px;
+    font-size:12px;
+    background-color:#F8F6F6;
+    margin-right:5px;
+    padding-right:5px;
+}
+
+QWidget .QFrame#frame .QLabel#labelStakeInputsText { /* Stake Balance Label */
     qproperty-alignment: 'AlignVCenter | AlignCenter';
     min-width:160px;
     font-size:12px;

@@ -45,6 +45,7 @@ Q_SIGNALS:
     void transactionClicked(const QModelIndex &index);
     void outOfSyncWarningClicked();
 
+
 private:
     QTimer *timer;
     Ui::OverviewPage *ui;
