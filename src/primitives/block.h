@@ -99,6 +99,15 @@ public:
         READWRITE(*(CBlockHeader*)this);
         READWRITE(vtx);
     }
+    
+    void SetNull()
+    {
+        CBlockHeader::SetNull();
+        vtx.clear();
+        txoutMasternode = CTxOut();
+        voutSuperblock.clear();
+        fChecked = false;
+    }   
 
     CBlockHeader GetBlockHeader() const
     {
