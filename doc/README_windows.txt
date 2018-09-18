@@ -1,4 +1,4 @@
-Polis Core 0.12.1
+Polis Core 1.3.1
 =====================
 
 Intro
@@ -19,5 +19,5 @@ depending on the speed of your computer and network connection, the synchronizat
 process can take anywhere from a few hours to a day or more.
 
 See the polis wiki at:
-  https://polispay.atlassian.net/wiki/
+  https://wiki.polispay.org
 for more help and information.

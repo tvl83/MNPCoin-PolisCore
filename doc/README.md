@@ -24,10 +24,10 @@ Drag Polis-Qt to your applications folder, and then run Polis-Qt.
 
 ### Need Help?
 
-* See the [Polis documentation](https://polispay.atlassian.net/wiki/display/DOC)
+* See the [Polis documentation](https://docs.polispay.org)
 for help and more information.
-* Ask for help on [Polis Nation Discord](http://polischat.org)
-* Ask for help on the [Polis Forum](https://polis.org/forum)
+* Ask for help on [Polis Discord]()
+* Ask for help on the [Polis Forum](https://forum.polispay.org)
 
 Building
 ---------------------

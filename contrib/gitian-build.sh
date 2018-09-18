@@ -28,6 +28,9 @@ scriptName=$(basename -- "$0")
 signProg="gpg --detach-sign"
 commitFiles=true
 
+SDK_URL=${SDK_URL:-https://bitcoincore.org/depends-sources/sdks}
+OSX_SDK=${OSX_SDK:-10.11}
+
 # Help Message
 read -d '' usage <<- EOF
 Usage: $scriptName [-c|u|v|b|s|B|o|h|j|m|] signer version
@@ -278,12 +281,12 @@ if [[ $build = true ]]
 then
 	# Make output folder
 	mkdir -p ./poliscore-binaries/${VERSION}
-	
+
 	# Build Dependencies
 	echo ""
 	echo "Building Dependencies"
 	echo ""
-	pushd ./gitian-builder	
+	pushd ./gitian-builder
 	mkdir -p inputs
 	wget -N -P inputs $osslPatchUrl
 	wget -N -P inputs $osslTarUrl
@@ -316,6 +319,13 @@ then
 	    echo ""
 	    echo "Compiling ${VERSION} Mac OSX"
 	    echo ""
+
+	    if [ -n "$OSX_SDK" ]; then
+	        if [ ! -f inputs/MacOSX${OSX_SDK}.sdk.tar.gz ]; then
+	            curl --location --fail $SDK_URL/MacOSX${OSX_SDK}.sdk.tar.gz -o inputs/MacOSX${OSX_SDK}.sdk.tar.gz
+	        fi
+	    fi
+
 	    ./bin/gbuild -j ${proc} -m ${mem} --commit polis=${COMMIT} --url polis=${url} ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	    ./bin/gsign -p "$signProg" --signer "$SIGNER" --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	    mv build/out/poliscore-*-osx-unsigned.tar.gz inputs/poliscore-osx-unsigned.tar.gz
@@ -352,10 +362,10 @@ then
 	echo "Verifying v${VERSION} Windows"
 	echo ""
 	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-unsigned ../polis/contrib/gitian-descriptors/gitian-win.yml
-	# Mac OSX	
+	# Mac OSX
 	echo ""
 	echo "Verifying v${VERSION} Mac OSX"
-	echo ""	
+	echo ""
 	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-unsigned ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	# Signed Windows
 	echo ""
@@ -373,7 +383,7 @@ fi
 # Sign binaries
 if [[ $sign = true ]]
 then
-	
+
         pushd ./gitian-builder
 	# Sign Windows
 	if [[ $windows = true ]]

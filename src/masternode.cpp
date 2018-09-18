@@ -18,7 +18,7 @@
 #include "wallet/wallet.h"
 #endif // ENABLE_WALLET
 
-#include <boost/lexical_cast.hpp>
+#include <string>
 
 
 CMasternode::CMasternode() :
@@ -332,9 +332,11 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
             if(!ReadBlockFromDisk(block, BlockReading, Params().GetConsensus()))
                 continue; // shouldn't really happen
 
+            const auto& coinbaseTransaction = (BlockReading->nHeight > Params().GetConsensus().nLastPoWBlock ? block.vtx[1] : block.vtx[0]);
+
             CAmount nMasternodePayment = GetMasternodePayment(BlockReading->nHeight, block.vtx[0]->GetValueOut());
 
-            for (const auto& txout : block.vtx[0]->vout)
+            for (const auto& txout : coinbaseTransaction->vout)
                 if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
                     nBlockLastPaid = BlockReading->nHeight;
                     nTimeLastPaid = BlockReading->nTime;
@@ -343,7 +345,7 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
                 }
         }
 
-        if (BlockReading->pprev == NULL) { assert(BlockReading); break; }
+        if (BlockReading->pprev == nullptr) { assert(BlockReading); break; }
         BlockReading = BlockReading->pprev;
     }
 
@@ -643,9 +645,9 @@ bool CMasternodeBroadcast::Sign(const CKey& keyCollateralAddress)
             return false;
         }
     } else {
-        std::string strMessage = addr.ToString(false) + boost::lexical_cast<std::string>(sigTime) +
+        std::string strMessage = addr.ToString(false) + std::to_string(sigTime) +
                         pubKeyCollateralAddress.GetID().ToString() + pubKeyMasternode.GetID().ToString() +
-                        boost::lexical_cast<std::string>(nProtocolVersion);
+                        std::to_string(nProtocolVersion);
 
         if (!CMessageSigner::SignMessage(strMessage, vchSig, keyCollateralAddress)) {
             LogPrintf("CMasternodeBroadcast::Sign -- SignMessage() failed\n");
@@ -671,9 +673,9 @@ bool CMasternodeBroadcast::CheckSignature(int& nDos) const
 
         if (!CHashSigner::VerifyHash(hash, pubKeyCollateralAddress, vchSig, strError)) {
             // maybe it's in old format
-            std::string strMessage = addr.ToString(false) + boost::lexical_cast<std::string>(sigTime) +
+            std::string strMessage = addr.ToString(false) + std::to_string(sigTime) +
                             pubKeyCollateralAddress.GetID().ToString() + pubKeyMasternode.GetID().ToString() +
-                            boost::lexical_cast<std::string>(nProtocolVersion);
+                            std::to_string(nProtocolVersion);
 
             if (!CMessageSigner::VerifyMessage(pubKeyCollateralAddress, vchSig, strMessage, strError)){
                 // nope, not in old format either
@@ -683,9 +685,9 @@ bool CMasternodeBroadcast::CheckSignature(int& nDos) const
             }
         }
     } else {
-        std::string strMessage = addr.ToString(false) + boost::lexical_cast<std::string>(sigTime) +
+        std::string strMessage = addr.ToString(false) + std::to_string(sigTime) +
                         pubKeyCollateralAddress.GetID().ToString() + pubKeyMasternode.GetID().ToString() +
-                        boost::lexical_cast<std::string>(nProtocolVersion);
+                        std::to_string(nProtocolVersion);
 
         if (!CMessageSigner::VerifyMessage(pubKeyCollateralAddress, vchSig, strMessage, strError)){
             LogPrintf("CMasternodeBroadcast::CheckSignature -- Got bad Masternode announce signature, error: %s\n", strError);
@@ -765,7 +767,7 @@ bool CMasternodePing::Sign(const CKey& keyMasternode, const CPubKey& pubKeyMaste
         }
     } else {
         std::string strMessage = CTxIn(masternodeOutpoint).ToString() + blockHash.ToString() +
-                    boost::lexical_cast<std::string>(sigTime);
+                    std::to_string(sigTime);
 
         if (!CMessageSigner::SignMessage(strMessage, vchSig, keyMasternode)) {
             LogPrintf("CMasternodePing::Sign -- SignMessage() failed\n");
@@ -791,7 +793,7 @@ bool CMasternodePing::CheckSignature(const CPubKey& pubKeyMasternode, int &nDos)
 
         if (!CHashSigner::VerifyHash(hash, pubKeyMasternode, vchSig, strError)) {
             std::string strMessage = CTxIn(masternodeOutpoint).ToString() + blockHash.ToString() +
-                        boost::lexical_cast<std::string>(sigTime);
+                        std::to_string(sigTime);
 
             if (!CMessageSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, strError)) {
                 LogPrintf("CMasternodePing::CheckSignature -- Got bad Masternode ping signature, masternode=%s, error: %s\n", masternodeOutpoint.ToStringShort(), strError);
@@ -801,7 +803,7 @@ bool CMasternodePing::CheckSignature(const CPubKey& pubKeyMasternode, int &nDos)
         }
     } else {
         std::string strMessage = CTxIn(masternodeOutpoint).ToString() + blockHash.ToString() +
-                    boost::lexical_cast<std::string>(sigTime);
+                    std::to_string(sigTime);
 
         if (!CMessageSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, strError)) {
             LogPrintf("CMasternodePing::CheckSignature -- Got bad Masternode ping signature, masternode=%s, error: %s\n", masternodeOutpoint.ToStringShort(), strError);
@@ -850,7 +852,7 @@ bool CMasternodePing::CheckAndUpdate(CMasternode* pmn, bool fFromNewBroadcast, i
         return false;
     }
 
-    if (pmn == NULL) {
+    if (pmn == nullptr) {
         LogPrint("masternode", "CMasternodePing::CheckAndUpdate -- Couldn't find Masternode entry, masternode=%s\n", masternodeOutpoint.ToStringShort());
         return false;
     }

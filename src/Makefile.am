@@ -127,6 +127,8 @@ BITCOIN_CORE_H = \
   instantx.h \
   key.h \
   keepass.h \
+  kernel.h \
+  blocksigner.h \
   keystore.h \
   dbwrapper.h \
   limitedmap.h \
@@ -282,7 +284,9 @@ endif
 libpolis_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libpolis_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libpolis_wallet_a_SOURCES = \
+  blocksigner.cpp \
   keepass.cpp \
+  kernel.cpp \
   privatesend-client.cpp \
   privatesend-util.cpp \
   wallet/crypter.cpp \
@@ -425,6 +429,7 @@ libpolis_util_a_SOURCES = \
 
 if GLIBC_BACK_COMPAT
 libpolis_util_a_SOURCES += compat/glibc_compat.cpp
+AM_LDFLAGS += -Wl,--wrap=log2f -Wl,--wrap=__divmoddi4
 endif
 
 # cli: shared between polis-cli and polis-qt

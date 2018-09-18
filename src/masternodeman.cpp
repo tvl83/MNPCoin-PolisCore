@@ -163,8 +163,6 @@ void CMasternodeMan::Check()
 {
     LOCK2(cs_main, cs);
 
-    LogPrint("masternode", "CMasternodeMan::Check -- nLastSentinelPingTime=%d, IsSentinelPingActive()=%d\n", nLastSentinelPingTime, IsSentinelPingActive());
-
     for (auto& mnpair : mapMasternodes) {
         // NOTE: internally it checks only every MASTERNODE_CHECK_SECONDS seconds
         // since the last time, so expect some MNs to skip this
@@ -253,7 +251,7 @@ void CMasternodeMan::CheckAndRemove(CConnman& connman)
                     // mapSeenMasternodeBroadcast.erase(itMnbReplies->first);
                     int nDos;
                     itMnbReplies->second[0].fRecovery = true;
-                    CheckMnbAndUpdateMasternodeList(NULL, itMnbReplies->second[0], nDos, connman);
+                    CheckMnbAndUpdateMasternodeList(nullptr, itMnbReplies->second[0], nDos, connman);
                 }
                 LogPrint("masternode", "CMasternodeMan::CheckAndRemove -- removing mnb recovery reply, masternode=%s, size=%d\n", itMnbReplies->second[0].outpoint.ToStringShort(), (int)itMnbReplies->second.size());
                 mMnbRecoveryGoodReplies.erase(itMnbReplies++);
@@ -445,7 +443,7 @@ CMasternode* CMasternodeMan::Find(const COutPoint &outpoint)
 {
     LOCK(cs);
     auto it = mapMasternodes.find(outpoint);
-    return it == mapMasternodes.end() ? NULL : &(it->second);
+    return it == mapMasternodes.end() ? nullptr : &(it->second);
 }
 
 bool CMasternodeMan::Get(const COutPoint& outpoint, CMasternode& masternodeRet)
@@ -571,7 +569,7 @@ bool CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool f
     int nTenthNetwork = nMnCount/10;
     int nCountTenth = 0;
     arith_uint256 nHighest = 0;
-    const CMasternode *pBestMasternode = NULL;
+    const CMasternode *pBestMasternode = nullptr;
     for (const auto& s : vecMasternodeLastPaid) {
         arith_uint256 nScore = s.second->CalculateScore(blockHash);
         if(nScore > nHighest){
@@ -772,14 +770,11 @@ void CMasternodeMan::ProcessPendingMnbRequests(CConnman& connman)
         bool fDone = connman.ForNode(itPendingMNB->first, [&](CNode* pnode) {
             // compile request vector
             std::vector<CInv> vToFetch;
-            std::set<uint256>& setHashes = itPendingMNB->second.second;
-            std::set<uint256>::iterator it = setHashes.begin();
-            while(it != setHashes.end()) {
-                if(*it != uint256()) {
-                    vToFetch.push_back(CInv(MSG_MASTERNODE_ANNOUNCE, *it));
-                    LogPrint("masternode", "-- asking for mnb %s from addr=%s\n", it->ToString(), pnode->addr.ToString());
+            for (auto& nHash : itPendingMNB->second.second) {
+                if(nHash != uint256()) {
+                    vToFetch.push_back(CInv(MSG_MASTERNODE_ANNOUNCE, nHash));
+                    LogPrint("masternode", "-- asking for mnb %s from addr=%s\n", nHash.ToString(), pnode->addr.ToString());
                 }
-                ++it;
             }
 
             // ask for data
@@ -798,7 +793,6 @@ void CMasternodeMan::ProcessPendingMnbRequests(CConnman& connman)
             ++itPendingMNB;
         }
     }
-    LogPrint("masternode", "%s -- mapPendingMNB size: %d\n", __func__, mapPendingMNB.size());
 }
 
 void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
@@ -865,7 +859,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         if(nDos > 0) {
             // if anything significant failed, mark that node
             Misbehaving(pfrom->GetId(), nDos);
-        } else if(pmn != NULL) {
+        } else if(pmn != nullptr) {
             // nothing significant failed, mn is a known one too
             return;
         }
@@ -968,7 +962,9 @@ void CMasternodeMan::SyncAll(CNode* pnode, CConnman& connman)
     LOCK(cs);
 
     for (const auto& mnpair : mapMasternodes) {
-        if (mnpair.second.addr.IsRFC1918() || mnpair.second.addr.IsLocal()) continue; // do not send local network masternode
+        if (Params().RequireRoutableExternalIP() &&
+            (mnpair.second.addr.IsRFC1918() || mnpair.second.addr.IsLocal()))
+            continue; // do not send local network masternode
         // NOTE: send masternode regardless of its current state, the other node will need it to verify old votes.
         LogPrint("masternode", "CMasternodeMan::%s -- Sending Masternode entry: masternode=%s  addr=%s\n", __func__, mnpair.first.ToStringShort(), mnpair.second.addr.ToString());
         PushDsegInvs(pnode, mnpair.second);
@@ -1011,20 +1007,18 @@ void CMasternodeMan::DoFullVerificationStep(CConnman& connman)
     int nRanksTotal = (int)vecMasternodeRanks.size();
 
     // send verify requests only if we are in top MAX_POSE_RANK
-    rank_pair_vec_t::iterator it = vecMasternodeRanks.begin();
-    while(it != vecMasternodeRanks.end()) {
-        if(it->first > MAX_POSE_RANK) {
+    for (auto& rankPair : vecMasternodeRanks) {
+        if(rankPair.first > MAX_POSE_RANK) {
             LogPrint("masternode", "CMasternodeMan::DoFullVerificationStep -- Must be in top %d to send verify request\n",
                         (int)MAX_POSE_RANK);
             return;
         }
-        if(it->second.outpoint == activeMasternode.outpoint) {
-            nMyRank = it->first;
+        if(rankPair.second.outpoint == activeMasternode.outpoint) {
+            nMyRank = rankPair.first;
             LogPrint("masternode", "CMasternodeMan::DoFullVerificationStep -- Found self at rank %d/%d, verifying up to %d masternodes\n",
                         nMyRank, nRanksTotal, (int)MAX_POSE_CONNECTIONS);
             break;
         }
-        ++it;
     }
 
     // edge case: list is too short and this masternode is not enabled
@@ -1042,7 +1036,7 @@ void CMasternodeMan::DoFullVerificationStep(CConnman& connman)
 
     sort(vSortedByAddr.begin(), vSortedByAddr.end(), CompareByAddr());
 
-    it = vecMasternodeRanks.begin() + nOffset;
+    auto it = vecMasternodeRanks.begin() + nOffset;
     while(it != vecMasternodeRanks.end()) {
         if(it->second.IsPoSeVerified() || it->second.IsPoSeBanned()) {
             LogPrint("masternode", "CMasternodeMan::DoFullVerificationStep -- Already %s%s%s masternode %s address %s, skipping...\n",
@@ -1084,8 +1078,8 @@ void CMasternodeMan::CheckSameAddr()
     {
         LOCK(cs);
 
-        CMasternode* pprevMasternode = NULL;
-        CMasternode* pverifiedMasternode = NULL;
+        CMasternode* pprevMasternode = nullptr;
+        CMasternode* pverifiedMasternode = nullptr;
 
         for (auto& mnpair : mapMasternodes) {
             vSortedByAddr.push_back(&mnpair.second);
@@ -1099,7 +1093,7 @@ void CMasternodeMan::CheckSameAddr()
             // initial step
             if(!pprevMasternode) {
                 pprevMasternode = pmn;
-                pverifiedMasternode = pmn->IsPoSeVerified() ? pmn : NULL;
+                pverifiedMasternode = pmn->IsPoSeVerified() ? pmn : nullptr;
                 continue;
             }
             // second+ step
@@ -1114,7 +1108,7 @@ void CMasternodeMan::CheckSameAddr()
                     pverifiedMasternode = pmn;
                 }
             } else {
-                pverifiedMasternode = pmn->IsPoSeVerified() ? pmn : NULL;
+                pverifiedMasternode = pmn->IsPoSeVerified() ? pmn : nullptr;
             }
             pprevMasternode = pmn;
         }
@@ -1173,7 +1167,6 @@ void CMasternodeMan::ProcessPendingMnvRequests(CConnman& connman)
             ++itPendingMNV;
         }
     }
-    LogPrint("masternode", "%s -- mapPendingMNV size: %d\n", __func__, mapPendingMNV.size());
 }
 
 void CMasternodeMan::SendVerifyReply(CNode* pnode, CMasternodeVerification& mnv, CConnman& connman)
@@ -1279,7 +1272,7 @@ void CMasternodeMan::ProcessVerifyReply(CNode* pnode, CMasternodeVerification& m
     {
         LOCK(cs);
 
-        CMasternode* prealMasternode = NULL;
+        CMasternode* prealMasternode = nullptr;
         std::vector<CMasternode*> vpMasternodesToBan;
 
         uint256 hash1 = mnv.GetSignatureHash1(blockHash);
