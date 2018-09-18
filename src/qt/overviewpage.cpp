@@ -5,7 +5,6 @@
 
 #include "overviewpage.h"
 #include "ui_overviewpage.h"
-
 #include "bitcoinunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
@@ -17,10 +16,10 @@
 #include "transactiontablemodel.h"
 #include "utilitydialog.h"
 #include "walletmodel.h"
-
+#include "modaloverlay.h"
+#include "validation.h"
 #include "instantx.h"
 #include "masternode-sync.h"
-
 #include <QAbstractItemDelegate>
 #include <QPainter>
 #include <QSettings>
@@ -28,8 +27,8 @@
 
 #define ICON_OFFSET 16
 #define DECORATION_SIZE 54
-#define NUM_ITEMS 5
-#define NUM_ITEMS_ADV 7
+#define NUM_ITEMS 10
+#define NUM_ITEMS_ADV 10
 
 class TxViewDelegate : public QAbstractItemDelegate
 {
@@ -131,6 +130,7 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     currentWatchOnlyBalance(-1),
     currentWatchUnconfBalance(-1),
     currentWatchImmatureBalance(-1),
+    currentStakeBalance(-1),
     txdelegate(new TxViewDelegate(platformStyle, this))
 {
     ui->setupUi(this);
@@ -144,9 +144,6 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
 
     connect(ui->listTransactions, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTransactionClicked(QModelIndex)));
 
-    // init "out of sync" warning labels
-    ui->labelWalletStatus->setText("(" + tr("out of sync") + ")");
-    ui->labelTransactionsStatus->setText("(" + tr("out of sync") + ")");
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
@@ -169,7 +166,7 @@ OverviewPage::~OverviewPage()
     delete ui;
 }
 
-void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& anonymizedBalance, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance)
+void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& anonymizedBalance, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& getStake)
 {
     currentBalance = balance;
     currentUnconfirmedBalance = unconfirmedBalance;
@@ -248,9 +245,8 @@ void OverviewPage::setWalletModel(WalletModel *model)
         updateDisplayUnit();
         // Keep up to date with wallet
         setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(), model->getAnonymizedBalance(),
-                   model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
-        connect(model, SIGNAL(balanceChanged(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)), this, SLOT(setBalance(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)));
-
+                   model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance(), model->getStake());
+        connect(model, SIGNAL(balanceChanged(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)), this, SLOT(setBalance(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)));
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
         updateWatchOnlyLabels(model->haveWatchOnly());
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
@@ -266,7 +262,7 @@ void OverviewPage::updateDisplayUnit()
         nDisplayUnit = walletModel->getOptionsModel()->getDisplayUnit();
         if(currentBalance != -1)
             setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance, currentAnonymizedBalance,
-                       currentWatchOnlyBalance, currentWatchUnconfBalance, currentWatchImmatureBalance);
+                       currentWatchOnlyBalance, currentWatchUnconfBalance, currentWatchImmatureBalance, currentStakeBalance);
 
         // Update txdelegate->unit with the current unit
         txdelegate->unit = nDisplayUnit;
@@ -283,9 +279,12 @@ void OverviewPage::updateAlerts(const QString &warnings)
 
 void OverviewPage::showOutOfSyncWarning(bool fShow)
 {
-    ui->labelWalletStatus->setVisible(fShow);
-    ui->labelTransactionsStatus->setVisible(fShow);
+
+
+
 }
+
+
 
 void OverviewPage::updateAdvancedPSUI(bool fShowAdvancedPSUI) {
     int nNumItems = (fLiteMode || !fShowAdvancedPSUI) ? NUM_ITEMS : NUM_ITEMS_ADV;

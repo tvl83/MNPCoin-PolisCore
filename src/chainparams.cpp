@@ -123,10 +123,10 @@ public:
     CMainParams() {
         strNetworkID = "main";
 
-        consensus.nSubsidyHalvingInterval = 1569325056; // Note: actual number of blocks per calendar year with DGW v3 is ~200700 (for example 449750 - 249050)
+        consensus.nSubsidyHalvingInterval = 262800; // Note: actual number of blocks per calendar year with DGW v3 is ~200700 (for example 449750 - 249050)
         consensus.nMasternodePaymentsStartBlock = 15; // not true, but it's ok as long as it's less then nMasternodePaymentsIncreaseBlock
-        consensus.nMasternodePaymentsIncreaseBlock = 1569325056; // actual historical value
-        consensus.nMasternodePaymentsIncreasePeriod = 1569325056; // 17280 - actual historical value
+        // consensus.nMasternodePaymentsIncreaseBlock = 1569325056; // actual historical value
+        // consensus.nMasternodePaymentsIncreasePeriod = 1569325056; // 17280 - actual historical value
         consensus.nInstantSendConfirmationsRequired = 6;
         consensus.nInstantSendKeepLock = 24;
         consensus.nBudgetPaymentsStartBlock = 32800; // actual historical value
@@ -145,11 +145,19 @@ public:
         consensus.DIP0001Height = 12096;
         consensus.powLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000");
         consensus.nPowTargetTimespan = 24 * 60 * 60; // polis: 1 day
-        consensus.nPowTargetSpacing = 120 ; // polis: 2.5 minutes
+        consensus.nPowTargetSpacing = 120 ; // polis: 2 minutes
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nPowKGWHeight = 551;
         consensus.nPowDGWHeight = 551;
+
+        // Stake information
+        consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
+        consensus.nPosTargetTimespan = 60 * 40;
+        consensus.nStakeMinAge = 60 * 60;
+        consensus.nStakeMaxAge = 60 * 60 * 24; // one day
+        // POS hard fork date
+        consensus.nLastPoWBlock = 185493;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -281,11 +289,11 @@ public:
         consensus.nMasternodePaymentsIncreasePeriod = 1569325056;
         consensus.nInstantSendConfirmationsRequired = 2;
         consensus.nInstantSendKeepLock = 6;
-        consensus.nBudgetPaymentsStartBlock = 4100;
-        consensus.nBudgetPaymentsCycleBlocks = 50;
+        consensus.nBudgetPaymentsStartBlock = 46;
+        consensus.nBudgetPaymentsCycleBlocks = 24;
         consensus.nBudgetPaymentsWindowBlocks = 10;
-        consensus.nSuperblockStartBlock = 4200; // NOTE: Should satisfy nSuperblockStartBlock > nBudgetPeymentsStartBlock
-        consensus.nSuperblockStartHash = uint256S("000001af046f4ed575a48b919ed28be8a40c6a78df8d7830fbbfd07ec17a1fee");
+        consensus.nSuperblockStartBlock = 70; // NOTE: Should satisfy nSuperblockStartBlock > nBudgetPeymentsStartBlock
+        // consensus.nSuperblockStartHash = uint256S("000001af046f4ed575a48b919ed28be8a40c6a78df8d7830fbbfd07ec17a1fee");
         consensus.nSuperblockCycle = 24; // Superblocks can be issued hourly on testnet
         consensus.nGovernanceMinQuorum = 1;
         consensus.nGovernanceFilterElements = 500;
@@ -297,11 +305,19 @@ public:
         consensus.DIP0001Height = 5500;
         consensus.powLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000");
         consensus.nPowTargetTimespan = 60 * 60 * 24; // polis: 1 day
-        consensus.nPowTargetSpacing = 40; // polis: 2.5 minutes
+        consensus.nPowTargetSpacing = 2 * 60; // polis: 2 minutes
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
         consensus.nPowDGWHeight = 4001;
+
+        // Stake info
+        consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
+        consensus.nPosTargetTimespan = 60 * 40;
+        consensus.nStakeMinAge = 60;
+        consensus.nStakeMaxAge = 60 * 60 * 24; // one day
+        consensus.nLastPoWBlock = 100;
+
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -348,8 +364,8 @@ public:
 
 
 
-        vFixedSeeds.clear();
-        vSeeds.clear();
+        vSeeds.push_back(CDNSSeedData("testnetseed.poliscentral.org", "testnetseed.poliscentral.org"));
+        vSeeds.push_back(CDNSSeedData("testnetseed2.poliscentral.org", "testnetseed2.poliscentral.org"));
 
 
         // Testnet polis addresses start with 'y'
@@ -378,7 +394,7 @@ public:
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
 
 
-        strSporkAddress = "ycMRXhDJC9iNxrMK5ywM8PpyEH2A4o28e7";
+        strSporkAddress = "yMCScEFCuhFGQL8aBS8UPXnKriFtjMVWra";
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
@@ -431,6 +447,17 @@ public:
         consensus.fPowNoRetargeting = false;
         consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
         consensus.nPowDGWHeight = 4001;
+
+
+        // Stake information
+
+        consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
+        consensus.nPosTargetTimespan = 60 * 40;
+        consensus.nStakeMinAge = 60 * 60;
+        consensus.nStakeMaxAge = 60 * 60 * 24; // one day
+        consensus.nLastPoWBlock = 180675;
+
+
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -553,7 +580,7 @@ public:
         consensus.DIP0001Height = 2000;
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 24 * 60 * 60; // polis: 1 day
-        consensus.nPowTargetSpacing = 2.5 * 60; // polis: 2.5 minutes
+        consensus.nPowTargetSpacing = 120; // polis: 2.5 minutes
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
         consensus.nPowKGWHeight = 15200; // same as mainnet
@@ -572,6 +599,13 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_BIP147].bit = 2;
         consensus.vDeployments[Consensus::DEPLOYMENT_BIP147].nStartTime = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_BIP147].nTimeout = 999999999999ULL;
+
+        // Stake info
+        consensus.nPosTargetSpacing = 30; // PoSW: 1 minutes
+        consensus.nPosTargetTimespan = 60 * 40;
+        consensus.nStakeMinAge = 2;
+        consensus.nStakeMaxAge = 60 * 60 * 24; // one day
+        consensus.nLastPoWBlock = 15;
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
