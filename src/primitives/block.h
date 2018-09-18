@@ -107,7 +107,7 @@ public:
         txoutMasternode = CTxOut();
         voutSuperblock.clear();
         fChecked = false;
-    }   
+    }
 
     CBlockHeader GetBlockHeader() const
     {
