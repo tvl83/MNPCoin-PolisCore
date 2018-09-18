@@ -9,9 +9,6 @@
 #include "tinyformat.h"
 #include "utilstrencodings.h"
 #include "crypto/common.h"
-#include "script/standard.h"
-#include "keystore.h"
-#include "util.h"
 
 
 uint256 CBlockHeader::GetHash() const
