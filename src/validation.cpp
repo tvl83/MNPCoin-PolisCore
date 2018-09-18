@@ -1330,7 +1330,7 @@ CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params&
     if(nPrevHeight == 181439) {nSubsidyBase = 5000;}
 
     // New Block Reward
-       if(nPrevHeight > 185493) {nSubsidyBase = 20;}
+       if(nPrevHeight > 186213) {nSubsidyBase = 20;}
 
         // LogPrintf("height %u diff %4.2f reward %d\n", nPrevHeight, dDiff, nSubsidyBase);
       CAmount nSubsidy = nSubsidyBase * COIN;
