@@ -1990,9 +1990,8 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 #ifdef ENABLE_WALLET
     if (pwalletMain)
         pwalletMain->postInitProcess(threadGroup);
-    threadGroup.create_thread(std::bind(&ThreadStakeMinter, boost::ref(chainparams), boost::ref(connman), pwalletMain));
-
-
+    if (chainActive.Tip()->nHeight == chainparams.GetConsensus().nLastPoWBlock)
+        threadGroup.create_thread(std::bind(&ThreadStakeMinter, boost::ref(chainparams), boost::ref(connman), pwalletMain));
 #endif
     threadGroup.create_thread(boost::bind(&ThreadSendAlert, boost::ref(connman)));
 
