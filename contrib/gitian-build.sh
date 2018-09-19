@@ -3,10 +3,10 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 # What to do
-sign=false
+sign=true
 verify=false
-build=false
-setupenv=false
+build=true
+setupenv=true
 
 # Systems to build
 linux=true
@@ -14,12 +14,12 @@ windows=true
 osx=true
 
 # Other Basic variables
-SIGNER=
-VERSION=
+SIGNER=POLIS
+VERSION=1.4.0
 commit=false
 url=https://github.com/polispay/polis
-proc=2
-mem=2000
+proc=32
+mem=64000
 lxc=true
 docker=false
 osslTarUrl=http://downloads.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-1.7.1.tar.gz
@@ -34,13 +34,10 @@ OSX_SDK=${OSX_SDK:-10.11}
 # Help Message
 read -d '' usage <<- EOF
 Usage: $scriptName [-c|u|v|b|s|B|o|h|j|m|] signer version
-
 Run this script from the directory containing the polis, gitian-builder, gitian.sigs, and polis-detached-sigs.
-
 Arguments:
 signer          GPG signer to sign each build assert file
 version		Version number, commit, or branch to build. If building a commit or branch, the -c option must be specified
-
 Options:
 -c|--commit	Indicate that the version argument is for a commit or branch
 -u|--url	Specify the URL of the repository. Default is https://github.com/polispay/polis
@@ -197,7 +194,7 @@ if [[ $lxc = true ]]
 then
     export USE_LXC=1
     export LXC_BRIDGE=lxcbr0
-    sudo ifconfig lxcbr0 up 10.0.3.2
+    sudo ifconfig lxcbr0 up 10.0.2.2
 elif [[ $docker = true ]]
 then
     export USE_DOCKER=1
@@ -259,13 +256,13 @@ then
     if [[ -n "$USE_LXC" ]]
     then
         sudo apt-get install lxc
-        bin/make-base-vm --suite trusty --arch amd64 --lxc
+        bin/make-base-vm --suite bionic --arch amd64 --lxc
     elif [[ -n "$USE_DOCKER" ]]
     then
         sudo apt-get install docker-ce
-        bin/make-base-vm --suite trusty --arch amd64 --docker
+        bin/make-base-vm --suite bionic --arch amd64 --docker
     else
-        bin/make-base-vm --suite trusty --arch amd64
+        bin/make-base-vm --suite bionic --arch amd64
     fi
     popd
 fi
@@ -281,12 +278,12 @@ if [[ $build = true ]]
 then
 	# Make output folder
 	mkdir -p ./poliscore-binaries/${VERSION}
-
+	
 	# Build Dependencies
 	echo ""
 	echo "Building Dependencies"
 	echo ""
-	pushd ./gitian-builder
+	pushd ./gitian-builder	
 	mkdir -p inputs
 	wget -N -P inputs $osslPatchUrl
 	wget -N -P inputs $osslTarUrl
@@ -362,10 +359,10 @@ then
 	echo "Verifying v${VERSION} Windows"
 	echo ""
 	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-unsigned ../polis/contrib/gitian-descriptors/gitian-win.yml
-	# Mac OSX
+	# Mac OSX	
 	echo ""
 	echo "Verifying v${VERSION} Mac OSX"
-	echo ""
+	echo ""	
 	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-unsigned ../polis/contrib/gitian-descriptors/gitian-osx.yml
 	# Signed Windows
 	echo ""
@@ -383,7 +380,7 @@ fi
 # Sign binaries
 if [[ $sign = true ]]
 then
-
+	
         pushd ./gitian-builder
 	# Sign Windows
 	if [[ $windows = true ]]
