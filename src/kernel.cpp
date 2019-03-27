@@ -18,39 +18,23 @@
 
 #define PRI64x  "llx"
 using namespace std;
-bool fTestNet = false; //Params().NetworkID() == CBaseChainParams::TESTNET;
+
+unsigned int nForkTimestamp     = 1554418800;
+
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
 unsigned int nModifierInterval = MODIFIER_INTERVAL;
-unsigned int getIntervalVersion(bool fTestNet)
-{
-    if (fTestNet)
-        return MODIFIER_INTERVAL_TESTNET;
-    else
-        return MODIFIER_INTERVAL;
-}
-//static int GetCoinUnspentTxCount(const uint256 &hash)
-//{
-//    CCoins coins;
-//    if(!pcoinsTip->GetCoins(hash, coins))
-//    {
-//        return 0;
-//    }
-//    return std::max(1, std::accumulate(std::begin(coins.vout), std::end(coins.vout), 0, [](int accum, const CTxOut &txOut) {
-//        return accum + (txOut.IsNull() ? 0 : 1);
-//    }) - 1);
-//}
+
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of
                 (0, 0xfd11f4e7u);
 
-
-// Get time weight
-int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd)
+bool IsProtocolV03(unsigned int nTimeCoinStake)
 {
-    return nIntervalEnd - nIntervalBeginning - Params().GetConsensus().nStakeMinAge;
+    return (nTimeCoinStake >= (nForkTimestamp));
 }
+
 // Get the last stake modifier and its generation time from a given block
 static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModifier, int64_t& nModifierTime)
 {
@@ -240,6 +224,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
     fGeneratedStakeModifier = true;
     return true;
 }
+
 // V0.5: Stake modifier used to hash for a stake kernel is chosen as the stake
 // modifier that is (nStakeMinAge minus a selection interval) earlier than the
 // stake, thus at least a selection interval later than the coin generating the // kernel, as the generating coin is from at least nStakeMinAge ago.
@@ -270,12 +255,6 @@ static bool GetKernelStakeModifierV05(unsigned int nTimeTx, uint64_t& nStakeModi
 static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake)
 {
     return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
-}
-uint256 stakeHash(unsigned int nTimeTx, CDataStream ss, unsigned int prevoutIndex, uint256 prevoutHash, unsigned int nTimeBlockFrom)
-{
-    //PoSW will hash in the transaction hash and the index number in order to make sure each hash is unique
-    ss << nTimeBlockFrom << prevoutIndex << prevoutHash << nTimeTx;
-    return Hash(ss.begin(), ss.end());
 }
 // ppcoin kernel protocol
 // coinstake must meet hash target according to the protocol:
@@ -335,9 +314,11 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     if (nTimeTx < 1549143000 && fValidate) {
         return true;
     } else {
-        if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
-            return error("Failed to get kernel stake modifier");
-        //ss << nStakeModifier;
+        if (IsProtocolV03(nTimeTx))  {
+            if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
+                return error("Failed to get kernel stake modifier");
+            ss << nStakeModifier;
+        }
         ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
         hashProofOfStake = Hash(ss.begin(), ss.end());
         // Now check if proof-of-stake hash meets target protocol
@@ -401,11 +382,6 @@ bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake)
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx->GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;
-}
-// Check whether the coinstake timestamp meets protocol
-bool CheckCoinStakeTimestamp(int64_t nTimeBlock, int64_t nTimeTx)
-{
-    return (nTimeBlock == nTimeTx);
 }
 // Get stake modifier checksum
 unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex)
