@@ -123,17 +123,12 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
         return nullptr;
     pblock = &pblocktemplate->block; // pointer for convenience
 
-    // Add dummy coinbase tx as first transaction
     pblock->vtx.emplace_back();
     pblocktemplate->vTxFees.push_back(-1); // updated at end
     pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 
-    CBlockIndex* pindexPrev = nullptr;
-    {
-        LOCK(cs_main);
-        pindexPrev = chainActive.Tip();
-    }
-
+    LOCK2(cs_main, mempool.cs);
+    CBlockIndex* pindexPrev = chainActive.Tip();
     assert(pindexPrev != nullptr);
     nHeight = pindexPrev->nHeight + 1;
 
@@ -156,17 +151,14 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
     nLastBlockSize = nBlockSize;
     LogPrintf("CreateNewBlock(): total size %u txs: %u fees: %ld sigops %d\n", nBlockSize, nBlockTx, nFees, nBlockSigOps);
 
-    // Create coinbase transaction.
     CMutableTransaction coinbaseTx;
     coinbaseTx.vin.resize(1);
     coinbaseTx.vin[0].prevout.SetNull();
     coinbaseTx.vout.resize(1);
     coinbaseTx.vout[0].scriptPubKey = scriptPubKeyIn;
-    CAmount blockReward = GetBlockSubsidy(pindexPrev->nHeight, Params().GetConsensus());
+    CAmount blockReward = nFees + GetBlockSubsidy(pindexPrev->nHeight, Params().GetConsensus());
     std::vector<CWalletTx*> vwtxPrev;
-
-    // NOTE: unlike in bitcoin, we need to pass PREVIOUS block height here
-    static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
+    static int64_t nLastCoinStakeSearchTime = GetAdjustedTime();
     if(fProofOfStake)
     {
         assert(wallet);
@@ -199,50 +191,16 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
         coinbaseTx.vout[0].nValue = nFees + blockReward;
     }
 
-
+    addPriorityTxs();
     int nPackagesSelected = 0;
     int nDescendantsUpdated = 0;
-
     {
         LOCK(mempool.cs);
         addPackageTxs(nPackagesSelected, nDescendantsUpdated);
     }
-
-    // Compute regular coinbase transaction.
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
-    if(!fProofOfStake)
-    {
-        // Update block coinbase
-        coinbaseTx.vout[0].nValue = nFees + blockReward;
-        pblocktemplate->vTxFees[0] = -nFees;
-
-        // Update coinbase transaction with additional info about masternode and governance payments,
-        // get some info back to pass to getblocktemplate
-
-        FillBlockPayments(coinbaseTx, nHeight, blockReward, pblock->txoutMasternode, pblock->voutSuperblock);
-        auto it = std::find(std::begin(coinbaseTx.vout), std::end(coinbaseTx.vout), pblock->txoutMasternode);
-
-        if(it != std::end(coinbaseTx.vout))
-        {
-            coinbaseTx.vout[0].nValue -= pblock->txoutMasternode.nValue;
-        }
-
-        LogPrintf("CreateNewBlock PoW-- nBlockHeight %d blockReward %lld txoutMasternode %s txNew %s",
-                  nHeight, blockReward, pblock->txoutMasternode.ToString(), coinbaseTx.ToString());
-
-    }
-
-    // Update coinbase transaction with additional info about masternode and governance payments,
-    // get some info back to pass to getblocktemplate
-    // FillBlockPayments(coinbaseTx, nHeight, blockReward, pblock->txoutMasternode, pblock->voutSuperblock);
-    // LogPrintf("CreateNewBlock -- nBlockHeight %d blockReward %lld txoutMasternode %s coinbaseTx %s",
-    //             nHeight, blockReward, pblock->txoutMasternode.ToString(), coinbaseTx.ToString());
-
     pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
     pblocktemplate->vTxFees[0] = -nFees;
-    nLastBlockTx = nBlockTx;
-    nLastBlockSize = nBlockSize;
-    LogPrintf("CreateNewBlock(): total size %u txs: %u fees: %ld sigops %d\n", nBlockSize, nBlockTx, nFees, nBlockSigOps);
 
     // Fill in header
     pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
@@ -252,10 +210,6 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
     pblock->nNonce         = 0;
     pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(*pblock->vtx[0]);
 
-    CValidationState state;
-    // if (!TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
-    //    throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, FormatStateMessage(state)));
-    // }
     int64_t nTime2 = GetTimeMicros();
 
     LogPrint("bench", "CreateNewBlock() packages: %.2fms (%d packages, %d updated descendants), validity: %.2fms (total %.2fms)\n", 0.001 * (nTime1 - nTimeStart), nPackagesSelected, nDescendantsUpdated, 0.001 * (nTime2 - nTime1), 0.001 * (nTime2 - nTimeStart));
@@ -696,7 +650,7 @@ void static BitcoinMiner(const CChainParams& chainparams, CConnman& connman,
                 // on an obsolete chain. In regtest mode we expect to fly solo.
                 do {
                     bool fvNodesEmpty = connman.GetNodeCount(CConnman::CONNECTIONS_ALL) == 0;
-                    if (!fvNodesEmpty  && !IsInitialBlockDownload()  /*&& masternodeSync.IsSynced()*/)
+                    if (!fvNodesEmpty && !IsInitialBlockDownload()  /*&& masternodeSync.IsSynced()*/)
                         break;
                     MilliSleep(1000);
                 } while (true);
