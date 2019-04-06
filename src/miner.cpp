@@ -38,7 +38,7 @@
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// PolisMiner
+// PolisMinter
 //
 
 //
@@ -628,10 +628,10 @@ static bool ProcessBlockFound(const std::shared_ptr<const CBlock> &pblock, const
     return true;
 }
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
-void static BitcoinMiner(const CChainParams& chainparams, CConnman& connman,
+void static PolisMinter(const CChainParams& chainparams, CConnman& connman,
                          CWallet* pwallet, bool fProofOfStake)
 {
-    LogPrintf("PolisMiner -- started\n");
+    LogPrintf("PolisMinter -- started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("polis-miner");
     unsigned int nExtraNonce = 0;
@@ -678,13 +678,13 @@ void static BitcoinMiner(const CChainParams& chainparams, CConnman& connman,
             std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(Params()).CreateNewBlock(pwallet, chainparams, coinbaseScript->reserveScript, fProofOfStake));
             if (!pblocktemplate.get())
             {
-                LogPrintf("PolisMiner -- Failed to find a coinstake\n");
+                LogPrintf("PolisMinter -- Failed to find a coinstake\n");
                 MilliSleep(5000);
                 continue;
             }
             auto pblock = std::make_shared<CBlock>(pblocktemplate->block);
             IncrementExtraNonce(pblock.get(), pindexPrev, nExtraNonce);
-            LogPrintf("PolisMiner -- Running miner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+            LogPrintf("PolisMinter -- Running miner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
                       ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
             //Sign block
             if (fProofOfStake)
@@ -692,7 +692,7 @@ void static BitcoinMiner(const CChainParams& chainparams, CConnman& connman,
                 LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
                 CBlockSigner signer(*pblock, pwallet);
                 if (!signer.SignBlock()) {
-                    LogPrintf("BitcoinMiner(): Signing new block failed \n");
+                    LogPrintf("PolisMinter(): Signing new block failed \n");
                     throw std::runtime_error(strprintf("%s: SignBlock failed", __func__));
                 }
                 LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", pblock->GetHash().ToString().c_str());
@@ -727,7 +727,7 @@ void static BitcoinMiner(const CChainParams& chainparams, CConnman& connman,
                     {
                         // Found a solution
                         SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                        LogPrintf("PolisMiner:\n  proof-of-work found\n  hash: %s\n  target: %s\n", hash.GetHex(), hashTarget.GetHex());
+                        LogPrintf("PolisMinter:\n  proof-of-work found\n  hash: %s\n  target: %s\n", hash.GetHex(), hashTarget.GetHex());
                         ProcessBlockFound(pblock, chainparams);
                         SetThreadPriority(THREAD_PRIORITY_LOWEST);
                         coinbaseScript->KeepScript();
@@ -766,12 +766,12 @@ void static BitcoinMiner(const CChainParams& chainparams, CConnman& connman,
         }
         catch (const boost::thread_interrupted&)
         {
-            LogPrintf("PolisMiner -- terminated\n");
+            LogPrintf("PolisMinter -- terminated\n");
             throw;
         }
         catch (const std::runtime_error &e)
         {
-            LogPrintf("PolisMiner -- runtime error: %s\n", e.what());
+            LogPrintf("PolisMinter -- runtime error: %s\n", e.what());
 //            return;
         }
     }
@@ -794,14 +794,14 @@ void GenerateBitcoins(bool fGenerate,
         return;
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
-        minerThreads->create_thread(boost::bind(&BitcoinMiner, boost::cref(chainparams), boost::ref(connman), nullptr, false));
+        minerThreads->create_thread(boost::bind(&PolisMinter, boost::cref(chainparams), boost::ref(connman), nullptr, false));
 }
 void ThreadStakeMinter(const CChainParams &chainparams, CConnman &connman, CWallet *pwallet)
 {
     boost::this_thread::interruption_point();
     LogPrintf("ThreadStakeMinter started\n");
     try {
-        BitcoinMiner(chainparams, connman, pwallet, true);
+        PolisMinter(chainparams, connman, pwallet, true);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
         LogPrintf("ThreadStakeMinter() exception %s\n", e.what());
