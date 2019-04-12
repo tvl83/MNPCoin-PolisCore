@@ -1355,8 +1355,7 @@ CAmount GetBlockSubsidy(int nPrevHeight, const Consensus::Params& consensusParam
 
     return fSuperblockPartOnly ? nSuperblockPart : nSubsidy - nSuperblockPart;
 }
-CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
-{
+CAmount GetMasternodePayment(int nHeight, CAmount blockValue){
     return blockValue * 0.8 ;
 }
 
@@ -2272,7 +2271,6 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
 
             if (!tx.IsCoinStake())
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
-
             nValueIn += view.GetValueIn(tx);
 
 
@@ -2326,14 +2324,15 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
 
+    // ppcoin: track money supply and mint amount info
     CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
-    pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
+    int newFee = pindex->IsProofOfStake() ? nFees : 0;
+    pindex->nMoneySupply = nMoneySupplyPrev + (nValueOut - nValueIn + newFee);
     pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev;
-
 
     int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
 
-    LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime3 - nTime2), 0.001 * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * 0.000001);
+    LogPrint("bench", " - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime3 - nTime2), 0.001 * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * 0.000001);
 
     // POLIS : MODIFIED TO CHECK MASTERNODE PAYMENTS AND SUPERBLOCKS
 
@@ -4262,10 +4261,6 @@ bool CVerifyDB::VerifyDB(const CChainParams& chainparams, CCoinsView *coinsview,
         // check level 0: read from disk
         if (!ReadBlockFromDisk(block, pindex, chainparams.GetConsensus()))
             return error("VerifyDB(): *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
-        // Verify correct stakeModifier calculations
-        if (pindex->nStakeModifier == 0) {
-            return error("VerifyDB(): *** Check StakeModifier failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
-        }
         // check level 1: verify block validity
         if (nCheckLevel >= 1 && !CheckBlock(block, state, chainparams.GetConsensus()))
             return error("%s: *** found bad block at %d, hash=%s (%s)\n", __func__,

@@ -187,7 +187,7 @@ Threads
 
 - ThreadRPCServer : Remote procedure call handler, listens on port 24127 for connections and services them.
 
-- BitcoinMiner : Generates coins (if wallet is enabled).
+- PolisMinter : Generates coins (if wallet is enabled).
 
 - ThreadCheckDarkSendPool : Runs masternode list and sync data update loops
 
