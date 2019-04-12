@@ -20,7 +20,7 @@
 #define PRI64x  "llx"
 using namespace std;
 
-unsigned int nForkTimestamp     = 1555099838;
+unsigned int nForkTimestamp     = 1555686000;
 
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
