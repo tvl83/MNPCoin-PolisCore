@@ -358,7 +358,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     if (nTimeTx < 1549143000 && fValidate) {
         return true;
     } else {
-        if (IsProtocolV03(nTimeTx) && sporkManager.IsSporkActive(SPORK_15_FULL_POS_V3))  {
+        if (IsProtocolV03(nTimeTx))  {
             if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
                 return false;
             ss << nStakeModifier;
