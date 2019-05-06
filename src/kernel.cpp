@@ -29,7 +29,10 @@ unsigned int nModifierInterval = MODIFIER_INTERVAL;
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of
-                (0, 0xfd11f4e7u);
+                ( 0, 0xfd11f4e7u )
+                ( 346035, 0x00000000);
+
+
 
 bool IsProtocolV03(unsigned int nTimeCoinStake)
 {
@@ -133,6 +136,10 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
     fGeneratedStakeModifier = false;
     if (!pindexPrev)
     {
+        fGeneratedStakeModifier = true;
+        return true;  // genesis block's modifier is 0
+    }
+    if (pindexCurrent->nHeight == 346034) {
         fGeneratedStakeModifier = true;
         return true;  // genesis block's modifier is 0
     }
