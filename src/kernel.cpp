@@ -143,6 +143,10 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
         nStakeModifier = 676357;
         return true;
     }
+    if (pindexCurrent->nHeight == 346098) {
+        nStakeModifier = 528471;
+        return true;
+    }
     // First find current stake modifier and its generation block time
     // if it's not old enough, return the same stake modifier
     int64_t nModifierTime = 0;
@@ -437,19 +441,21 @@ bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake)
 // Get stake modifier checksum
 unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex)
 {
-    if (pindex->nHeight <= 346226) {
+    if (pindex->nHeight <= 346226)
         return 0;
-    } else {
-        assert (pindex->pprev || pindex->GetBlockHash() == Params().GetConsensus().hashGenesisBlock);
-        // Hash previous checksum with flags, hashProofOfStake and nStakeModifier
-        CDataStream ss(SER_GETHASH, 0);
-        if (pindex->pprev)
-            ss << pindex->pprev->nStakeModifierChecksum;
-        ss << pindex->nFlags << pindex->hashProofOfStake << pindex->nStakeModifier;
-        arith_uint256 hashChecksum = UintToArith256(Hash(ss.begin(), ss.end()));
-        hashChecksum >>= (256 - 32);
-        return hashChecksum.GetLow64();
-    }
+    if (pindex->nHeight == 346227)
+        return 0xaf8cccdd;
+
+    assert (pindex->pprev || pindex->GetBlockHash() == Params().GetConsensus().hashGenesisBlock);
+    // Hash previous checksum with flags, hashProofOfStake and nStakeModifier
+    CDataStream ss(SER_GETHASH, 0);
+    if (pindex->pprev)
+        ss << pindex->pprev->nStakeModifierChecksum;
+    ss << pindex->nFlags << pindex->hashProofOfStake << pindex->nStakeModifier;
+    arith_uint256 hashChecksum = UintToArith256(Hash(ss.begin(), ss.end()));
+    hashChecksum >>= (256 - 32);
+    return hashChecksum.GetLow64();
+
 }
 // Check stake modifier hard checkpoints
 bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum)
