@@ -20,7 +20,7 @@
 #define PRI64x  "llx"
 using namespace std;
 
-unsigned int nForkTimestamp     = 1557068400;
+unsigned int nForkTimestamp     = 1557414000;
 
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
@@ -29,7 +29,7 @@ unsigned int nModifierInterval = MODIFIER_INTERVAL;
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of
-                ( 0, 0 );
+                ( 0, 0xfd11f4e7u);
 
 
 
@@ -138,15 +138,6 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
         fGeneratedStakeModifier = true;
         return true;  // genesis block's modifier is 0
     }
-/*    if (pindexCurrent->nHeight == 346033) {
-        fGeneratedStakeModifier = true;
-        nStakeModifier = 676357;
-        return true;
-    }
-    if (pindexCurrent->nHeight == 346098) {
-        nStakeModifier = 528471;
-        return true;
-    }*/
     // First find current stake modifier and its generation block time
     // if it's not old enough, return the same stake modifier
     int64_t nModifierTime = 0;
@@ -305,11 +296,11 @@ static bool GetKernelStakeModifierV05(unsigned int nTimeTx, uint64_t& nStakeModi
     nStakeModifier = pindex->nStakeModifier;
     return true;
 }
+
 // Get the stake modifier specified by the protocol to hash for a stake kernel
 static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake)
 {
     return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
-    //return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
 }
 // ppcoin kernel protocol
 // coinstake must meet hash target according to the protocol:
@@ -365,22 +356,24 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     int nStakeModifierHeight = 0;
     int64_t nStakeModifierTime = 0;
 
+    // Simply allow all blocks before time = 1549143000 -> Post POS Mess
     if (nTimeTx < 1549143000) {
         return true;
-    } else {
-        if (IsProtocolV03(nTimeTx))  {
-            if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
-                return false;
-            ss << nStakeModifier;
-            ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
-            hashProofOfStake = Hash(ss.begin(), ss.end());
-            // Now check if proof-of-stake hash meets target protocol
-            if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay) {
-                return false;
-            }
-        }
     }
 
+    if (IsProtocolV03(nTimeTx))  {
+        if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
+            return false;
+        ss << nStakeModifier;
+    }
+
+    ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
+    hashProofOfStake = Hash(ss.begin(), ss.end());
+    // Now check if proof-of-sta3ke hash meets target protocol
+    if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay) {
+        return false;
+    }
+    
     return true;
 }
 
