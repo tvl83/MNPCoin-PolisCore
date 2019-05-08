@@ -23,19 +23,17 @@ using namespace std;
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
 unsigned int nModifierInterval = MODIFIER_INTERVAL;
+unsigned int nForkTimestamp     = 1557334000;
+
+bool IsProtocolV03(unsigned int nTimeCoinStake)
+{
+    return (nTimeCoinStake >= (nForkTimestamp));
+}
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of
                 ( 0, 0xfd11f4e7u)
-                ( 50000, 0xa1db49e5u)
-                ( 100000, 0x79c0a90cu)
-                ( 150000, 0x76967002u)
-                ( 200000, 0xe35b9d5a)
-                ( 250000, 0xb8fc9208u)
-                ( 300000, 0x917ef2c8u)
-                ( 328924, 0x3d4743c7u)
-                ( 333755, 0x746c9c06u)
 ;
 
 // Get the last stake modifier and its generation time from a given block
@@ -357,14 +355,17 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     int64_t nStakeModifierTime = 0;
 
 
-    if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
-        return false;
-    ss << nStakeModifier;
-    ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
-    hashProofOfStake = Hash(ss.begin(), ss.end());
-
-    // Now check if proof-of-stake hash meets target protocol
-    if (nTimeTx > 1557330000) {
+    if (nTimeTx < 1549143000 ) {
+        return true;
+    } else {
+        if (IsProtocolV03(nTimeTx))  {
+            if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
+                return false;
+            ss << nStakeModifier;
+        }
+        ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
+        hashProofOfStake = Hash(ss.begin(), ss.end());
+        // Now check if proof-of-stake hash meets target protocol
         if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay) {
             return false;
         }
