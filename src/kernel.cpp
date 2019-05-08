@@ -20,7 +20,7 @@
 #define PRI64x  "llx"
 using namespace std;
 
-unsigned int nForkTimestamp     = 1557338000;
+unsigned int nForkTimestamp     = 1557068400;
 
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
@@ -297,8 +297,8 @@ static bool GetKernelStakeModifierV05(unsigned int nTimeTx, uint64_t& nStakeModi
 // Get the stake modifier specified by the protocol to hash for a stake kernel
 static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake)
 {
-    return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
-    //return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
+    //return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
+    return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
 }
 // ppcoin kernel protocol
 // coinstake must meet hash target according to the protocol:
@@ -366,10 +366,8 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
         ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
         hashProofOfStake = Hash(ss.begin(), ss.end());
         // Now check if proof-of-stake hash meets target protocol
-        if (IsProtocolV03(nTimeTx)) {
-            if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay) {
-                return false;
-            }
+        if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay) {
+            return false;
         }
     }
 
