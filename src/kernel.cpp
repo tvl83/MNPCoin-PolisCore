@@ -20,22 +20,21 @@
 #define PRI64x  "llx"
 using namespace std;
 
+unsigned int nForkTimestamp     = 1557338000;
+
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
 unsigned int nModifierInterval = MODIFIER_INTERVAL;
-unsigned int nForkTimestamp_1     = 1557068400;
-unsigned int nForkTimestamp_2     = 1557334000;
-
-bool IsProtocolV03(unsigned int nTimeCoinStake)
-{
-    return (nTimeCoinStake >= (nForkTimestamp_2));
-}
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of
-                ( 0, 0xfd11f4e7u)
-;
+                (0, 0xfd11f4e7u);
+
+bool IsProtocolV03(unsigned int nTimeCoinStake)
+{
+    return (nTimeCoinStake >= (nForkTimestamp));
+}
 
 // Get the last stake modifier and its generation time from a given block
 static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModifier, int64_t& nModifierTime)
@@ -295,14 +294,11 @@ static bool GetKernelStakeModifierV05(unsigned int nTimeTx, uint64_t& nStakeModi
     nStakeModifier = pindex->nStakeModifier;
     return true;
 }
-
 // Get the stake modifier specified by the protocol to hash for a stake kernel
 static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake)
 {
-    if (nTimeTx > nForkTimestamp_1)
-        return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
-    return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
-
+    return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
+    //return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
 }
 // ppcoin kernel protocol
 // coinstake must meet hash target according to the protocol:
@@ -333,6 +329,7 @@ static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, 
 
 bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned int nTxPrevOffset, const CTransactionRef& txPrev, const COutPoint& prevout, unsigned int nTimeTx, uint256& hashProofOfStake)
 {
+
     auto txPrevTime = blockFrom.GetBlockTime();
     if (nTimeTx < txPrevTime)  // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
@@ -358,13 +355,12 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     int nStakeModifierHeight = 0;
     int64_t nStakeModifierTime = 0;
 
-
-    if (nTimeTx < 1549143000 ) {
+    if (nTimeTx < 1549143000) {
         return true;
     } else {
         if (IsProtocolV03(nTimeTx))  {
             if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
-                return false;
+                return error("Unable to get kernel stake modifier");
             ss << nStakeModifier;
         }
         ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
@@ -426,7 +422,8 @@ bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake)
     if(!CheckKernelScript(prevTxOut.scriptPubKey, tx->vout[1].scriptPubKey))
         return error("CheckProofOfStake() : INFO: check kernel script failed on coinstake %s, hashProof=%s \n", tx->GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str());
     unsigned int nTime = block.nTime;
-    if (!CheckStakeKernelHash(block.nBits, blockprev, sizeof(CBlock), txPrev, txin.prevout, nTime, hashProofOfStake))        return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx->GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
+    if (!CheckStakeKernelHash(block.nBits, blockprev, sizeof(CBlock), txPrev, txin.prevout, nTime, hashProofOfStake))
+        return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx->GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;
 }
