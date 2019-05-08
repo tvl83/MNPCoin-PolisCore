@@ -28,10 +28,14 @@ unsigned int nModifierInterval = MODIFIER_INTERVAL;
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of
                 ( 0, 0xfd11f4e7u)
-                ( 50000, 0x9aa3dc9du)
-                ( 100000, 0x41547978u)
-                ( 150000, 0xe8fc919cu)
-                ( 200000, 0xe35b9d5au)
+                ( 50000, 0xa1db49e5u)
+                ( 100000, 0x79c0a90cu)
+                ( 150000, 0x76967002u)
+                ( 200000, 0xe35b9d5a)
+                ( 250000, 0xb8fc9208u)
+                ( 300000, 0x917ef2c8u)
+                ( 328924, 0x3d4743c7u)
+                ( 333755, 0x746c9c06u)
 ;
 
 // Get the last stake modifier and its generation time from a given block
@@ -296,9 +300,7 @@ static bool GetKernelStakeModifierV05(unsigned int nTimeTx, uint64_t& nStakeModi
 // Get the stake modifier specified by the protocol to hash for a stake kernel
 static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake)
 {
-    if (nTimeTx > 1556438656)
-        return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
-    return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
+    return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
 }
 // ppcoin kernel protocol
 // coinstake must meet hash target according to the protocol:
@@ -362,7 +364,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     hashProofOfStake = Hash(ss.begin(), ss.end());
 
     // Now check if proof-of-stake hash meets target protocol
-    if (nTimeTx > 1557321760) {
+    if (nTimeTx > 1557330000) {
         if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay) {
             return false;
         }
