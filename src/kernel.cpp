@@ -23,11 +23,12 @@ using namespace std;
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
 unsigned int nModifierInterval = MODIFIER_INTERVAL;
-unsigned int nForkTimestamp     = 1557334000;
+unsigned int nForkTimestamp_1     = 1557068400;
+unsigned int nForkTimestamp_2     = 1557334000;
 
 bool IsProtocolV03(unsigned int nTimeCoinStake)
 {
-    return (nTimeCoinStake >= (nForkTimestamp));
+    return (nTimeCoinStake >= (nForkTimestamp_2));
 }
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
@@ -298,7 +299,7 @@ static bool GetKernelStakeModifierV05(unsigned int nTimeTx, uint64_t& nStakeModi
 // Get the stake modifier specified by the protocol to hash for a stake kernel
 static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake)
 {
-    if (IsProtocolV03(nTimeTx))
+    if (nTimeTx > nForkTimestamp_1)
         return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
     return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
 
