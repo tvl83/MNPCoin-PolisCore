@@ -2063,11 +2063,6 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
         if (!mapProofOfStake.count(hash))
             LogPrintf("AcceptProofOfStakeBlock() : hashProofOfStake not found in map \n");
         pindexNew->hashProofOfStake = mapProofOfStake[hash];
-
-        LogPrintf("AcceptProofOfStakeBlock(): hash = %s \n", hash.ToString());
-        LogPrintf("AcceptProofOfStakeBlock(): hashProofOfStake = %s \n", mapProofOfStake[hash].ToString());
-        LogPrintf("pindexNew->hashProofOfStake: hashProofOfStake = %s \n", pindexNew->hashProofOfStake.ToString());
-
     }
 
     // ppcoin: compute stake modifier
@@ -2098,8 +2093,6 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(block, state, chainparams.GetConsensus(), !fJustCheck, !fJustCheck))
         return error("%s: Consensus::CheckBlock: %s", __func__, FormatStateMessage(state));
-    LogPrintf("ConnectBlock() = %b", true);
-    AcceptProofOfStakeBlock(block, pindex);
 
     // verify that the view's current state corresponds to the previous block
     uint256 hashPrevBlock = pindex->pprev == NULL ? uint256() : pindex->pprev->GetBlockHash();
@@ -3542,8 +3535,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         if(!CheckProofOfStake(block, hashProofOfStake)) {
             return state.DoS(100, error("CheckBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str()));
         }
-        LogPrintf("CheckBlock(): hashProofOfStake = %s \n", hashProofOfStake.ToString());
-
+        
         if(!mapProofOfStake.count(hash)) // add to mapProofOfStake
             mapProofOfStake.insert(std::make_pair(hash, hashProofOfStake));
     }
