@@ -37,9 +37,9 @@ static std::map<int, unsigned int> mapStakeModifierCheckpoints =
                 (250000, 0xad566bcdu)
                 (300000, 0x8b72c5efu)
                 (310000, 0x5ae5866bu)
-                (320000, 0x3fefc8b9u)
-                (330000, 0xa76266deu)
-                (340000, 0x42593ea7u)
+                (320000, 0x3fefc8b9u) // 00000247e87a930a1ded1bb3c29dfc2bde9706626f23cab2ce74bc84439d4ae2
+                (330000, 0xa76266deu) // 0000093e093449dd3094506726e35823405ea3c076d43c0c99490ab4725de748
+                (340000, 0x42593ea7u) // 00000c1a5189cfd9cf1c0017c7a5ccd708f59425b8bd4325693be3a6833ab7af
 ;
 
 bool IsProtocolV03(unsigned int nTimeCoinStake)
@@ -366,21 +366,21 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     int nStakeModifierHeight = 0;
     int64_t nStakeModifierTime = 0;
 
-    if (nTimeTx < 1549143000) {
-        return true;
-    } else {
-        if (IsProtocolV03(nTimeTx))  {
-            if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
-                return false;
-            ss << nStakeModifier;
-        }
-        ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
-        hashProofOfStake = Hash(ss.begin(), ss.end());
-        // Now check if proof-of-stake hash meets target protocol
-        if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay) {
+    if (IsProtocolV03(nTimeTx)){
+        if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
             return false;
-        }
+        ss << nStakeModifier;
     }
+
+    ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
+    hashProofOfStake = Hash(ss.begin(), ss.end());
+    if (nTimeTx < 1549143000)
+        return true;
+
+    // Now check if proof-of-stake hash meets target protocol
+    if (UintToArith256(hashProofOfStake) > bnCoinDayWeight * bnTargetPerCoinDay)
+        return false;
+
 
     return true;
 }

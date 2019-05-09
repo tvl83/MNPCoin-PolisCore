@@ -3168,11 +3168,17 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
 
     uint256 hash = block.GetHash();
 
+
     // ppcoin: record proof-of-stake hash value
     if (pindexNew->IsProofOfStake()) {
         if (!mapProofOfStake.count(hash))
             LogPrintf("AcceptProofOfStakeBlock() : hashProofOfStake not found in map \n");
         pindexNew->hashProofOfStake = mapProofOfStake[hash];
+
+        LogPrintf("AcceptProofOfStakeBlock(): hash = %s \n", hash.ToString());
+        LogPrintf("AcceptProofOfStakeBlock(): hashProofOfStake = %s \n", mapProofOfStake[hash].ToString());
+        LogPrintf("pindexNew->hashProofOfStake: hashProofOfStake = %s \n", pindexNew->hashProofOfStake.ToString());
+
     }
 
     // ppcoin: compute stake modifier
@@ -3523,18 +3529,18 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         uint256 hash = block.GetHash();
 
 
-       //  CBlock blockTmp = block;
-
-       //  CBlockSigner signer(blockTmp, NULL);
-
-       // if(!signer.CheckBlockSignature()) {
-       //    return state.DoS(100, error("CheckBlock(): block signature invalid"),
-      //                     REJECT_INVALID, "bad-block-signature");
-      //   }
+        // TODO validate block signature
+/*         CBlock blockTmp = block;
+         CBlockSigner signer(blockTmp, NULL);
+        if(!signer.CheckBlockSignature()) {
+           return state.DoS(100, error("CheckBlock(): block signature invalid"),
+                           REJECT_INVALID, "bad-block-signature");
+         }*/
 
         if(!CheckProofOfStake(block, hashProofOfStake)) {
             return state.DoS(100, error("CheckBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str()));
         }
+        LogPrintf("CheckBlock(): hashProofOfStake = %s \n", hashProofOfStake.ToString());
 
         if(!mapProofOfStake.count(hash)) // add to mapProofOfStake
             mapProofOfStake.insert(std::make_pair(hash, hashProofOfStake));

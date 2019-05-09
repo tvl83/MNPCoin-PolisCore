@@ -79,8 +79,7 @@ CBlockSigner::CBlockSigner(CBlock &block, const CKeyStore *keystore) :
             {
                 signatureKeyID = CPubKey(vSolutions[0]).GetID();
             }
-    }
-    else
+    } else
     {
         const CTxOut& txout = refBlock.vtx[0]->vout[0];
          if (!Solver(txout.scriptPubKey, whichType, vSolutions))
