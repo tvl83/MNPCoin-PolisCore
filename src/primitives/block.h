@@ -113,6 +113,7 @@ public:
         txoutMasternode = CTxOut();
         voutSuperblock.clear();
         fChecked = false;
+        vchBlockSig.clear();
     }
 
 
@@ -127,15 +128,8 @@ public:
         block.nNonce         = nNonce;
         return block;
     }
-    bool IsProofOfStake() const
-    {
-        return (vtx.size() > 1 && vtx[1]->IsCoinStake());
-    }
-
-    bool IsProofOfWork() const
-    {
-        return !IsProofOfStake();
-    }
+    bool IsProofOfStake() const;
+    bool IsProofOfWork() const;
 
     std::string ToString() const;
 };
