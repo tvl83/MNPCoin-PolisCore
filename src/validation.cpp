@@ -4089,9 +4089,9 @@ CBlockIndex * InsertBlockIndex(uint256 hash)
     return pindexNew;
 }
 
-bool LoadBlockIndex(const Consensus::Params& consensus_params, CBlockTreeDB& blocktree)
+bool static LoadBlockIndexDB(const CChainParams& chainparams)
 {
-    if (!blocktree.LoadBlockIndexGuts(InsertBlockIndex))
+    if (!pblocktree->LoadBlockIndexGuts(InsertBlockIndex))
         return false;
 
     boost::this_thread::interruption_point();
@@ -4099,13 +4099,13 @@ bool LoadBlockIndex(const Consensus::Params& consensus_params, CBlockTreeDB& blo
     // Calculate nChainWork
     std::vector<std::pair<int, CBlockIndex*> > vSortedByHeight;
     vSortedByHeight.reserve(mapBlockIndex.size());
-    for (const std::pair<uint256, CBlockIndex*>& item : mapBlockIndex)
+    BOOST_FOREACH(const PAIRTYPE(uint256, CBlockIndex*)& item, mapBlockIndex)
     {
         CBlockIndex* pindex = item.second;
         vSortedByHeight.push_back(std::make_pair(pindex->nHeight, pindex));
     }
     sort(vSortedByHeight.begin(), vSortedByHeight.end());
-    for (const std::pair<int, CBlockIndex*>& item : vSortedByHeight)
+    BOOST_FOREACH(const PAIRTYPE(int, CBlockIndex*)& item, vSortedByHeight)
     {
         CBlockIndex* pindex = item.second;
         pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
@@ -4124,27 +4124,15 @@ bool LoadBlockIndex(const Consensus::Params& consensus_params, CBlockTreeDB& blo
                 pindex->nChainTx = pindex->nTx;
             }
         }
-        if (!(pindex->nStatus & BLOCK_FAILED_MASK) && pindex->pprev && (pindex->pprev->nStatus & BLOCK_FAILED_MASK)) {
-            pindex->nStatus |= BLOCK_FAILED_CHILD;
-            setDirtyBlockIndex.insert(pindex);
-        }
-        if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) && (pindex->nChainTx || pindex->pprev == nullptr))
+        if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) && (pindex->nChainTx || pindex->pprev == NULL))
             setBlockIndexCandidates.insert(pindex);
         if (pindex->nStatus & BLOCK_FAILED_MASK && (!pindexBestInvalid || pindex->nChainWork > pindexBestInvalid->nChainWork))
             pindexBestInvalid = pindex;
         if (pindex->pprev)
             pindex->BuildSkip();
-        if (pindex->IsValid(BLOCK_VALID_TREE) && (pindexBestHeader == nullptr || CBlockIndexWorkComparator()(pindexBestHeader, pindex)))
+        if (pindex->IsValid(BLOCK_VALID_TREE) && (pindexBestHeader == NULL || CBlockIndexWorkComparator()(pindexBestHeader, pindex)))
             pindexBestHeader = pindex;
     }
-
-    return true;
-}
-
-bool static LoadBlockIndexDB(const CChainParams& chainparams)
-{
-    if (!LoadBlockIndex(chainparams.GetConsensus(), *pblocktree))
-        return false;
 
     // Load block file info
     pblocktree->ReadLastBlockFile(nLastBlockFile);
@@ -4166,7 +4154,7 @@ bool static LoadBlockIndexDB(const CChainParams& chainparams)
     // Check presence of blk files
     LogPrintf("Checking all blk files are present...\n");
     std::set<int> setBlkDataFiles;
-    for (const std::pair<uint256, CBlockIndex*>& item : mapBlockIndex)
+    BOOST_FOREACH(const PAIRTYPE(uint256, CBlockIndex*)& item, mapBlockIndex)
     {
         CBlockIndex* pindex = item.second;
         if (pindex->nStatus & BLOCK_HAVE_DATA) {
@@ -4189,7 +4177,36 @@ bool static LoadBlockIndexDB(const CChainParams& chainparams)
     // Check whether we need to continue reindexing
     bool fReindexing = false;
     pblocktree->ReadReindexing(fReindexing);
-    if(fReindexing) fReindex = true;
+    fReindex |= fReindexing;
+
+    // Check whether we have a transaction index
+    pblocktree->ReadFlag("txindex", fTxIndex);
+    LogPrintf("%s: transaction index %s\n", __func__, fTxIndex ? "enabled" : "disabled");
+
+    // Check whether we have an address index
+    pblocktree->ReadFlag("addressindex", fAddressIndex);
+    LogPrintf("%s: address index %s\n", __func__, fAddressIndex ? "enabled" : "disabled");
+
+    // Check whether we have a timestamp index
+    pblocktree->ReadFlag("timestampindex", fTimestampIndex);
+    LogPrintf("%s: timestamp index %s\n", __func__, fTimestampIndex ? "enabled" : "disabled");
+
+    // Check whether we have a spent index
+    pblocktree->ReadFlag("spentindex", fSpentIndex);
+    LogPrintf("%s: spent index %s\n", __func__, fSpentIndex ? "enabled" : "disabled");
+
+    // Load pointer to end of best chain
+    BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
+    if (it == mapBlockIndex.end())
+        return true;
+    chainActive.SetTip(it->second);
+
+    PruneBlockIndexCandidates();
+
+    LogPrintf("%s: hashBestChain=%s height=%d date=%s progress=%f\n", __func__,
+        chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(),
+        DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
+        GuessVerificationProgress(chainparams.TxData(), chainActive.Tip()));
 
     return true;
 }
@@ -4331,22 +4348,8 @@ void UnloadBlockIndex()
 bool LoadBlockIndex(const CChainParams& chainparams)
 {
     // Load block index from databases
-    bool needs_init = fReindex;
-    if (!fReindex) {
-        bool ret = LoadBlockIndexDB(chainparams);
-        if (!ret) return false;
-        needs_init = mapBlockIndex.empty();
-    }
-
-    if (needs_init) {
-        // Everything here is for *new* reindex/DBs. Thus, though
-        // LoadBlockIndexDB may have set fReindex if we shut down
-        // mid-reindex previously, we don't check fReindex and
-        // instead only check it prior to LoadBlockIndexDB to set
-        // needs_init.
-
-        LogPrintf("Initializing databases...\n");
-    }
+    if (!fReindex && !LoadBlockIndexDB(chainparams))
+        return false;
     return true;
 }
 
