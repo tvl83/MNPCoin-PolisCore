@@ -524,6 +524,13 @@ public:
 /** Find the last common block between the parameter chain and a locator. */
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);
 
+inline CBlockIndex* LookupBlockIndex(const uint256& hash)
+{
+    AssertLockHeld(cs_main);
+    BlockMap::const_iterator it = mapBlockIndex.find(hash);
+    return it == mapBlockIndex.end() ? nullptr : it->second;
+}
+
 /** Mark a block as precious and reorganize. */
 bool PreciousBlock(CValidationState& state, const CChainParams& params, CBlockIndex *pindex);
 
