@@ -292,10 +292,10 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
             strNetworkID = "test";
-            consensus.nSubsidyHalvingInterval = 1569325056;
+            consensus.nSubsidyHalvingInterval = 2628;
             consensus.nMasternodePaymentsStartBlock = 15; // not true, but it's ok as long as it's less then nMasternodePaymentsIncreaseBlock
-            consensus.nMasternodePaymentsIncreaseBlock = 1569325056;
-            consensus.nMasternodePaymentsIncreasePeriod = 1569325056;
+            // consensus.nMasternodePaymentsIncreaseBlock = 1569325056;
+            // consensus.nMasternodePaymentsIncreasePeriod = 1569325056;
             consensus.nInstantSendConfirmationsRequired = 2;
             consensus.nInstantSendKeepLock = 6;
             consensus.nBudgetPaymentsStartBlock = 46;
@@ -323,12 +323,10 @@ public:
             // Stake info
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
             consensus.nPosTargetTimespan = 60 * 40;
-            consensus.nStakeMinAge = 60; //one minute
+            consensus.nStakeMinAge = 60 * 2; // two minutes
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 650;
-            consensus.nPoSDiffAdjustRange = 1;
-            // highest difficulty | 0x1e0ffff0 (?)
-            // smallest difficulty | 0x008000
+            consensus.nPoSDiffAdjustRange = 5;
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
 
             consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
