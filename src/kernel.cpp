@@ -40,7 +40,10 @@ static std::map<int, unsigned int> mapStakeModifierCheckpoints =
                 (320000, 0x3fefc8b9u) // 00000247e87a930a1ded1bb3c29dfc2bde9706626f23cab2ce74bc84439d4ae2
                 (330000, 0xa76266deu) // 0000093e093449dd3094506726e35823405ea3c076d43c0c99490ab4725de748
                 (340000, 0x42593ea7u) // 00000c1a5189cfd9cf1c0017c7a5ccd708f59425b8bd4325693be3a6833ab7af
-;
+                (346035, 0x63ea38fdu) // 0000070417b8cee2d3b1c4ab6bafbe45374c4e725f212c837a4db44bb5b68662
+                (346130, 0x8b6c5d8fu) // 0000072ac9f4375d0eb1e36ab3307795fdc3387271b9843c4f5d0c0f6ac2d27d
+                (346700, 0xe0f17cb6u) // 00007c22ea26757ab1e0204c0a20d93abd475cc23ef9d2893f447e3a2c28a45e
+ ;
 
 bool IsProtocolV03(unsigned int nTimeCoinStake)
 {
@@ -454,6 +457,7 @@ unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex)
 // Check stake modifier hard checkpoints
 bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum)
 {
+    LogPrintf("StakeModifier %i Checksum %i \n", nHeight, nStakeModifierChecksum);
     if (mapStakeModifierCheckpoints.count(nHeight)){
         return nStakeModifierChecksum == mapStakeModifierCheckpoints[nHeight];
     }
