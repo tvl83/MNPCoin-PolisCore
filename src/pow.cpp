@@ -107,54 +107,14 @@ unsigned int static PoW2PoSRequired(const CBlockIndex* pindexLast, const Consens
     return Params().GetConsensus().nWSTargetDiff; // Gets hardcoded diff for last PoW block.
 }
 
-unsigned int static DarkGravityWave(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params) {
-    /* current difficulty formula, polis - DarkGravity v3, written by Evan Duffield - evan@polispay.org */
+unsigned int static DarkGravityWave(const CBlockIndex* pindexLast, const Consensus::Params& params) {
+    /* current difficulty formula, polis - DarkGravity v3, written by Evan Duffield - evan@dash.org */
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
     int64_t nPastBlocks = 24;
 
     // make sure we have at least (nPastBlocks + 1) blocks, otherwise just return powLimit
     if (!pindexLast || pindexLast->nHeight < nPastBlocks) {
         return bnPowLimit.GetCompact();
-    }
-
-    if (params.fPowAllowMinDifficultyBlocks && (
-        // testnet ...
-        (params.hashDevnetGenesisBlock.IsNull() && pindexLast->nChainWork >= UintToArith256(uint256S("0x000000000000000000000000000000000000000000000000003e9ccfe0e03e01"))) ||
-        // or devnet
-        !params.hashDevnetGenesisBlock.IsNull())) {
-        // NOTE: 000000000000000000000000000000000000000000000000003e9ccfe0e03e01 is the work of the "wrong" chain,
-        // so this rule activates there immediately and new blocks with high diff from that chain are going
-        // to be rejected by updated nodes. Note, that old nodes are going to reject blocks from updated nodes
-        // after the "right" chain reaches this amount of work too. This is a temporary condition which should
-        // be removed when we decide to hard-fork testnet again.
-        // TODO: remove "testnet+work OR devnet" part on next testnet hard-fork
-        // Special difficulty rule for testnet/devnet:
-        // If the new block's timestamp is more than 2* 2.5 minutes
-        // then allow mining of a min-difficulty block.
-
-        // start using smoother adjustment on testnet when total work hits
-        // 000000000000000000000000000000000000000000000000003ff00000000000
-        if (pindexLast->nChainWork >= UintToArith256(uint256S("0x000000000000000000000000000000000000000000000000003ff00000000000"))
-            // and immediately on devnet
-            || !params.hashDevnetGenesisBlock.IsNull()) {
-            // recent block is more than 2 hours old
-            if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + 2 * 60 * 60) {
-                return bnPowLimit.GetCompact();
-            }
-            // recent block is more than 10 minutes old
-            if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing*4) {
-                arith_uint256 bnNew = arith_uint256().SetCompact(pindexLast->nBits) * 10;
-                if (bnNew > bnPowLimit) {
-                    bnNew = bnPowLimit;
-                }
-                return bnNew.GetCompact();
-            }
-        } else {
-            // old stuff
-            if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing*2) {
-                return bnPowLimit.GetCompact();
-            }
-        }
     }
 
     const CBlockIndex *pindex = pindexLast;
@@ -233,9 +193,8 @@ unsigned int GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const CBlockH
     const CBlockIndex* pindexFirst = pindexLast->GetAncestor(nHeightFirst);
     assert(pindexFirst);
 
-   return CalculateNextWorkRequired(pindexLast, pindexFirst->GetBlockTime(), params);
+    return CalculateNextWorkRequired(pindexLast, pindexFirst->GetBlockTime(), params);
 }
-
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
     // Most recent algo first
@@ -246,8 +205,9 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
             return PoW2PoSRequired(pindexLast, params);
 
         return PoSWorkRequired(pindexLast, params);
-    } else if (pindexLast->nHeight + 1 >= params.nPowDGWHeight) {
-        return DarkGravityWave(pindexLast, pblock, params);
+    }
+    else if (pindexLast->nHeight + 1 >= params.nPowDGWHeight) {
+        return DarkGravityWave(pindexLast, params);
     }
     else if (pindexLast->nHeight + 1 >= params.nPowKGWHeight) {
         return KimotoGravityWell(pindexLast, params);
