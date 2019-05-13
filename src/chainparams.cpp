@@ -271,9 +271,12 @@ public:
                         ( 280600, uint256S("0xf2911e19b667f05b091d8217098813055aa26e1eca6c8eba5b84ff63df414208"))
                         ( 324353, uint256S("0x852675a3957d48e0f1198fdda33e496211317d89bab71ff39c28faaf3d4e61af"))
                         ( 336284, uint256S("0xd3dbdedff4c5b1f6e47ab43d2b0dc1f9a5a011035b4b936284a5b8725d405a78"))
+                        ( 346035, uint256S("0x5591a0fbf0eb0f3ba4f3c3573098a106f5c8fbffdacb73b9c5aa287efd89658b"))
+                        ( 346700, uint256S("0xdbccfd1fdd4b1b785f8b23a7b9f12f22f256ce2e0a3d6b67f506f896a7daa7b5"))
+                        ( 348436, uint256S("0x92cb16eb95b44a6a549eb19ba20e81401ec7037b45df16a4fc035ac044f58efd"))
         };
         chainTxData = ChainTxData{
-                1555956689, // * UNIX timestamp of last checkpoint block
+                1557726640, // * UNIX timestamp of last checkpoint block
                 783896,    // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
                 0.1        // * estimated number of transactions per day after checkpoint
@@ -290,10 +293,10 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
             strNetworkID = "test";
-            consensus.nSubsidyHalvingInterval = 1569325056;
+            consensus.nSubsidyHalvingInterval = 2628;
             consensus.nMasternodePaymentsStartBlock = 15; // not true, but it's ok as long as it's less then nMasternodePaymentsIncreaseBlock
-            consensus.nMasternodePaymentsIncreaseBlock = 1569325056;
-            consensus.nMasternodePaymentsIncreasePeriod = 1569325056;
+            // consensus.nMasternodePaymentsIncreaseBlock = 1569325056;
+            // consensus.nMasternodePaymentsIncreasePeriod = 1569325056;
             consensus.nInstantSendConfirmationsRequired = 2;
             consensus.nInstantSendKeepLock = 6;
             consensus.nBudgetPaymentsStartBlock = 46;
@@ -321,12 +324,10 @@ public:
             // Stake info
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 2 minutes
             consensus.nPosTargetTimespan = 60 * 40;
-            consensus.nStakeMinAge = 60; //one minute
+            consensus.nStakeMinAge = 60 * 2; // two minutes
             consensus.nStakeMaxAge = 60 * 60 * 24; // one day
             consensus.nLastPoWBlock = 650;
-            consensus.nPoSDiffAdjustRange = 1;
-            // highest difficulty | 0x1e0ffff0 (?)
-            // smallest difficulty | 0x008000
+            consensus.nPoSDiffAdjustRange = 5;
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
 
             consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
