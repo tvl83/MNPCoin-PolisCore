@@ -29,8 +29,7 @@ unsigned int nModifierInterval = MODIFIER_INTERVAL;
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of
-                (0, 0xfd11f4e7u)
-;
+                (0, 0xfd11f4e7u);
 
 bool IsProtocolV03(unsigned int nTimeCoinStake)
 {
@@ -137,7 +136,6 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
         fGeneratedStakeModifier = true;
         return true;  // genesis block's modifier is 0
     }
-
     // First find current stake modifier and its generation block time
     // if it's not old enough, return the same stake modifier
     int64_t nModifierTime = 0;
@@ -298,7 +296,8 @@ static bool GetKernelStakeModifierV05(unsigned int nTimeTx, uint64_t& nStakeModi
 // Get the stake modifier specified by the protocol to hash for a stake kernel
 static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake)
 {
-    //return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
+    if (IsProtocolV03(nTimeTx))
+        return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
     return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
 }
 // ppcoin kernel protocol
@@ -442,9 +441,16 @@ unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex) {
     assert (pindex->pprev || pindex->GetBlockHash() == Params().GetConsensus().hashGenesisBlock);
     // Hash previous checksum with flags, hashProofOfStake and nStakeModifier
     CDataStream ss(SER_GETHASH, 0);
-    if (pindex->pprev)
+    if (pindex->pprev) {
         ss << pindex->pprev->nStakeModifierChecksum;
+        //LogPrintf("pindex->pprev->nStakeModifierChecksum = %i \n", pindex->pprev->nStakeModifierChecksum);
+    }
     ss << pindex->nFlags << pindex->hashProofOfStake << pindex->nStakeModifier;
+    //LogPrintf("pindex->nHeight = %i \n", pindex->nHeight);
+    //LogPrintf("pindex->nFlags = %i \n", pindex->nFlags);
+    //LogPrintf("pindex->hashProofOfStake = %i \n", pindex->hashProofOfStake.ToString());
+    //LogPrintf("pindex->nStakeModifier = %i \n", pindex->nStakeModifier);
+
     arith_uint256 hashChecksum = UintToArith256(Hash(ss.begin(), ss.end()));
     hashChecksum >>= (256 - 32);
     return hashChecksum.GetLow64();
