@@ -1191,34 +1191,6 @@ bool GetTransaction(const uint256 &hash, CTransactionRef &txOut, const Consensus
     return false;
 }
 
-bool CheckHeaderProof(const CBlockHeader& block, const Consensus::Params& consensusParams) {
-
-    if (block.nTime >= 1540526903 ) {
-        return CheckHeaderProofOfStake(block, consensusParams);
-    } else {
-        return CheckHeaderProofOfWork(block, consensusParams);
-    }
-
-}
-
-bool CheckIndexProof(const CBlockIndex& block, const Consensus::Params& consensusParams)
-{
-    // Get the hash of the proof
-    // After validating the PoS block the computed hash proof is saved in the block index, which is used to check the index
-    bool IsPosBlock = block.nTime >= 1540526903;
-    uint256 hashProof = IsPosBlock ? block.GetBlockHash() : block.hashProofOfStake;
-    // Check for proof after the hash proof is computed
-    if (IsPosBlock ) {
-        //blocks are loaded out of order, so checking PoS kernels here is not practical
-        return true;
-    } else {
-        return CheckProofOfWork(hashProof, block.nBits, consensusParams);
-    }
-}
-
-
-
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // CBlock and CBlockIndex
@@ -1263,7 +1235,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
     }
 
     // Check the header
-    if (!CheckHeaderProof(block, consensusParams))
+    if (block.IsProofOfWork() && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
         return error("ReadBlockFromDisk: Errors in block header at %s", pos.ToString());
 
     return true;
@@ -3359,80 +3331,16 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
     return true;
 }
 
-bool CheckHeaderProofOfWork(const CBlockHeader& block, const Consensus::Params& consensusParams)
+bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW)
 {
-    // Check for proof of work block header
-    return CheckProofOfWork(block.GetHash(), block.nBits, consensusParams);
-}
-
-bool CheckHeaderProofOfStake(const CBlockHeader& block, const Consensus::Params& consensusParams)
-{
-    // Check for proof of stake block header
-    // Get prev block index
-    BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-    if (mi == mapBlockIndex.end()) {
-        LogPrintf("CheckHeaderProofOfStake(): Unable to find block on mapBlockIndex");
-        return false;
-    }
-
-    // Check the kernel hash
-    CBlockIndex* pindexPrev = (*mi).second;
-    return CheckKernel(pindexPrev, block.nBits, block.nTime, /*block.prevoutStake,  */ *pcoinsTip);
-}
-
-bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, uint32_t nTimeBlock, /*const COutPoint& prevout ,*/ CCoinsViewCache& view)
-{
-    uint256 hashProofOfStake, targetProofOfStake;
-
-    // not found in cache (shouldn't happen during staking, only during verification which does not use cache)
-    Coin coinPrev;
-/*    if(!view.GetCoin(prevout, coinPrev)){
-        LogPrintf("CheckKernel(): null GetCoinCache \n");
-        return false;
-    }*/
-
-    if(pindexPrev->nHeight + 1 - coinPrev.nHeight < COINBASE_MATURITY){
-        LogPrintf("CheckKernel(): Failed non-mature spent \n");
-        return false;
-    }
-
-    CBlockIndex* blockFrom = pindexPrev->GetAncestor(coinPrev.nHeight);
-/*    if(!blockFrom) {
-        LogPrintf("CheckKernel(): Failed null blockFrom \n");
-        return false;
-    }*/
-
-/*    if(coinPrev.IsSpent()){
-        LogPrintf("CheckKernel(): coinPrev is spent \n");
-        return false;
-    }*/
-
-    return true;
-    //return CheckStakeKernelHash(nBits, blockFrom, sizeof(blockFrom), prevout, nTimeBlock, hashProofOfStake, false, true);
-}
-
-bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckPOS)
-{
-
     // Check proof of work matches claimed amount
     if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
         return state.DoS(50, false, REJECT_INVALID, "high-hash", false, "proof of work failed");
 
-    if (fCheckPOS && !IsInitialBlockDownload()){
-        // Check PoS
-       // if(!CheckHeaderProofOfStake(block, consensusParams))
-       //     return state.DoS(50, false, REJECT_INVALID, "kernel-hash", false, "CheckBlockHeader(): Check proof of stake failed");
-    }
-
-    // Check timestamp
-    if (block.GetBlockTime() > GetAdjustedTime() + 2 * 60 * 60)
-        return state.Invalid(error("CheckBlockHeader(): block timestamp too far in the future"),
-                             REJECT_INVALID, "time-too-new");
-
     // Check DevNet
     if (!consensusParams.hashDevnetGenesisBlock.IsNull() &&
-            block.hashPrevBlock == consensusParams.hashGenesisBlock &&
-            block.GetHash() != consensusParams.hashDevnetGenesisBlock) {
+        block.hashPrevBlock == consensusParams.hashGenesisBlock &&
+        block.GetHash() != consensusParams.hashDevnetGenesisBlock) {
         return state.DoS(100, error("CheckBlockHeader(): wrong devnet genesis"),
                          REJECT_INVALID, "devnet-genesis");
     }
@@ -3447,10 +3355,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     if (block.fChecked)
         return true;
 
-    bool IsProofOfStake = block.vtx.size() > 1 && block.vtx[1]->IsCoinStake();
     // Check that the header is valid (particularly PoW).  This is mostly
     // redundant with the call in AcceptBlockHeader.
-    if (!CheckBlockHeader(block, state, consensusParams, !IsProofOfStake, IsProofOfStake))
+    if (!CheckBlockHeader(block, state, consensusParams, block.IsProofOfWork()))
         return false;
 
 
@@ -3562,20 +3469,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     return true;
 }
 
-static bool CheckIndexAgainstCheckpoint(const CBlockIndex* pindexPrev, CValidationState& state, const CChainParams& chainparams, const uint256& hash)
-{
-    if (*pindexPrev->phashBlock == chainparams.GetConsensus().hashGenesisBlock)
-        return true;
-
-    int nHeight = pindexPrev->nHeight+1;
-    // Don't accept any forks from the main chain prior to last checkpoint
-    CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(chainparams.Checkpoints());
-    if (pcheckpoint && nHeight < pcheckpoint->nHeight)
-        return state.DoS(100, error("%s: forked chain older than last checkpoint (height %d)", __func__, nHeight));
-
-    return true;
-}
-
 bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev, int64_t nAdjustedTime)
 {
     const int nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
@@ -3588,11 +3481,16 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 
         if (abs(n1-n2) > n1*0.5)
             return state.DoS(100, error("%s : incorrect proof of work (DGW pre-fork) - %f %f %f at %d", __func__, abs(n1-n2), n1, n2, nHeight),
-                            REJECT_INVALID, "bad-diffbits");
+                             REJECT_INVALID, "bad-diffbits");
     } else {
         if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
             return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, strprintf("incorrect proof of work at %d", nHeight));
     }
+
+
+    // Check that the block satisfies synchronized checkpoint
+    if (!Checkpoints::CheckSync(nHeight))
+        return state.DoS(1, error("%s: forked chain older than synchronized checkpoint (height %d)", __func__, nHeight), REJECT_CHECKPOINT, "bad-fork-prior-to-synch-checkpoint");
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
@@ -3606,8 +3504,8 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if((block.nVersion < 2 && nHeight >= consensusParams.BIP34Height) ||
        (block.nVersion < 3 && nHeight >= consensusParams.BIP66Height) ||
        (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height))
-            return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
-                                 strprintf("rejected nVersion=0x%08x block", block.nVersion));
+        return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
+                             strprintf("rejected nVersion=0x%08x block", block.nVersion));
 
     return true;
 }
@@ -3671,9 +3569,7 @@ static bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state
     BlockMap::iterator miSelf = mapBlockIndex.find(hash);
     CBlockIndex *pindex = NULL;
 
-
     // TODO : ENABLE BLOCK CACHE IN SPECIFIC CASES
-
     if (hash != chainparams.GetConsensus().hashGenesisBlock) {
 
         if (miSelf != mapBlockIndex.end()) {
@@ -3681,19 +3577,13 @@ static bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state
             pindex = miSelf->second;
             if (ppindex)
                 *ppindex = pindex;
-            if (pindex->nHeight <= chainparams.GetConsensus().nLastPoWBlock) {
-                if (pindex->nStatus & BLOCK_FAILED_MASK)
-                    return state.Invalid(error("%s: block %s is marked invalid", __func__, hash.ToString()), 0, "duplicate");
-            }
-
+            if (pindex->nStatus & BLOCK_FAILED_MASK)
+                return state.Invalid(error("%s: block %s is marked invalid", __func__, hash.ToString()), 0, "duplicate");
             return true;
         }
 
-
-        bool IsProofOfStake = block.nTime >= 1540526903;
-        if (!CheckBlockHeader(block, state, chainparams.GetConsensus(), !IsProofOfStake, IsProofOfStake))
+        if (!CheckBlockHeader(block, state, chainparams.GetConsensus(), false))
             return error("%s: Consensus::CheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
-
 
         // Get prev block index
         CBlockIndex* pindexPrev = NULL;
@@ -3701,15 +3591,8 @@ static bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state
         if (mi == mapBlockIndex.end())
             return state.DoS(10, error("%s: prev block not found", __func__), 0, "bad-prevblk");
         pindexPrev = (*mi).second;
-        if (pindexPrev->nHeight <= chainparams.GetConsensus().nLastPoWBlock) {
-            if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
-                return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
-        }
-
-        assert(pindexPrev);
-        if (fCheckpointsEnabled && !CheckIndexAgainstCheckpoint(pindexPrev, state, chainparams, hash))
-            return error("%s: CheckIndexAgainstCheckpoint(): %s", __func__, state.GetRejectReason().c_str());
-
+        if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
+            return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
         if (!ContextualCheckBlockHeader(block, state, chainparams.GetConsensus(), pindexPrev, GetAdjustedTime()))
             return error("%s: Consensus::ContextualCheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
     }
@@ -3734,6 +3617,18 @@ bool ProcessNewBlockHeaders(const std::vector<CBlockHeader>& headers, CValidatio
         LOCK(cs_main);
         for (const CBlockHeader& header : headers) {
             CBlockIndex *pindex = NULL; // Use a temp pindex instead of ppindex to avoid a const_cast
+            // Check for the checkpoint
+            if (header.hashPrevBlock != chainActive.Tip()->GetBlockHash())
+            {
+                // Extra checks to prevent "fill up memory by spamming with bogus blocks"
+                const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
+                int64_t deltaTime = header.GetBlockTime() - pcheckpoint->nTime;
+                if (deltaTime < 0)
+                {
+                    return state.DoS(1, false, REJECT_INVALID, "older-than-checkpoint", false,
+                                     "ProcessNewBlockHeaders(): Block with a timestamp before last checkpoint");
+                }
+            }
             if (!AcceptBlockHeader(header, state, chainparams, &pindex)) {
                 return false;
             }
@@ -3864,14 +3759,15 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
 bool TestBlockValidity(CValidationState& state, const CChainParams& chainparams, const CBlock& block, CBlockIndex* pindexPrev, bool fCheckPOW, bool fCheckMerkleRoot)
 {
     AssertLockHeld(cs_main);
-    assert(pindexPrev && pindexPrev == chainActive.Tip());
-    if (fCheckpointsEnabled && !CheckIndexAgainstCheckpoint(pindexPrev, state, chainparams, block.GetHash()))
-        return error("%s: CheckIndexAgainstCheckpoint(): %s", __func__, state.GetRejectReason().c_str());
+    if(pindexPrev && pindexPrev != chainActive.Tip())
+        return false;
 
     CCoinsViewCache viewNew(pcoinsTip);
+    uint256 block_hash(block.GetHash());
     CBlockIndex indexDummy(block);
     indexDummy.pprev = pindexPrev;
     indexDummy.nHeight = pindexPrev->nHeight + 1;
+    indexDummy.phashBlock = &block_hash;
 
     // NOTE: CheckBlockHeader is called by CheckBlock
     if (!ContextualCheckBlockHeader(block, state, chainparams.GetConsensus(), pindexPrev, GetAdjustedTime()))

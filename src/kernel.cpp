@@ -29,21 +29,7 @@ unsigned int nModifierInterval = MODIFIER_INTERVAL;
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of
-                (0, 0xfd11f4e7u)
-                (50000,  0x45c3e360u)
-                (100000, 0x402855a9u)
-                (150000, 0xead8e02fu)
-                (200000, 0x6f522d05u)
-                (250000, 0xad566bcdu)
-                (300000, 0x8b72c5efu)
-                (310000, 0x5ae5866bu)
-                (320000, 0x3fefc8b9u) // 00000247e87a930a1ded1bb3c29dfc2bde9706626f23cab2ce74bc84439d4ae2
-                (330000, 0xa76266deu) // 0000093e093449dd3094506726e35823405ea3c076d43c0c99490ab4725de748
-                (340000, 0x42593ea7u) // 00000c1a5189cfd9cf1c0017c7a5ccd708f59425b8bd4325693be3a6833ab7af
-                (346035, 0x63ea38fdu) // 0000070417b8cee2d3b1c4ab6bafbe45374c4e725f212c837a4db44bb5b68662
-                (346130, 0x8b6c5d8fu) // 0000072ac9f4375d0eb1e36ab3307795fdc3387271b9843c4f5d0c0f6ac2d27d
-                (346700, 0xe0f17cb6u) // 00007c22ea26757ab1e0204c0a20d93abd475cc23ef9d2893f447e3a2c28a45e
- ;
+                (0, 0xfd11f4e7u);
 
 bool IsProtocolV03(unsigned int nTimeCoinStake)
 {
@@ -369,14 +355,16 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     int nStakeModifierHeight = 0;
     int64_t nStakeModifierTime = 0;
 
+    if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
+        return false;
+
     if (IsProtocolV03(nTimeTx)){
-        if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
-            return false;
         ss << nStakeModifier;
     }
 
     ss << nTimeBlockFrom << nTxPrevOffset << txPrevTime << prevout.n << nTimeTx;
     hashProofOfStake = Hash(ss.begin(), ss.end());
+
     if (nTimeTx < 1549143000)
         return true;
 
