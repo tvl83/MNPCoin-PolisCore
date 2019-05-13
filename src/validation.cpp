@@ -2353,7 +2353,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     // ppcoin: track money supply and mint amount info
     CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
     int newFee = pindex->IsProofOfStake() ? nFees : 0;
-    pindex->nMoneySupply = nMoneySupplyPrev + (nValueOut - nValueIn + newFee
+    pindex->nMoneySupply = nMoneySupplyPrev + (nValueOut - nValueIn + newFee;
     pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev;
 
     int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
