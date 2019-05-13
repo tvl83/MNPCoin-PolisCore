@@ -137,6 +137,93 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
         fGeneratedStakeModifier = true;
         return true;  // genesis block's modifier is 0
     }
+
+    // HardCoded StakeModifiers
+    if (pindexCurrent->nHeight == 50000) {
+        fGeneratedStakeModifier = false;
+        nStakeModifier = 84436;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 100000) {
+        fGeneratedStakeModifier = false;
+        nStakeModifier = 953941;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 150000) {
+        fGeneratedStakeModifier = true;
+        nStakeModifier = 7;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 200000) {
+        fGeneratedStakeModifier = false;
+        nStakeModifier = 325;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 250000) {
+        fGeneratedStakeModifier = true;
+        nStakeModifier = 1220557;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 300000) {
+        fGeneratedStakeModifier = false;
+        nStakeModifier = 526;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 310000) {
+        fGeneratedStakeModifier = true;
+        nStakeModifier = 20075;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 320000) {
+        fGeneratedStakeModifier = false;
+        nStakeModifier = 584921;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 330000) {
+        fGeneratedStakeModifier = false;
+        nStakeModifier = 33969;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 340000) {
+        fGeneratedStakeModifier = true;
+        nStakeModifier = 84190;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 341000) {
+        fGeneratedStakeModifier = false;
+        nStakeModifier = 5035894;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 342000) {
+        fGeneratedStakeModifier = true;
+        nStakeModifier = 238442;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 343000) {
+        fGeneratedStakeModifier = true;
+        nStakeModifier =
+        return true;
+    }
+    if (pindexCurrent->nHeight == 344000) {
+        fGeneratedStakeModifier = false;
+        nStakeModifier = 6963585;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 345000) {
+        fGeneratedStakeModifier = false;
+        nStakeModifier = 1596775;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 346000) {
+        fGeneratedStakeModifier = false;
+        nStakeModifier = 28982565;
+        return true;
+    }
+    if (pindexCurrent->nHeight == 346033) {
+        fGeneratedStakeModifier = true;
+        nStakeModifier = 676357;
+        return true;
+    }
     // First find current stake modifier and its generation block time
     // if it's not old enough, return the same stake modifier
     int64_t nModifierTime = 0;
@@ -355,10 +442,9 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
     int nStakeModifierHeight = 0;
     int64_t nStakeModifierTime = 0;
 
-    if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
-        return false;
-
     if (IsProtocolV03(nTimeTx)){
+        if (!GetKernelStakeModifier(blockFrom.GetHash(), nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false))
+            return false;
         ss << nStakeModifier;
     }
 
