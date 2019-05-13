@@ -139,9 +139,14 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
     }
 
     // HardCoded StakeModifiers
-    if (pindexCurrent->nHeight == 50000) {
+    if (pindexCurrent->nHeight == 2785) {
+        fGeneratedStakeModifier = true;
+        nStakeModifier = 1508654171;
+        return true;
+    }
+    /*if (pindexCurrent->nHeight == 50000) {
         fGeneratedStakeModifier = false;
-        nStakeModifier = 84436;
+        nStakeModifier = 1508654171;
         return true;
     }
     if (pindexCurrent->nHeight == 100000) {
@@ -223,7 +228,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
         fGeneratedStakeModifier = true;
         nStakeModifier = 676357;
         return true;
-    }
+    }*/
     // First find current stake modifier and its generation block time
     // if it's not old enough, return the same stake modifier
     int64_t nModifierTime = 0;
