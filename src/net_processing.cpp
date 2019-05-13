@@ -119,6 +119,7 @@ namespace {
         std::unique_ptr<PartiallyDownloadedBlock> partialBlock;  //!< Optional, used for CMPCTBLOCK downloads
     };
     std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> > mapBlocksInFlight;
+    static std::map<uint256, std::shared_ptr<CBlock>> mapBlocksUnknownParent;
 
     /** Stack of nodes which we have set to announce using compact blocks */
     std::list<NodeId> lNodesAnnouncingHeaderAndIDs;
@@ -2573,28 +2574,72 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         std::shared_ptr<CBlock> pblock = std::make_shared<CBlock>();
         vRecv >> *pblock;
 
-        LogPrint("net", "received block %s peer=%d\n", pblock->GetHash().ToString(), pfrom->id);
+        LogPrint("Received block %s peer=%d\n", pblock->GetHash().ToString(), pfrom->GetId());
 
-        // Process all blocks from whitelisted peers, even if not requested,
-        // unless we're still syncing with the network.
-        // Such an unrequested block may still be processed, subject to the
-        // conditions in AcceptBlock().
-        bool forceProcessing = pfrom->fWhitelisted && !IsInitialBlockDownload();
+        bool forceProcessing = false;
         const uint256 hash(pblock->GetHash());
+
+        auto it = mapBlockIndex.find(pblock->hashPrevBlock);
+        if (it != mapBlockIndex.end() && ((it->second->nStatus & BLOCK_HAVE_DATA) == 0))
         {
-            LOCK(cs_main);
-            // Also always process if we requested the block explicitly, as we may
-            // need it even though it is not a candidate for a new best tip.
-            forceProcessing |= MarkBlockAsReceived(hash);
-            // mapBlockSource is only used for sending reject messages and DoS scores,
-            // so the race between here and cs_main in ProcessNewBlock is fine.
-            mapBlockSource.emplace(hash, std::make_pair(pfrom->GetId(), true));
+            LogPrint("Received block out of order: %s\n", pblock->GetHash().ToString());
+            if (mapBlocksInFlight.count(pblock->hashPrevBlock))
+            {
+                LOCK(cs_main);
+                mapBlocksUnknownParent.insert(std::make_pair(pblock->hashPrevBlock, pblock));
+                MarkBlockAsReceived(pblock->hashPrevBlock); // invalidate to send again.
+            }
         }
-        bool fNewBlock = false;
-        ProcessNewBlock(chainparams, pblock, forceProcessing, &fNewBlock);
-        if (fNewBlock)
-            pfrom->nLastBlockTime = GetTime();
+        else
+        {
+            {
+                LOCK(cs_main);
+                // Also always process if we requested the block explicitly, as we may
+                // need it even though it is not a candidate for a new best tip.
+                forceProcessing |= MarkBlockAsReceived(hash);
+                // mapBlockSource is only used for sending reject messages and DoS scores,
+                // so the race between here and cs_main in ProcessNewBlock is fine.
+                mapBlockSource.emplace(hash, std::make_pair(pfrom->GetId(), true));
+            }
+
+            bool fNewBlock = false;
+            ProcessNewBlock(chainparams, pblock, forceProcessing, &fNewBlock);
+            if (fNewBlock)
+            {
+                pfrom->nLastBlockTime = GetTime();
+
+                std::deque<uint256> queue;
+                queue.push_back(hash);
+                while (!queue.empty())
+                {
+                    uint256 head = queue.front();
+                    queue.pop_front();
+                    auto it = mapBlocksUnknownParent.find(head);
+                    if (it != std::end(mapBlocksUnknownParent))
+                    {
+                        std::shared_ptr<CBlock> pblockrecursive = it->second;
+                        auto recursiveHash = pblockrecursive->GetHash();
+                        LogPrint("%s: Processing out of order child %s of %s\n", __func__, recursiveHash.ToString(),
+                                 head.ToString());
+
+                        bool forceProcessing = false;
+                        {
+                            LOCK(cs_main);
+                            mapBlocksUnknownParent.erase(it);
+                            forceProcessing = MarkBlockAsReceived(recursiveHash);
+                        }
+                        ProcessNewBlock(chainparams, pblockrecursive, forceProcessing, &fNewBlock);
+                        queue.push_back(recursiveHash);
+                    }
+                }
+            }
+            else {
+                LOCK(cs_main);
+                mapBlockSource.erase(pblock->GetHash());
+            }
+        }
     }
+
 
 
     else if (strCommand == NetMsgType::GETADDR)
