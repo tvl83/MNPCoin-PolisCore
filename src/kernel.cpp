@@ -201,12 +201,12 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
     }
     if (pindexCurrent->nHeight == 343000) {
         fGeneratedStakeModifier = true;
-        nStakeModifier =
+        nStakeModifier = 6963585;
         return true;
     }
     if (pindexCurrent->nHeight == 344000) {
         fGeneratedStakeModifier = false;
-        nStakeModifier = 6963585;
+        nStakeModifier = 57690;
         return true;
     }
     if (pindexCurrent->nHeight == 345000) {
