@@ -416,7 +416,6 @@ static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, 
 
 bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned int nTxPrevOffset, const CTransactionRef& txPrev, const COutPoint& prevout, unsigned int nTimeTx, uint256& hashProofOfStake)
 {
-    nTxPrevOffset = 336;
     auto txPrevTime = blockFrom.GetBlockTime();
     if (nTimeTx < txPrevTime)  // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
