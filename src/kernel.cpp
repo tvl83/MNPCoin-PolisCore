@@ -20,7 +20,7 @@
 #define PRI64x  "llx"
 using namespace std;
 
-unsigned int nForkTimestamp     = 1557068400;
+unsigned int nForkTimestamp     = 1560344400;
 
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
@@ -137,7 +137,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexCurrent, uint64_t& nStake
         fGeneratedStakeModifier = true;
         return true;  // genesis block's modifier is 0
     }
-    
+
     // First find current stake modifier and its generation block time
     // if it's not old enough, return the same stake modifier
     int64_t nModifierTime = 0;
@@ -298,8 +298,8 @@ static bool GetKernelStakeModifierV05(unsigned int nTimeTx, uint64_t& nStakeModi
 // Get the stake modifier specified by the protocol to hash for a stake kernel
 static bool GetKernelStakeModifier(uint256 hashBlockFrom, unsigned int nTimeTx, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake)
 {
-    return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
-    //return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
+    //return GetKernlStakeModifierV03(hashBlockFrom, nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
+    return GetKernelStakeModifierV05(nTimeTx, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake);
 }
 // ppcoin kernel protocol
 // coinstake must meet hash target according to the protocol:
