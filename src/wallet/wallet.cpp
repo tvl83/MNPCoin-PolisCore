@@ -219,7 +219,7 @@ bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeS
         return false;
     for(unsigned int i = 0; i < nHashDrift; ++i)
     {
-        nTryTime = nTimeTx + nHashDrift - i;
+        nTryTime = nTimeTx  - i;
         if (CheckStakeKernelHash(nBits, blockFrom, nTxPrevOffset, txPrev, prevout, nTryTime, hashProofOfStake))
         {
             //Double check that this will pass time requirements

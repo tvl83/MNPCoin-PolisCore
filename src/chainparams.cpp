@@ -150,8 +150,8 @@ public:
             consensus.fPowNoRetargeting = false;
             consensus.nPowKGWHeight = 551;
             consensus.nPowDGWHeight = 551;
-            consensus.nMaxBlockSpacingFixDeploymentHeight = 371861;
-            consensus.nStakeMinAgeSwitchTime = 1560470400;
+            consensus.nMaxBlockSpacingFixDeploymentHeight = 373765;
+            consensus.nStakeMinAgeSwitchTime = 1560729600;
 
             // Stake information
 
@@ -331,7 +331,7 @@ public:
             consensus.nPoSDiffAdjustRange = 1;
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
             consensus.nMaxBlockSpacingFixDeploymentHeight = 700;
-            consensus.nStakeMinAgeSwitchTime = 1560470400;
+            consensus.nStakeMinAgeSwitchTime = 1560729600;
 
             consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
             consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
@@ -462,7 +462,7 @@ public:
             consensus.nPowKGWHeight = 4001; // nPowKGWHeight >= nPowDGWHeight means "no KGW"
             consensus.nPowDGWHeight = 4001;
             consensus.nMaxBlockSpacingFixDeploymentHeight = 700;
-            consensus.nStakeMinAgeSwitchTime = 1560470400;
+            consensus.nStakeMinAgeSwitchTime = 1560729600;
 
 
             consensus.nPosTargetSpacing = 2 * 60; // PoSW: 1 minutes
@@ -623,7 +623,7 @@ public:
             // highest difficulty | 0x1e0ffff0 (?)
             // smallest difficulty | 0x008000
             consensus.nWSTargetDiff = 0x1e0ffff0; // Genesis Difficulty
-            consensus.nStakeMinAgeSwitchTime = 1560470400;
+            consensus.nStakeMinAgeSwitchTime = 1560729600;
 
             // The best chain should have at least this much work.
             consensus.nMinimumChainWork = uint256S("0x00");
