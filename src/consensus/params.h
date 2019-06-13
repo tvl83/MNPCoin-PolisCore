@@ -91,12 +91,16 @@ struct Params {
     uint256 defaultAssumeValid;
     // Stake
     int nStakeMinAge;
+    int nStakeMinAge_2;
     int nStakeMaxAge;
     int64_t nPosTargetSpacing;
     int64_t nPosTargetTimespan;
     int nLastPoWBlock;
     unsigned int nWSTargetDiff;
     int nPoSDiffAdjustRange;
+    int nMaxBlockSpacingFixDeploymentHeight;
+    int nStakeMinAgeSwitchTime;
+
 };
 } // namespace Consensus
 

@@ -220,6 +220,12 @@ CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& loc
     return chain.Genesis();
 }
 
+static int64_t GetMaxFutureBlockTime(const CBlockIndex *pindexPrev, const Consensus::Params &params)
+{
+    return pindexPrev->nHeight > params.nMaxBlockSpacingFixDeploymentHeight ? MAX_FUTURE_BLOCK_TIME_POST_FORK :
+           MAX_FUTURE_BLOCK_TIME;
+}
+
 CCoinsViewDB *pcoinsdbview = NULL;
 CCoinsViewCache *pcoinsTip = NULL;
 CBlockTreeDB *pblocktree = NULL;
@@ -1193,30 +1199,14 @@ bool GetTransaction(const uint256 &hash, CTransactionRef &txOut, const Consensus
 
 bool CheckHeaderProof(const CBlockHeader& block, const Consensus::Params& consensusParams) {
 
-    if (block.nTime >= 1540526903 ) {
+    uint32_t lastPowBlockTime = Params().NetworkIDString() == CBaseChainParams::MAIN ? 1540526903 : 1560351742; // Not yet known.
+    if (block.nTime > lastPowBlockTime) {
         return CheckHeaderProofOfStake(block, consensusParams);
     } else {
         return CheckHeaderProofOfWork(block, consensusParams);
     }
 
 }
-
-bool CheckIndexProof(const CBlockIndex& block, const Consensus::Params& consensusParams)
-{
-    // Get the hash of the proof
-    // After validating the PoS block the computed hash proof is saved in the block index, which is used to check the index
-    bool IsPosBlock = block.nTime >= 1540526903;
-    uint256 hashProof = IsPosBlock ? block.GetBlockHash() : block.hashProofOfStake;
-    // Check for proof after the hash proof is computed
-    if (IsPosBlock ) {
-        //blocks are loaded out of order, so checking PoS kernels here is not practical
-        return true;
-    } else {
-        return CheckProofOfWork(hashProof, block.nBits, consensusParams);
-    }
-}
-
-
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -3368,49 +3358,10 @@ bool CheckHeaderProofOfWork(const CBlockHeader& block, const Consensus::Params& 
 
 bool CheckHeaderProofOfStake(const CBlockHeader& block, const Consensus::Params& consensusParams)
 {
-    // Check for proof of stake block header
-    // Get prev block index
-    BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-    if (mi == mapBlockIndex.end()) {
-        LogPrintf("CheckHeaderProofOfStake(): Unable to find block on mapBlockIndex");
-        return false;
-    }
-
-    // Check the kernel hash
-    CBlockIndex* pindexPrev = (*mi).second;
-    return CheckKernel(pindexPrev, block.nBits, block.nTime, /*block.prevoutStake,  */ *pcoinsTip);
-}
-
-bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, uint32_t nTimeBlock, /*const COutPoint& prevout ,*/ CCoinsViewCache& view)
-{
-    uint256 hashProofOfStake, targetProofOfStake;
-
-    // not found in cache (shouldn't happen during staking, only during verification which does not use cache)
-    Coin coinPrev;
-/*    if(!view.GetCoin(prevout, coinPrev)){
-        LogPrintf("CheckKernel(): null GetCoinCache \n");
-        return false;
-    }*/
-
-    if(pindexPrev->nHeight + 1 - coinPrev.nHeight < COINBASE_MATURITY){
-        LogPrintf("CheckKernel(): Failed non-mature spent \n");
-        return false;
-    }
-
-    CBlockIndex* blockFrom = pindexPrev->GetAncestor(coinPrev.nHeight);
-/*    if(!blockFrom) {
-        LogPrintf("CheckKernel(): Failed null blockFrom \n");
-        return false;
-    }*/
-
-/*    if(coinPrev.IsSpent()){
-        LogPrintf("CheckKernel(): coinPrev is spent \n");
-        return false;
-    }*/
-
+    // TODO find a way to check the POS header, maybe using qtum POS?
     return true;
-    //return CheckStakeKernelHash(nBits, blockFrom, sizeof(blockFrom), prevout, nTimeBlock, hashProofOfStake, false, true);
 }
+
 
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckPOS)
 {
@@ -3524,14 +3475,15 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         uint256 hash = block.GetHash();
 
 
-        // TODO validate block signature
-/*         CBlock blockTmp = block;
-         CBlockSigner signer(blockTmp, NULL);
-        if(!signer.CheckBlockSignature()) {
-           return state.DoS(100, error("CheckBlock(): block signature invalid"),
-                           REJECT_INVALID, "bad-block-signature");
-         }*/
-
+        if (block.nTime > Params().GetConsensus().nStakeMinAgeSwitchTime) {
+            CBlock blockTmp = block;
+            CBlockSigner signer(blockTmp, nullptr);
+            if(!signer.CheckBlockSignature()) {
+                return state.DoS(100, error("CheckBlock(): block signature invalid"),
+                                 REJECT_INVALID, "bad-block-signature");
+            }
+        }
+        
         if(!CheckProofOfStake(block, hashProofOfStake)) {
             return state.DoS(100, error("CheckBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str()));
         }
@@ -3600,7 +3552,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
         return state.Invalid(false, REJECT_INVALID, "time-too-old", "block's timestamp is too early");
 
     // Check timestamp
-    if (block.GetBlockTime() > nAdjustedTime + 2 * 60 * 60)
+    if (block.GetBlockTime() > nAdjustedTime + GetMaxFutureBlockTime(pindexPrev, consensusParams))
         return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
 
     // check for version 2, 3 and 4 upgrades

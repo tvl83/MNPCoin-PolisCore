@@ -497,10 +497,8 @@ bool DisconnectBlocks(int blocks);
 void ReprocessBlocks(int nBlocks);
 
 /** Context-independent validity checks */
-bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, uint32_t nTimeBlock, /* const COutPoint& prevout , */CCoinsViewCache& view);
 bool CheckHeaderProofOfStake(const CBlockHeader& block, const Consensus::Params& consensusParams);
 bool CheckHeaderProofOfWork(const CBlockHeader& block, const Consensus::Params& consensusParams);
-bool CheckIndexProof(const CBlockIndex& block, const Consensus::Params& consensusParams);
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckPOS);
 bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true, bool fCheckMerkleRoot = true);
 
