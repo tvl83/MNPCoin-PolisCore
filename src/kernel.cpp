@@ -254,7 +254,7 @@ static bool GetKernlStakeModifierV03(uint256 hashBlockFrom, unsigned int nTimeTx
             }
             else
             {
-                return error("Null pindexNext\n");
+                return false;
             }
         }
 
