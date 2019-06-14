@@ -104,6 +104,13 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action) {
         READWRITE(*(CBlockHeader*)this);
         READWRITE(vtx);
+        if(vtx.size() > 1 && vtx[1]->IsCoinStake())
+        {
+            // Params().GetConsensus().nStakeMinAgeSwitchTime
+            if (nTime > 1561129200)
+                READWRITE(vchBlockSig);
+        }
+
     }
 
     void SetNull()
