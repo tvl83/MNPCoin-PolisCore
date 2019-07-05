@@ -3378,7 +3378,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     if (!CheckBlockHeader(block, state, consensusParams, fCheckPOW && block.IsProofOfWork()))
         return false;
 
-
     // Check the merkle root.
     if (fCheckMerkleRoot) {
         bool mutated;
@@ -3408,34 +3407,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         if (block.vtx[i]->IsCoinBase())
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-multiple", false, "more than one coinbase");
 
-
-    // POLIS : CHECK TRANSACTIONS FOR INSTANTSEND
-
-    if(sporkManager.IsSporkActive(SPORK_3_INSTANTSEND_BLOCK_FILTERING)) {
-        // We should never accept block which conflicts with completed transaction lock,
-        // that's why this is in CheckBlock unlike coinbase payee/amount.
-        // Require other nodes to comply, send them some data in case they are missing it.
-        for(const auto& tx : block.vtx) {
-            // skip coinbase, it has no inputs
-            if (tx->IsCoinBase()) continue;
-            // LOOK FOR TRANSACTION LOCK IN OUR MAP OF OUTPOINTS
-            for (const auto& txin : tx->vin) {
-                uint256 hashLocked;
-                if(instantsend.GetLockedOutPointTxHash(txin.prevout, hashLocked) && hashLocked != tx->GetHash()) {
-                    // The node which relayed this will have to switch later,
-                    // relaying instantsend data won't help it.
-                    LOCK(cs_main);
-                    mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
-                    return state.DoS(100, false, REJECT_INVALID, "conflict-tx-lock", false, 
-                                     strprintf("transaction %s conflicts with transaction lock %s", tx->GetHash().ToString(), hashLocked.ToString()));
-                }
-            }
-        }
-    } else {
-        LogPrintf("CheckBlock(POLIS): spork is off, skipping transaction locking checks\n");
-    }
-
-
     if (block.IsProofOfStake()) {
         // Second transaction must be coinstake, the rest must not be
         if (block.vtx.empty() || !block.vtx[1]->IsCoinStake())
@@ -3447,7 +3418,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         uint256 hashProofOfStake;
         uint256 hash = block.GetHash();
 
-
         if (block.nTime > Params().GetConsensus().nStakeMinAgeSwitchTime) {
             CBlock blockTmp = block;
             CBlockSigner signer(blockTmp, nullptr);
@@ -3456,16 +3426,14 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
                                  REJECT_INVALID, "bad-block-signature");
             }
         }
-        
+
         if(!CheckProofOfStake(block, hashProofOfStake)) {
             return state.DoS(100, error("CheckBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str()));
         }
-        
+
         if(!mapProofOfStake.count(hash)) // add to mapProofOfStake
             mapProofOfStake.insert(std::make_pair(hash, hashProofOfStake));
     }
-
-    // END POLIS
 
     // Check transactions
     for (const auto& tx : block.vtx)
@@ -3478,7 +3446,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     {
         nSigOps += GetLegacySigOpCount(*tx);
     }
-    // sigops limits (relaxed)
     if (nSigOps > MaxBlockSigOps(true))
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-sigops", false, "out-of-bounds SigOpCount");
 
@@ -3767,6 +3734,8 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
 
     if (fCheckForPruning)
         FlushStateToDisk(state, FLUSH_STATE_NONE); // we just allocated more disk space for block files
+
+    CheckBlockIndex(chainparams.GetConsensus());
 
     return true;
 }
