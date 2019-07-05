@@ -30,6 +30,8 @@ unsigned int nModifierInterval = MODIFIER_INTERVAL;
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of
                 (0, 0xfd11f4e7u)
+                (379624, 0xdbc9e427u)
+
 ;
 
 bool IsProtocolV03(unsigned int nTimeCoinStake)
