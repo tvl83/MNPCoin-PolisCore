@@ -3039,7 +3039,6 @@ bool ProcessMessages(CNode* pfrom, CConnman& connman, const std::atomic<bool>& i
         }
 
         if (!fRet) {
-            connman.DisconnectNode(pfrom->GetId());
             LogPrintf("%s(%s, %u bytes) FAILED peer=%d\n", __func__, SanitizeString(strCommand), nMessageSize, pfrom->id);
         }
 
