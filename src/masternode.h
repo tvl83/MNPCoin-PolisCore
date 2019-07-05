@@ -13,7 +13,7 @@ class CMasternode;
 class CMasternodeBroadcast;
 class CConnman;
 
-static const int MASTERNODE_CHECK_SECONDS               =   5;
+static const int MASTERNODE_CHECK_SECONDS               =   20;
 static const int MASTERNODE_MIN_MNB_SECONDS             =   5 * 60;
 static const int MASTERNODE_MIN_MNP_SECONDS             =  10 * 60;
 static const int MASTERNODE_SENTINEL_PING_MAX_SECONDS   =  60 * 60;
