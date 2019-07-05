@@ -610,6 +610,7 @@ public:
     int nVersion;
     std::string cleanSubVer;
     bool fInbound;
+    bool m_manual_connection;
     bool fAddnode;
     int nStartingHeight;
     uint64_t nSendBytes;
@@ -715,6 +716,7 @@ public:
     bool fWhitelisted; // This peer can bypass DoS banning.
     bool fFeeler; // If true this node is being used as a short lived feeler.
     bool fOneShot;
+    bool m_manual_connection;
     bool fAddnode;
     bool fClient;
     const bool fInbound;
