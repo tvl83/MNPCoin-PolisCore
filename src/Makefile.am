@@ -67,15 +67,15 @@ TESTS =
 BENCHMARKS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += polisd
+  bin_PROGRAMS += mnpcoind
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += polis-cli polis-tx
+  bin_PROGRAMS += mnpcoin-cli mnpcoin-tx
 endif
 
 .PHONY: FORCE check-symbols check-security
-# polis core #
+# mnpcoin core #
 BITCOIN_CORE_H = \
   addrdb.h \
   activemasternode.h \
@@ -208,7 +208,7 @@ obj/build.h: FORCE
 	  $(abs_top_srcdir)
 libmnpcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
-# server: shared between polisd and polis-qt
+# server: shared between mnpcoind and mnpcoin-qt
 libmnpcoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libmnpcoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libmnpcoin_server_a_SOURCES = \
@@ -282,7 +282,7 @@ libmnpcoin_zmq_a_SOURCES = \
 endif
 
 
-# wallet: shared between polisd and polis-qt, but only linked
+# wallet: shared between mnpcoind and mnpcoin-qt, but only linked
 # when wallet enabled
 libmnpcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libmnpcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -369,7 +369,7 @@ libmnpcoin_consensus_a_SOURCES = \
   primitives/transaction.h \
   pubkey.cpp \
   pubkey.h \
-  script/polisconsensus.cpp \
+  script/mnpcoinconsensus.cpp \
   script/interpreter.cpp \
   script/interpreter.h \
   script/script.cpp \
@@ -384,7 +384,7 @@ libmnpcoin_consensus_a_SOURCES = \
   utilstrencodings.h \
   version.h
 
-# common: shared between polisd, and polis-qt and non-server tools
+# common: shared between mnpcoind, and mnpcoin-qt and non-server tools
 libmnpcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libmnpcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libmnpcoin_common_a_SOURCES = \
@@ -436,7 +436,7 @@ libmnpcoin_util_a_SOURCES += compat/glibc_compat.cpp
 AM_LDFLAGS += $(COMPAT_LDFLAGS)
 endif
 
-# cli: shared between polis-cli and polis-qt
+# cli: shared between mnpcoin-cli and mnpcoin-qt
 libmnpcoin_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libmnpcoin_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libmnpcoin_cli_a_SOURCES = \
@@ -446,17 +446,17 @@ libmnpcoin_cli_a_SOURCES = \
 nodist_libmnpcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# polisd binary #
-polisd_SOURCES = polisd.cpp
-polisd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-polisd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-polisd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# mnpcoind binary #
+mnpcoind_SOURCES = mnpcoind.cpp
+mnpcoind_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+mnpcoind_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+mnpcoind_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-polisd_SOURCES += polisd-res.rc
+mnpcoind_SOURCES += mnpcoind-res.rc
 endif
 
-polisd_LDADD = \
+mnpcoind_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_COMMON) \
   $(LIBUNIVALUE) \
@@ -469,37 +469,37 @@ polisd_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-polisd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
+mnpcoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
 
-# polis-cli binary #
-polis_cli_SOURCES = polis-cli.cpp
-polis_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-polis_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-polis_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# mnpcoin-cli binary #
+mnpcoin_cli_SOURCES = mnpcoin-cli.cpp
+mnpcoin_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+mnpcoin_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+mnpcoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-polis_cli_SOURCES += polis-cli-res.rc
+mnpcoin_cli_SOURCES += mnpcoin-cli-res.rc
 endif
 
-polis_cli_LDADD = \
+mnpcoin_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
-polis_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
+mnpcoin_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
 
-# polis-tx binary #
-polis_tx_SOURCES = polis-tx.cpp
-polis_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-polis_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-polis_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# mnpcoin-tx binary #
+mnpcoin_tx_SOURCES = mnpcoin-tx.cpp
+mnpcoin_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+mnpcoin_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+mnpcoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-polis_tx_SOURCES += polis-tx-res.rc
+mnpcoin_tx_SOURCES += mnpcoin-tx-res.rc
 endif
 
-polis_tx_LDADD = \
+mnpcoin_tx_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UTIL) \
@@ -507,12 +507,12 @@ polis_tx_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-polis_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+mnpcoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 #
 
-# polisconsensus library #
+# mnpcoinconsensus library #
 if BUILD_BITCOIN_LIBS
-include_HEADERS = script/polisconsensus.h
+include_HEADERS = script/mnpcoinconsensus.h
 libmnpcoinconsensus_la_SOURCES = $(crypto_libmnpcoin_crypto_a_SOURCES) $(libmnpcoin_consensus_a_SOURCES)
 
 if GLIBC_BACK_COMPAT
@@ -553,12 +553,12 @@ DISTCLEANFILES = obj/build.h
 EXTRA_DIST = $(CTAES_DIST)
 
 
-config/polis-config.h: config/stamp-h1
+config/mnpcoin-config.h: config/stamp-h1
 	@$(MAKE) -C $(top_builddir) $(subdir)/$(@)
-config/stamp-h1: $(top_srcdir)/$(subdir)/config/polis-config.h.in $(top_builddir)/config.status
+config/stamp-h1: $(top_srcdir)/$(subdir)/config/mnpcoin-config.h.in $(top_builddir)/config.status
 	$(AM_V_at)$(MAKE) -C $(top_builddir) $(subdir)/$(@)
-$(top_srcdir)/$(subdir)/config/polis-config.h.in:  $(am__configure_deps)
-	$(AM_V_at)$(MAKE) -C $(top_srcdir) $(subdir)/config/polis-config.h.in
+$(top_srcdir)/$(subdir)/config/mnpcoin-config.h.in:  $(am__configure_deps)
+	$(AM_V_at)$(MAKE) -C $(top_srcdir) $(subdir)/config/mnpcoin-config.h.in
 
 clean-local:
 	-$(MAKE) -C secp256k1 clean
