@@ -26,23 +26,23 @@ BITCOIN_INCLUDES=-I$(builddir) -I$(builddir)/obj $(BDB_CPPFLAGS) $(BOOST_CPPFLAG
 BITCOIN_INCLUDES += -I$(srcdir)/secp256k1/include
 BITCOIN_INCLUDES += $(UNIVALUE_CFLAGS)
 
-LIBBITCOIN_SERVER=libpolis_server.a
-LIBBITCOIN_COMMON=libpolis_common.a
-LIBBITCOIN_CONSENSUS=libpolis_consensus.a
-LIBBITCOIN_CLI=libpolis_cli.a
-LIBBITCOIN_UTIL=libpolis_util.a
-LIBBITCOIN_CRYPTO=crypto/libpolis_crypto.a
-LIBBITCOINQT=qt/libpolisqt.a
+LIBBITCOIN_SERVER=libmnpcoin_server.a
+LIBBITCOIN_COMMON=libmnpcoin_common.a
+LIBBITCOIN_CONSENSUS=libmnpcoin_consensus.a
+LIBBITCOIN_CLI=libmnpcoin_cli.a
+LIBBITCOIN_UTIL=libmnpcoin_util.a
+LIBBITCOIN_CRYPTO=crypto/libmnpcoin_crypto.a
+LIBBITCOINQT=qt/libmnpcoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
 
 if ENABLE_ZMQ
-LIBBITCOIN_ZMQ=libpolis_zmq.a
+LIBBITCOIN_ZMQ=libmnpcoin_zmq.a
 endif
 if BUILD_BITCOIN_LIBS
-LIBBITCOINCONSENSUS=libpolisconsensus.la
+LIBBITCOINCONSENSUS=libmnpcoinconsensus.la
 endif
 if ENABLE_WALLET
-LIBBITCOIN_WALLET=libpolis_wallet.a
+LIBBITCOIN_WALLET=libmnpcoin_wallet.a
 endif
 
 $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
@@ -206,12 +206,12 @@ obj/build.h: FORCE
 	@$(MKDIR_P) $(builddir)/obj
 	@$(top_srcdir)/share/genbuild.sh $(abs_top_builddir)/src/obj/build.h \
 	  $(abs_top_srcdir)
-libpolis_util_a-clientversion.$(OBJEXT): obj/build.h
+libmnpcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
 # server: shared between polisd and polis-qt
-libpolis_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
-libpolis_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libpolis_server_a_SOURCES = \
+libmnpcoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
+libmnpcoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libmnpcoin_server_a_SOURCES = \
   activemasternode.cpp \
   addrman.cpp \
   addrdb.cpp \
@@ -273,9 +273,9 @@ libpolis_server_a_SOURCES = \
   $(BITCOIN_CORE_H)
 
 if ENABLE_ZMQ
-libpolis_zmq_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(ZMQ_CFLAGS)
-libpolis_zmq_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libpolis_zmq_a_SOURCES = \
+libmnpcoin_zmq_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(ZMQ_CFLAGS)
+libmnpcoin_zmq_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libmnpcoin_zmq_a_SOURCES = \
   zmq/zmqabstractnotifier.cpp \
   zmq/zmqnotificationinterface.cpp \
   zmq/zmqpublishnotifier.cpp
@@ -284,9 +284,9 @@ endif
 
 # wallet: shared between polisd and polis-qt, but only linked
 # when wallet enabled
-libpolis_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libpolis_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libpolis_wallet_a_SOURCES = \
+libmnpcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+libmnpcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libmnpcoin_wallet_a_SOURCES = \
   kernel.cpp \
   keepass.cpp \
   blocksigner.cpp \
@@ -303,9 +303,9 @@ libpolis_wallet_a_SOURCES = \
   $(BITCOIN_CORE_H)
 
 # crypto primitives library
-crypto_libpolis_crypto_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_CONFIG_INCLUDES) $(PIC_FLAGS)
-crypto_libpolis_crypto_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
-crypto_libpolis_crypto_a_SOURCES = \
+crypto_libmnpcoin_crypto_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_CONFIG_INCLUDES) $(PIC_FLAGS)
+crypto_libmnpcoin_crypto_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
+crypto_libmnpcoin_crypto_a_SOURCES = \
   crypto/aes.cpp \
   crypto/aes.h \
   crypto/common.h \
@@ -324,7 +324,7 @@ crypto_libpolis_crypto_a_SOURCES = \
   crypto/sha512.h
 
 # x11
-crypto_libpolis_crypto_a_SOURCES += \
+crypto_libmnpcoin_crypto_a_SOURCES += \
   crypto/blake.c \
   crypto/bmw.c \
   crypto/cubehash.c \
@@ -350,9 +350,9 @@ crypto_libpolis_crypto_a_SOURCES += \
   crypto/sph_types.h
 
 # consensus: shared between all executables that validate any consensus rules.
-libpolis_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libpolis_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libpolis_consensus_a_SOURCES = \
+libmnpcoin_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+libmnpcoin_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libmnpcoin_consensus_a_SOURCES = \
   amount.h \
   arith_uint256.cpp \
   arith_uint256.h \
@@ -385,9 +385,9 @@ libpolis_consensus_a_SOURCES = \
   version.h
 
 # common: shared between polisd, and polis-qt and non-server tools
-libpolis_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libpolis_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libpolis_common_a_SOURCES = \
+libmnpcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+libmnpcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libmnpcoin_common_a_SOURCES = \
   amount.cpp \
   base58.cpp \
   bip39.cpp \
@@ -411,9 +411,9 @@ libpolis_common_a_SOURCES = \
 # util: shared between all executables.
 # This library *must* be included to make sure that the glibc
 # backward-compatibility objects and their sanity checks are linked.
-libpolis_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libpolis_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libpolis_util_a_SOURCES = \
+libmnpcoin_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+libmnpcoin_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libmnpcoin_util_a_SOURCES = \
   support/lockedpool.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
@@ -432,18 +432,18 @@ libpolis_util_a_SOURCES = \
   $(BITCOIN_CORE_H)
 
 if GLIBC_BACK_COMPAT
-libpolis_util_a_SOURCES += compat/glibc_compat.cpp
+libmnpcoin_util_a_SOURCES += compat/glibc_compat.cpp
 AM_LDFLAGS += $(COMPAT_LDFLAGS)
 endif
 
 # cli: shared between polis-cli and polis-qt
-libpolis_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libpolis_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libpolis_cli_a_SOURCES = \
+libmnpcoin_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+libmnpcoin_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libmnpcoin_cli_a_SOURCES = \
   rpc/client.cpp \
   $(BITCOIN_CORE_H)
 
-nodist_libpolis_util_a_SOURCES = $(srcdir)/obj/build.h
+nodist_libmnpcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
 # polisd binary #
@@ -513,16 +513,16 @@ polis_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 # polisconsensus library #
 if BUILD_BITCOIN_LIBS
 include_HEADERS = script/polisconsensus.h
-libpolisconsensus_la_SOURCES = $(crypto_libpolis_crypto_a_SOURCES) $(libpolis_consensus_a_SOURCES)
+libmnpcoinconsensus_la_SOURCES = $(crypto_libmnpcoin_crypto_a_SOURCES) $(libmnpcoin_consensus_a_SOURCES)
 
 if GLIBC_BACK_COMPAT
-  libpolisconsensus_la_SOURCES += compat/glibc_compat.cpp
+  libmnpcoinconsensus_la_SOURCES += compat/glibc_compat.cpp
 endif
 
-libpolisconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
-libpolisconsensus_la_LIBADD = $(LIBSECP256K1)
-libpolisconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL
-libpolisconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libmnpcoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
+libmnpcoinconsensus_la_LIBADD = $(LIBSECP256K1)
+libmnpcoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL
+libmnpcoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
 endif
 #
