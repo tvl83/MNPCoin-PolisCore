@@ -526,7 +526,7 @@ UniValue verifymessage(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Malformed base64 encoding");
 
     CHashWriter ss(SER_GETHASH, 0);
-    ss << strMessageMagic;
+    ss << ReturnMessageSigningMagic(GetTime());
     ss << strMessage;
 
     CPubKey pubkey;
@@ -568,7 +568,7 @@ UniValue signmessagewithprivkey(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Private key outside allowed range");
 
     CHashWriter ss(SER_GETHASH, 0);
-    ss << strMessageMagic;
+    ss << ReturnMessageSigningMagic(GetTime());
     ss << strMessage;
 
     std::vector<unsigned char> vchSig;

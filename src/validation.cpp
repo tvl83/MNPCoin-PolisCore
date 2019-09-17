@@ -110,8 +110,6 @@ static void CheckBlockIndex(const Consensus::Params& consensusParams);
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 
-const std::string strMessageMagic = "DarkCoin Signed Message:\n";
-
 // Internal stuff
 namespace {
 
@@ -4928,6 +4926,17 @@ int CurrentMinStakeAge(int nTimePeriod)
         nTimePeriod = finalTime;
 
     return nTimePeriod;
+}
+
+//! Return the current ReturnMessageSigningMagic(GetTime())
+std::string ReturnMessageSigningMagic(int nTimePeriod)
+{
+    const std::string strMessageMagicOld = "DarkCoin Signed Message:\n";
+    const std::string strMessageMagicNew = "Polis Signed Message:\n";
+
+    if (nTimePeriod > Params().GetConsensus().nPosMitigationSwitchTime)
+	return strMessageMagicNew;
+    return strMessageMagicOld;
 }
 
 class CMainCleanup
