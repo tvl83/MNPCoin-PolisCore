@@ -1,5 +1,5 @@
 ---
-name: "dash-linux-0.13"
+name: "polis-linux-1.5.0"
 enable_cache: true
 suites:
 - "bionic"
