@@ -628,7 +628,7 @@ UniValue signmessage(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key not available");
 
     CHashWriter ss(SER_GETHASH, 0);
-    ss << strMessageMagic;
+    ss << ReturnMessageSigningMagic(GetTime());
     ss << strMessage;
 
     std::vector<unsigned char> vchSig;

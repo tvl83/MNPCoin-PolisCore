@@ -168,7 +168,6 @@ typedef boost::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
 extern BlockMap mapBlockIndex;
 extern uint64_t nLastBlockTx;
 extern uint64_t nLastBlockSize;
-extern const std::string strMessageMagic;
 extern CWaitableCriticalSection csBestBlock;
 extern CConditionVariable cvBlockChange;
 extern std::atomic_bool fImporting;
@@ -587,5 +586,8 @@ bool LoadMempool();
 
 //! Return the minimum staking age appropriate to where we are in the chain
 int CurrentMinStakeAge(int nTimePeriod);
+
+//! Return the current ReturnMessageSigningMagic(GetTime())
+std::string ReturnMessageSigningMagic(int nTimePeriod);
 
 #endif // BITCOIN_VALIDATION_H
