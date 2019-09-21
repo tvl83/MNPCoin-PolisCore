@@ -429,10 +429,10 @@ void CPrivateSendServer::ChargeFees(CConnman& connman)
     if (vecOffendersCollaterals.empty()) return;
 
     //mostly offending? Charge sometimes
-    if ((int)vecOffendersCollaterals.size() >= Params().PoolMaxTransactions() - 1 && GetRandInt(100) > 33) return;
+    if ((int)vecOffendersCollaterals.size() >= Params().PoolMaxParticipants() - 1 && GetRandInt(100) > 33) return;
 
     //everyone is an offender? That's not right
-    if ((int)vecOffendersCollaterals.size() >= Params().PoolMaxTransactions()) return;
+    if ((int)vecOffendersCollaterals.size() >= Params().PoolMaxParticipants()) return;
 
     //charge one of the offenders randomly
     std::random_shuffle(vecOffendersCollaterals.begin(), vecOffendersCollaterals.end());

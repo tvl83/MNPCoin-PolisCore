@@ -7,6 +7,7 @@
 #define BITCOIN_CONSENSUS_PARAMS_H
 
 #include "uint256.h"
+#include <limits>
 #include <map>
 #include <string>
 
@@ -19,6 +20,7 @@ enum DeploymentPos
     DEPLOYMENT_DIP0001, // Deployment of DIP0001 and lower transaction fees.
     DEPLOYMENT_BIP147, // Deployment of BIP147 (NULLDUMMY)
     DEPLOYMENT_DIP0003, // Deployment of DIP0002 and DIP0003 (txv3 and deterministic MN lists)
+    DEPLOYMENT_DIP0008, // Deployment of ChainLock enforcement
     // NOTE: Also add new deployments to VersionBitsDeploymentInfo in versionbits.cpp
     MAX_VERSION_BITS_DEPLOYMENTS
 };
@@ -37,6 +39,15 @@ struct BIP9Deployment {
     int64_t nWindowSize;
     /** A number of blocks, in the range of 1..nWindowSize, which must signal for a fork in order to lock it in. */
     int64_t nThreshold;
+
+    /** Constant for nTimeout very far in the future. */
+    static constexpr int64_t NO_TIMEOUT = std::numeric_limits<int64_t>::max();
+
+    /** Special value for nStartTime indicating that the deployment is always active.
+     *  This is useful for testing, as it means tests don't need to deal with the activation
+     *  process (which takes at least 3 BIP9 intervals). Only tests that specifically test the
+     *  behaviour during activation cannot use this. */
+    static constexpr int64_t ALWAYS_ACTIVE = -1;
 };
 
 enum LLMQType : uint8_t
@@ -49,6 +60,7 @@ enum LLMQType : uint8_t
 
     // for testing only
     LLMQ_10_60 = 100, // 10 members, 6 (60%) threshold, one per hour
+    LLMQ_5_60 = 100, // 5 members, 3 (60%) threshold, one per hour
 };
 
 // Configures a LLMQ and its DKG
@@ -97,6 +109,19 @@ struct LLMQParams {
     // should at the same time not be too large so that not too much space is wasted with null commitments in case a DKG
     // session failed.
     int dkgMiningWindowEnd;
+
+    // In the complaint phase, members will vote on other members being bad (missing valid contribution). If at least
+    // dkgBadVotesThreshold have voted for another member to be bad, it will considered to be bad by all other members
+    // as well. This serves as a protection against late-comers who send their contribution on the bring of
+    // phase-transition, which would otherwise result in inconsistent views of the valid members set
+    int dkgBadVotesThreshold;
+
+    // Number of quorums to consider "active" for signing sessions
+    int signingActiveQuorumCount;
+
+    // Used for inter-quorum communication. This is the number of quorums for which we should keep old connections. This
+    // should be at least one more then the active quorums set.
+    int keepOldConnections;
 };
 
 /**
@@ -111,6 +136,8 @@ struct Params {
     int nMasternodePaymentsIncreasePeriod; // in blocks
     int nInstantSendConfirmationsRequired; // in blocks
     int nInstantSendKeepLock; // in blocks
+    int nInstantSendSigsRequired;
+    int nInstantSendSigsTotal;
     int nBudgetPaymentsStartBlock;
     int nBudgetPaymentsCycleBlocks;
     int nBudgetPaymentsWindowBlocks;
@@ -129,6 +156,11 @@ struct Params {
     int BIP66Height;
     /** Block height at which DIP0001 becomes active */
     int DIP0001Height;
+    /** Block height at which DIP0003 becomes active */
+    int DIP0003Height;
+    /** Block height at which DIP0003 becomes enforced */
+    int DIP0003EnforcementHeight;
+    uint256 DIP0003EnforcementHash;
     /**
      * Minimum blocks including miner confirmation of the total of nMinerConfirmationWindow blocks in a retargeting period,
      * (nPowTargetTimespan / nPowTargetSpacing) which is also used for BIP9 deployments.
@@ -168,6 +200,8 @@ struct Params {
     int nHighSubsidyFactor{1};
 
     std::map<LLMQType, LLMQParams> llmqs;
+    LLMQType llmqChainLocks;
+    LLMQType llmqForInstantSend{LLMQ_NONE};
     bool fLLMQAllowDummyCommitments;
 };
 } // namespace Consensus
