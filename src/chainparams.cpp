@@ -479,10 +479,8 @@ public:
                        UintToArith256(consensus.powLimit))
                 {
                     nNonce++;
-                    if (nNonce % 128 == 0) printf("\rnNonce %08x", nNonce);
                     genesis = CreateGenesisBlock(nTime, nNonce, 0x1f00ffff, 1, 50 * COIN);
                 }
-                printf("\n\ngenesis is %s\n", genesis.ToString().c_str());
             }
 
             genesis = CreateGenesisBlock(nTime, nNonce, 0x1f00ffff, 1, 50 * COIN);
