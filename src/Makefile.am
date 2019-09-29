@@ -26,6 +26,8 @@ BITCOIN_INCLUDES=-I$(builddir) -I$(builddir)/obj $(BDB_CPPFLAGS) $(BOOST_CPPFLAG
 BITCOIN_INCLUDES += -I$(srcdir)/secp256k1/include
 BITCOIN_INCLUDES += $(UNIVALUE_CFLAGS)
 
+BLS_LIBS=-lchiabls -lgmp
+
 LIBBITCOIN_SERVER=libmnpcoin_server.a
 LIBBITCOIN_COMMON=libmnpcoin_common.a
 LIBBITCOIN_CONSENSUS=libmnpcoin_consensus.a
@@ -107,6 +109,13 @@ BITCOIN_CORE_H = \
   core_io.h \
   core_memusage.h \
   cuckoocache.h \
+  ctpl.h \
+  evo/evodb.h \
+  evo/specialtx.h \
+  evo/providertx.h \
+  evo/deterministicmns.h \
+  evo/cbtx.h \
+  evo/simplifiedmns.h \
   privatesend.h \
   privatesend-client.h \
   privatesend-server.h \
@@ -133,6 +142,11 @@ BITCOIN_CORE_H = \
   keystore.h \
   dbwrapper.h \
   limitedmap.h \
+  llmq/quorums_commitment.h \
+  llmq/quorums_blockprocessor.h \
+  llmq/quorums_dummydkg.h \
+  llmq/quorums_utils.h \
+  llmq/quorums_init.h \
   masternode.h \
   masternode-payments.h \
   masternode-sync.h \
@@ -151,7 +165,6 @@ BITCOIN_CORE_H = \
   noui.h \
   policy/fees.h \
   policy/policy.h \
-  policy/rbf.h \
   pow.h \
   protocol.h \
   random.h \
@@ -168,6 +181,8 @@ BITCOIN_CORE_H = \
   script/ismine.h \
   spork.h \
   streams.h \
+  support/allocators/mt_pooled_secure.h \
+  support/allocators/pooled_secure.h \
   support/allocators/secure.h \
   support/allocators/zeroafterfree.h \
   support/cleanse.h \
@@ -221,6 +236,12 @@ libmnpcoin_server_a_SOURCES = \
   chain.cpp \
   checkpoints.cpp \
   dsnotificationinterface.cpp \
+  evo/evodb.cpp \
+  evo/specialtx.cpp \
+  evo/providertx.cpp \
+  evo/deterministicmns.cpp \
+  evo/cbtx.cpp \
+  evo/simplifiedmns.cpp \
   httprpc.cpp \
   httpserver.cpp \
   init.cpp \
@@ -232,6 +253,11 @@ libmnpcoin_server_a_SOURCES = \
   governance-validators.cpp \
   governance-vote.cpp \
   governance-votedb.cpp \
+  llmq/quorums_commitment.cpp \
+  llmq/quorums_blockprocessor.cpp \
+  llmq/quorums_dummydkg.cpp \
+  llmq/quorums_utils.cpp \
+  llmq/quorums_init.cpp \
   masternode.cpp \
   masternode-payments.cpp \
   masternode-sync.cpp \
@@ -257,6 +283,7 @@ libmnpcoin_server_a_SOURCES = \
   rpc/misc.cpp \
   rpc/net.cpp \
   rpc/rawtransaction.cpp \
+  rpc/rpcevo.cpp \
   rpc/server.cpp \
   script/sigcache.cpp \
   script/ismine.cpp \
@@ -299,7 +326,6 @@ libmnpcoin_wallet_a_SOURCES = \
   wallet/wallet.cpp \
   wallet/walletdb.cpp \
   wallet/authhelper.cpp \
-  policy/rbf.cpp \
   $(BITCOIN_CORE_H)
 
 # crypto primitives library
@@ -356,6 +382,8 @@ libmnpcoin_consensus_a_SOURCES = \
   amount.h \
   arith_uint256.cpp \
   arith_uint256.h \
+  bls/bls.cpp \
+  bls/bls.h \
   consensus/merkle.cpp \
   consensus/merkle.h \
   consensus/params.h \
@@ -377,6 +405,7 @@ libmnpcoin_consensus_a_SOURCES = \
   script/script_error.cpp \
   script/script_error.h \
   serialize.h \
+  streams.h \
   tinyformat.h \
   uint256.cpp \
   uint256.h \
@@ -411,9 +440,13 @@ libmnpcoin_common_a_SOURCES = \
 # util: shared between all executables.
 # This library *must* be included to make sure that the glibc
 # backward-compatibility objects and their sanity checks are linked.
-libmnpcoin_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libmnpcoin_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libmnpcoin_util_a_SOURCES = \
+libpolis_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+libpolis_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libpolis_util_a_SOURCES = \
+  bls/bls_ies.cpp \
+  bls/bls_ies.h \
+  bls/bls_worker.cpp \
+  bls/bls_worker.h \
   support/lockedpool.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
@@ -469,7 +502,7 @@ mnpcoind_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-mnpcoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
+mnpcoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)  $(BLS_LIBS)
 
 # mnpcoin-cli binary #
 mnpcoin_cli_SOURCES = mnpcoin-cli.cpp
@@ -486,7 +519,7 @@ mnpcoin_cli_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
-mnpcoin_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
+mnpcoin_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
 #
 
 # mnpcoin-tx binary #
@@ -507,7 +540,7 @@ mnpcoin_tx_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-mnpcoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+mnpcoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS) $(BLS_LIBS)
 #
 
 # mnpcoinconsensus library #
@@ -520,7 +553,7 @@ if GLIBC_BACK_COMPAT
 endif
 
 libmnpcoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
-libmnpcoinconsensus_la_LIBADD = $(LIBSECP256K1)
+libmnpcoinconsensus_la_LIBADD = $(LIBSECP256K1) $(BLS_LIBS)
 libmnpcoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL
 libmnpcoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
@@ -548,9 +581,12 @@ CLEANFILES += wallet/*.gcda wallet/*.gcno
 CLEANFILES += wallet/test/*.gcda wallet/test/*.gcno
 CLEANFILES += zmq/*.gcda zmq/*.gcno
 
+IMMER_DIST = immer
+
 DISTCLEANFILES = obj/build.h
 
 EXTRA_DIST = $(CTAES_DIST)
+EXTRA_DIST += $(IMMER_DIST)
 
 
 config/mnpcoin-config.h: config/stamp-h1
