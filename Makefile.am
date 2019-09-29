@@ -1,5 +1,5 @@
 # Copyright (c) 2013-2016 The Bitcoin Core developers
-# Copyright (c) 2014-2018 The Dash Core developers
+# Copyright (c) 2014-2018 The Polis Core developers
 # Copyright (c) 2017-2019 The Polis Core developers
 # Copyright (c) 2017-2019 The MNPCoin Core developers
 # Distributed under the MIT software license, see the accompanying
