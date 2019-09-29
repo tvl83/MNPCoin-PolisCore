@@ -556,10 +556,10 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\PolisCore
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\PolisCore
-    // Mac: ~/Library/Application Support/PolisCore
-    // Unix: ~/.poliscore
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\MNPCoin
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\MNPCoin
+    // Mac: ~/Library/Application Support/MNPCoin
+    // Unix: ~/.mnpcoin
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "PolisCore";
@@ -575,7 +575,7 @@ boost::filesystem::path GetDefaultDataDir()
     return pathRet / "Library/Application Support/PolisCore";
 #else
     // Unix
-    return pathRet / ".poliscore";
+    return pathRet / ".mnpcoin";
 #endif
 #endif
 }
