@@ -116,7 +116,7 @@ qa/cache/*
 .autotools
 /doc/doxygen/
 
-libpolisconsensus.pc
+libmnpcoinconsensus.pc
 contrib/devtools/split-debug.sh
 src/qt/mnpcoin-qt.bash
 qa/pull-tester/tests-config.sh
