@@ -121,8 +121,8 @@ bool fLiteMode = false;
 */
 int nWalletBackups = 10;
 
-const char * const BITCOIN_CONF_FILENAME = "polis.conf";
-const char * const BITCOIN_PID_FILENAME = "polisd.pid";
+const char * const BITCOIN_CONF_FILENAME = "mnpcoin.conf";
+const char * const BITCOIN_PID_FILENAME = "mnpcoind.pid";
 
 CCriticalSection cs_args;
 std::map<std::string, std::string> mapArgs;
